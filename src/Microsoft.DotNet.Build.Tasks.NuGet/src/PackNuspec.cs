@@ -99,7 +99,7 @@ namespace Microsoft.DotNet.Build.Tasks.NuGet
 
             if (!(string.IsNullOrEmpty(DestinationFolder) ^ string.IsNullOrEmpty(OutputPath)))
             {
-                Log.LogError("Either DestinationFolder and OutputPath must be specified, but only not both.");
+                Log.LogError("Either DestinationFolder and OutputPath must be specified, but only one, not both.");
                 return false;
             }
 

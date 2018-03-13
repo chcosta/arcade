@@ -18,10 +18,9 @@
     <packageTypes>
       <packageType name="MSBuildSdk" />
     </packageTypes>
-    <tags></tags>
-    <dependencies>
-       <!-- Do not add any dependencies to this package as we want to install it versionless (i.e. -ExcludeVersion) and we don't want the dependencies to be installed that way -->
-    </dependencies>
+    <tags>msbuild tasks nuget</tags>
+    <!-- Do not add any dependencies to this package. Its dependencies are bundled in the package. -->
+    <dependencies />
   </metadata>
   <files>
     <file src="$ArtifactsBinDir$Microsoft.DotNet.Build.Tasks.NuGet\netstandard2.0\*.dll" target="build\netstandard2.0" />

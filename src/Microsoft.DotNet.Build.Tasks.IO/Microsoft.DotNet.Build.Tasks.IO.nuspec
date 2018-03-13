@@ -23,10 +23,9 @@
     <packageTypes>
       <packageType name="MSBuildSdk" />
     </packageTypes>
-    <tags></tags>
-    <dependencies>
-       <!-- Do not add any dependencies to this package as we want to install it versionless (i.e. -ExcludeVersion) and we don't want the dependencies to be installed that way -->
-    </dependencies>
+    <tags>msbuild tasks io</tags>
+    <!-- Do not add any dependencies to this package. Its dependencies are bundled in the package. -->
+    <dependencies />
   </metadata>
   <files>
     <file src="$ArtifactsBinDir$Microsoft.DotNet.Build.Tasks.IO\netcoreapp2.0\Microsoft.DotNet.Build.Tasks.IO.dll" target="build\netcoreapp2.0" />

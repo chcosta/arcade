@@ -26,8 +26,8 @@ Overwrite                | boolean     | Overwrite files if they exists already 
 Version                  | string      | The package version to use. Overrides any value in .nuspec or `Properties`.
 Properties               | string[]    | Provides substitution in the nuspec for variables using `$varName$` syntax. Input should be "key=value" pairs.
 BasePath                 | string      | The base path to use for any relative paths in the &lt;files&gt; section of nuspec.
-Dependencies             | ITaskItem[] | Dependencies to add to the &lt;dependencies&gt; section of the spec. Metadata 'TargetFramework' can be specified to put dependencies into groups with targetFramework set.
-PackageFiles             | ITaskItem[] | Files to add to the package. Must specify the PackagePath metadata.
+Dependencies             | ITaskItem[] | Dependencies to add to the &lt;dependencies&gt; section of the spec. <br> Metadata 'TargetFramework' can be specified to put dependencies into groups with targetFramework set.<br> These dependencies augment any dependencies listed explicitly in the .nuspec file.
+PackageFiles             | ITaskItem[] | Files to add to the package. Must specify the PackagePath metadata. <br> These files augment any files listed explicitly in the .nuspec file.
 IncludeEmptyDirectories  | boolean     | Pack empty directories.
 Packages                 | ITaskItem[] | **[Output]** The full path to package files created.
 
@@ -37,5 +37,22 @@ Notes:
 
 Example:
 ```xml
-<PackNuspec File="MyPackage.nuspec" Properties="version=$(PackageVersion)" DestinationFolder="$(PackagesDir)" />
+<PackNuspec File="MyPackage.nuspec" 
+            Version="$(PackageVersion)"
+            Properties="author=$(Author);$description=$(Description)"
+            DestinationFolder="$(PackagesDir)" />
+```
+
+```xml
+<!-- MyPackage.nuspec -->
+<?xml version=`1.0` encoding=`utf-8`?>
+<package xmlns=`http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd`>
+  <metadata>
+    <id>MyPackage</id>
+    <version>1.0.0</version>
+    <authors>$author$</authors>
+    <description>$description$</description>
+  </metadata>
+  <files />
+</package>
 ```

@@ -22,7 +22,7 @@ Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Tasks.Tests.Shared", "test\
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		test\Tasks.Tests.Shared\Tests.Shared.projitems*{55dd2a17-70b0-4b73-a1a6-65b8db32fefd}*SharedItemsImports = 13
+		test\Tasks.Tests.Shared\Tasks.Tests.Shared.projitems*{55dd2a17-70b0-4b73-a1a6-65b8db32fefd}*SharedItemsImports = 13
 		src\Tasks.Shared\Tasks.Shared.projitems*{e7579bc9-793c-4490-9101-3f4d08c59756}*SharedItemsImports = 13
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
