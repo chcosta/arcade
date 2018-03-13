@@ -354,7 +354,7 @@ namespace Microsoft.DotNet.Build.Tasks.NuGet.Tests
             };
 
             Assert.False(task.Execute(), "Task should fail");
-            Assert.Contains("Either DestinationFolder and OutputPath must be specified, but only not both.", engine.Errors.Select(e => e.Message));
+            Assert.Contains("Either DestinationFolder and OutputPath must be specified, but only one, not both.", engine.Errors.Select(e => e.Message));
         }
 
         [Fact]
@@ -368,7 +368,7 @@ namespace Microsoft.DotNet.Build.Tasks.NuGet.Tests
             };
 
             Assert.False(task.Execute(), "Task should fail");
-            Assert.Contains("Either DestinationFolder and OutputPath must be specified, but only not both.", engine.Errors.Select(e => e.Message));
+            Assert.Contains("Either DestinationFolder and OutputPath must be specified, but only one, not both.", engine.Errors.Select(e => e.Message));
         }
 
         private string CreateNuspec(string xml)
