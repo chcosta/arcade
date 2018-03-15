@@ -20,6 +20,23 @@ Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Tasks.Shared", "src\Tasks.S
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Tasks.Tests.Shared", "test\Tasks.Tests.Shared\Tasks.Tests.Shared.shproj", "{55DD2A17-70B0-4B73-A1A6-65B8DB32FEFD}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "files", "files", "{0E631128-0109-4BC5-AA82-F74359B6D40C}"
+	ProjectSection(SolutionItems) = preProject
+		.gitattributes = .gitattributes
+		.gitignore = .gitignore
+		.vsts-ci.yml = .vsts-ci.yml
+		Build.cmd = Build.cmd
+		build.sh = build.sh
+		Directory.Build.props = Directory.Build.props
+		global.json = global.json
+		msbuild.log = msbuild.log
+		netci.groovy = netci.groovy
+		NuGet.Config = NuGet.Config
+		README.md = README.md
+		Restore.cmd = Restore.cmd
+		restore.sh = restore.sh
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		test\Tasks.Tests.Shared\Tasks.Tests.Shared.projitems*{55dd2a17-70b0-4b73-a1a6-65b8db32fefd}*SharedItemsImports = 13

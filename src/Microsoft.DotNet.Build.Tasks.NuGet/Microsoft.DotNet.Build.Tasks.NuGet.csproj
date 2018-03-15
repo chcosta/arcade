@@ -1,8 +1,9 @@
 <Project Sdk="RoslynTools.RepoToolset">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0</TargetFrameworks>
-    <TargetFrameworks Condition="'$(OS)' == 'Windows_NT'">$(TargetFrameworks);net46</TargetFrameworks>
+    <!-- TODO: unify this with the rest of the projects in arcade. See dotnet/arcade#59 -->
+    <NetFxTfm Condition="'$(OS)' == 'Windows_NT'">net461</NetFxTfm>
+    <TargetFrameworks>netstandard2.0;$(NetFxTfm)</TargetFrameworks>
 
     <IsPackable>true</IsPackable>
     <NuspecFile>$(MSBuildProjectName).nuspec</NuspecFile>
@@ -20,7 +21,7 @@
     <PackageReference Include="Microsoft.Build.Utilities.Core" Version="$(MicrosoftBuildUtilitiesCoreVersion)" PrivateAssets="All" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)' == 'net46'">
+  <ItemGroup Condition="'$(TargetFramework)' == '$(NetFxTfm)'">
     <Reference Include="Microsoft.Build.Tasks.v4.0" />
     <Reference Include="Microsoft.Build.Framework" />
     <Reference Include="Microsoft.Build.Utilities.v4.0" />

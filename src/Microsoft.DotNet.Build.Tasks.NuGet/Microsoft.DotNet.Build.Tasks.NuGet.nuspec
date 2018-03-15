@@ -24,7 +24,7 @@
   </metadata>
   <files>
     <file src="$ArtifactsBinDir$Microsoft.DotNet.Build.Tasks.NuGet\netstandard2.0\*.dll" target="build\netstandard2.0" />
-    <file src="$ArtifactsBinDir$Microsoft.DotNet.Build.Tasks.NuGet\net46\*.dll" target="build\net46" />
+    <file src="$ArtifactsBinDir$Microsoft.DotNet.Build.Tasks.NuGet\$NetFxTfm$\*.dll" target="build\net461" />
     <file src="targets\sdk\**" target="sdk" />
     <file src="targets\Microsoft.DotNet.Build.Tasks.NuGet.props" target="build" />
   </files>

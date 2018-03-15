@@ -11,7 +11,7 @@
         "bin/Microsoft.DotNet.Build.Tasks.IO/netcoreapp2.0/Microsoft.DotNet.Build.Tasks.IO.dll",
         "bin/Microsoft.DotNet.Build.Tasks.IO/net45/Microsoft.DotNet.Build.Tasks.IO.dll",
         "bin/Microsoft.DotNet.Build.Tasks.NuGet/netstandard2.0/Microsoft.DotNet.Build.Tasks.NuGet.dll",
-        "bin/Microsoft.DotNet.Build.Tasks.NuGet/net46/Microsoft.DotNet.Build.Tasks.NuGet.dll"
+        "bin/Microsoft.DotNet.Build.Tasks.NuGet/net461/Microsoft.DotNet.Build.Tasks.NuGet.dll"
       ]
     },
     {

@@ -181,12 +181,6 @@ namespace Microsoft.DotNet.Build.Tasks.NuGet
 
             Directory.CreateDirectory(Path.GetDirectoryName(dest));
 
-            if (!Overwrite && System.IO.File.Exists(dest))
-            {
-                Log.LogError($"File path '{dest}' already exists. Set Overwrite=true to overwrite the destination nupkg file.");
-                return false;
-            }
-
             if (packageBuilder.Files != null)
             {
                 foreach (var file in packageBuilder.Files)
@@ -202,9 +196,24 @@ namespace Microsoft.DotNet.Build.Tasks.NuGet
                 }
             }
 
-            using (var stream = System.IO.File.Create(dest))
+            var mode = Overwrite ? FileMode.Create : FileMode.CreateNew;
+
+            try
             {
-                packageBuilder.Save(stream);
+                using (var stream = new FileStream(dest, mode))
+                {
+                    packageBuilder.Save(stream);
+                }
+            }
+            catch (IOException)
+            {
+                if (!Overwrite && System.IO.File.Exists(dest))
+                {
+                    // add a friendly error when IOException is thrown because Overwrite=false
+                    Log.LogError($"File path '{dest}' already exists. Set Overwrite=true to overwrite the destination nupkg file.");
+                }
+
+                throw;
             }
 
             Log.LogMessage(MessageImportance.High, $"Created package {dest}");
