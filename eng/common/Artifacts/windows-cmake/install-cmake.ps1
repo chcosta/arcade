@@ -34,7 +34,7 @@ Param (
     [string] $BaseUri,
     [Parameter(Mandatory=$True)]
     [string] $Version,
-    [string] $CommonLibraryDirectory = $PSScriptRoot + "\..\",
+    [string] $CommonLibraryDirectory = $PSScriptRoot,
     [switch] $Force = $False,
     [int] $DownloadRetries = 5,
     [int] $RetryWaitTimeInSeconds = 30
