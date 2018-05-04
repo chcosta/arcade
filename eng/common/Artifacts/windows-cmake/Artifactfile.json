@@ -23,14 +23,9 @@
             "type": "string",
             "displayName": "Version",
             "defaultValue": "3.11.1"
-        },
-        "CommonLibraryDirectory": {
-            "type": "string",
-            "displayName": "CommonLibraryDirectory",
-            "defaultValue": "..\\\\..\\\\"
         }
     },
     "runCommand": {
-        "commandToExecute": "[concat('powershell.exe -NoProfile -NoLogo -ExecutionPolicy ByPass \"& ./install-cmake.ps1 -BaseUri \"', parameters('BaseUri'), '\" -InstallPath \"', parameters('InstallPath'), '\" -Version \"', parameters('Version'), '\" -CommonLibraryDirectory \"', parameters('CommonLibraryDirectory'), '\"')]"
+        "commandToExecute": "[concat('powershell.exe -NoProfile -NoLogo -ExecutionPolicy ByPass \"& ./install-cmake.ps1 -BaseUri \"', parameters('BaseUri'), '\" -InstallPath \"', parameters('InstallPath'), '\" -Version \"', parameters('Version'), '\"')]"
     }
 }
