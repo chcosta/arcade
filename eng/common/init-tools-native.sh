@@ -84,10 +84,14 @@ function Main {
 
     if [[ "$clean" == true || "$force" == "--force" ]]; then
         echo "Cleaning $artifactsnativebasedir"
-        if [[ -z $artifactsnativebasedir ]]; then
+        if [[ -d $artifactsnativebasedir ]]; then
             rm -dfr $artifactsnativebasedir
         fi
-
+        tempdir=$( GetTempPath )
+        echo "Cleaning $tempdir"
+        if [[ -d $tempdir ]]; then
+            rm -dfr $tempdir
+        fi
         if [[ "$clean" == true ]]; then
             exit 0
         fi

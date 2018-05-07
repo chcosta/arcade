@@ -20,9 +20,13 @@ function PrintExitStatusMessage {
     fi
     
     if [[ "$exitstatus" -eq '0' ]]; then
-        echo "$message"
-    else 
-        echo_error "$errormessage"
+        if [[ ! "$message" == "" ]]; then
+            echo "$message"
+        fi
+    else
+        if [[ ! "$errormessage" -eq "" ]]; then
+            echo_error "$errormessage"
+        fi
     fi
     return $exitstatus
 }
@@ -239,7 +243,7 @@ function NewScriptShim {
     toolfilepath=$2
     force=''
     if [[ $# -gt 2 ]]; then
-      force=$3
+        force=$3
     fi
     echo_verbose "Generating '$shimpath' shim"
     if [[ -f $shimpath ]] && [[ ! "$force" == "--force" ]]; then
@@ -252,7 +256,9 @@ function NewScriptShim {
         return 1
     fi
 
-    rm $shimpath
+    if [[ -f $shimpath ]]; then
+        rm $shimpath
+    fi
     echo "#!/usr/bin/env bash" > $shimpath
     echo "\"$toolfilepath\" \$@" >> $shimpath
     echo_verbose "Setting +x on $shimpath"
