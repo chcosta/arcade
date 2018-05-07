@@ -160,11 +160,10 @@ Creates a wrapper script (shim) that passes arguments forward to native tool ass
 .PARAMETER ShimPath
 Path to shim file
 
-.PARAMETER AssemblyPath
+.PARAMETER ToolFilePath
 Path to assembly that shim forwards to
 
-.PARAMETER Overwrite
-Parameter description
+.PARAMETER Force
 
 .NOTES
 Returns $True if generating shim succeeds, $False otherwise
@@ -239,7 +238,7 @@ function Get-MachineArchitecture {
 }
 
 function Get-TempPath {
-    return Join-Path $Env:USERPROFILE ".net/native/installers/temp"
+    return Join-Path $Env:USERPROFILE ".netcoreeng/native/temp"
 }
 
 <#
