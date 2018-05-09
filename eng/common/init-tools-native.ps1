@@ -47,13 +47,15 @@ Param (
 Set-StrictMode -version 2.0
 $ErrorActionPreference="Stop"
 
-Import-Module -Name (Join-Path $PSScriptRoot "native\CommonLibrary.psm1")
+Import-Module -Name (Join-Path $PSScriptRoot "native\Windows-CommonLibrary\CommonLibrary.psm1")
 
 try {
     # Define verbose switch if undefined
     $Verbose = $VerbosePreference -Eq "Continue"
 
     $EngCommonBaseDir = Join-Path $PSScriptRoot "native\"
+    $CommonLibraryDirectory = Join-Path $EngCommonBaseDir "Windows-CommonLibrary"
+
     $NativeBaseDir = $InstallDirectory
     if (!$NativeBaseDir) {
       $NativeBaseDir = CommonLibrary\Get-NativeInstallDirectory
@@ -92,11 +94,11 @@ try {
     $ToolsList.GetEnumerator() | ForEach-Object {
         $ToolName = $_.Key
         $ToolVersion = $_.Value
-        $InstallerFilename = "install-$ToolName.ps1"
+        $InstallerFilename = "Windows-$ToolName\install-$ToolName.ps1"
         $LocalInstallerCommand = Join-Path $EngCommonBaseDir $InstallerFilename
         $LocalInstallerCommand += " -InstallPath $InstallBin"
         $LocalInstallerCommand += " -BaseUri $BaseUri"
-        $LocalInstallerCommand += " -CommonLibraryDirectory $EngCommonBaseDir"
+        $LocalInstallerCommand += " -CommonLibraryDirectory $CommonLibraryDirectory"
         $LocalInstallerCommand += " -Version $ToolVersion"
 
         if ($Verbose) {

@@ -1,0 +1,36 @@
+{
+    "$schema": "https://raw.githubusercontent.com/Azure/azure-devtestlab/master/schemas/2016-11-28/dtlArtifacts.json",
+    "title": "CMake",
+    "publisher": "Microsoft",
+    "description": "Install cmake from Azure storage",
+    "tags": [
+        "Windows",
+        "CMake"
+    ],
+    "targetOsType": "Windows",
+    "parameters": {
+        "BaseUri": {
+            "type": "string",
+            "displayName": "BaseUri",
+            "defaultValue": "https://dotnetfeed.blob.core.windows.net/chcosta-test/nativeassets"
+        },
+        "InstallPath": {
+            "type": "string",
+            "displayName": "InstallPath",
+            "defaultValue": "C:\\nativetools"
+        },
+        "Version": {
+            "type": "string",
+            "displayName": "Version",
+            "defaultValue": "3.11.1"
+        },
+        "CommonLibraryDirectory": {
+            "type": "string",
+            "displayName": "CommonLibraryDirectory",
+            "defaultValue": "C:\\nativetools\\commonlibrary"
+        }
+    },
+    "runCommand": {
+        "commandToExecute": "[concat('powershell.exe -NoProfile -NoLogo -ExecutionPolicy ByPass \"& ./install-cmake.ps1 -BaseUri \"', parameters('BaseUri'), '\" -InstallPath \"', parameters('InstallPath'), '\" -Version \"', parameters('Version'), '\" -CommonLibraryDirectory \"', parameters('CommonLibraryDirectory'), '\"')]"
+    }
+}
