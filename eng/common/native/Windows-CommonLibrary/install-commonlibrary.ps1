@@ -6,7 +6,7 @@ Param (
 )
 
 $CommonLibraryPath = Join-Path $PSScriptRoot "CommonLibrary.psm1"
-$InstallPath = Join-Path $PSScriptRoot "CommonLibrary.psm1"
+$InstallPath = Join-Path $InstallDirectory "CommonLibrary.psm1"
 
 if ($Force) {
     if (Test-Path $InstallPath) {
