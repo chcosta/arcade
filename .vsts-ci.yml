@@ -9,7 +9,7 @@ phases:
     HelixSource: official/dotnet/arcade/$(Build.SourceBranch)
     HelixType: build/product
   queue:
-    name: DotNetCore-Build
+    name: Hosted VS2017
     parallel: 2
     demands: 
       - agent.os -equals Windows_NT
@@ -27,16 +27,6 @@ phases:
   - template: eng/common/telemetry.yaml
     parameters:
       buildSteps:
-      - task: ms-vseng.MicroBuildTasks.30666190-6959-11e5-9f96-f56098202fef.MicroBuildSigningPlugin@1
-        displayName: Install MicroBuild plugin
-        inputs:
-          signType: '$(_SignType)'
-          zipSources: false
-          esrpSigning: '$(_UseEsrpSigning)'
-        env:
-          TeamName: $(_TeamName)
-        continueOnError: false
-        condition: and(succeeded(), in(variables._SignType, 'real', 'test'))
       - task: AzureKeyVault@1
         inputs:
           azureSubscription: 'DotNet-VSTS'
@@ -78,7 +68,7 @@ phases:
     HelixSource: official/dotnet/arcade/$(Build.SourceBranch)
     HelixType: build/product
   queue:
-    name: DotNetCore-Test
+    name: Hosted Linux Preview
     parallel: 2
     demands:
     - agent.os -equals linux
