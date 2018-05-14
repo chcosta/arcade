@@ -24,6 +24,7 @@ phases:
   - checkout: self
     clean: true
     fetchDepth: 1
+  - template: eng/common/telemetry.yaml
     parameters:
       buildSteps:
       - task: AzureKeyVault@1
