@@ -26,6 +26,7 @@ phases:
     fetchDepth: 1
   - template: eng/common/telemetry.yaml
     parameters:
+      agentOs: Windows_NT
       buildSteps:
       - task: AzureKeyVault@1
         inputs:
@@ -57,6 +58,53 @@ phases:
         inputs:
           PathtoPublish: '$(Build.StagingDirectory)\BuildLogs'
           ArtifactName: Windows_$(Agent.JobName)
+          publishLocation: Container
+        continueOnError: true
+        condition: succeededOrFailed()
+
+- phase: Linux
+  variables:
+    # set _PREVIEW_VSTS_DOCKER_IMAGE to the docker image you want to automatically run in a container
+    _PREVIEW_VSTS_DOCKER_IMAGE: microsoft/dotnet-buildtools-prereqs:ubuntu-14.04-cross-0cd4667-20170319080304
+    HelixSource: official/dotnet/arcade/$(Build.SourceBranch)
+    HelixType: build/product
+  queue:
+    name: Hosted Linux Preview
+    parallel: 2
+    demands:
+    - agent.os -equals linux
+    - docker -equals 18.03.1-ce
+    matrix:
+      Build_Debug:
+        _BuildConfig: Debug
+      Build_Release:
+        _BuildConfig: Release
+  steps:
+  - checkout: self
+    clean: true
+    fetchDepth: 1
+  - template: eng/common/telemetry.yaml
+    parameters:
+      buildSteps:
+      - script: eng/common/cibuild.sh --configuration $(_BuildConfig) --preparemachine
+        name: Build
+        env:
+          OfficialBuildId: $(BUILD.BUILDNUMBER)
+      # Copy build logs to a staging directory
+      - task: CopyFiles@2
+        displayName: Gather Logs
+        inputs:
+          SourceFolder: '$(Build.SourcesDirectory)/artifacts'
+          Contents: '**/*log'
+          TargetFolder: '$(Build.StagingDirectory)/BuildLogs'
+        continueOnError: true
+        condition: succeededOrFailed()
+      # Publish build logs to VSTS  
+      - task: PublishBuildArtifacts@1
+        displayName: Publish Logs to VSTS
+        inputs:
+          PathtoPublish: '$(Build.StagingDirectory)/BuildLogs'
+          ArtifactName: Linux_$(Agent.JobName)
           publishLocation: Container
         continueOnError: true
         condition: succeededOrFailed()
