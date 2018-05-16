@@ -23,7 +23,7 @@ steps:
         Attempt: 1
         OperatingSystem: $(Agent.OS)
         Configuration: $(_BuildConfig)
-  - ${{ if not(parameters.agentOs, 'Windows_NT') }}:
+  - ${{ if eq(parameters.agentOs, 'Windows_NT') }}:
     - powershell: |
         ./telemetry/start-job.ps1 -Source $env:Source -Type $env:Type -Build $env:Build -QueueId $env:QueueId -Attempt $env:Attempt -Properties @{ operatingSystem=$env:OperatingSystem; configuration=$env:Configuration } -Verbose
         if ($LASTEXITCODE -ne 0) {
