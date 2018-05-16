@@ -85,6 +85,7 @@ phases:
     fetchDepth: 1
   - template: eng/common/telemetry.yaml
     parameters:
+      agentOs: Linux
       buildSteps:
       - script: eng/common/cibuild.sh --configuration $(_BuildConfig) --preparemachine
         name: Build
