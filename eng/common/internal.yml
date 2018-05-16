@@ -2,7 +2,7 @@ parameters:
   buildSteps: []
 
 steps:
-  - template: telemetry.yaml
+  - template: /eng/common/telemetry.yaml
     parameters:
       buildSteps: 
       - ${{ if not(eq(variables['Build.BuildNumber'], '')) }}:

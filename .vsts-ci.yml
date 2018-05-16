@@ -1,5 +1,5 @@
 phases:
-- template: build.yml
+- template: eng/build.yml
   parameters:
     agentOs: Windows_NT
     queueName: Hosted VS2017
@@ -11,7 +11,7 @@ phases:
         buildConfig: Release
         publishType: blob    
 
-- template: build.yml
+- template: eng/build.yml
   parameters:
     agentOs: Linux
     queueName: Hosted Linux Preview
