@@ -8,7 +8,19 @@ phases:
     _TeamName: DotNetCore
     HelixSource: official/dotnet/arcade/$(Build.SourceBranch)
     HelixType: build/product
+    Windows_Queue: Hosted VS2017
+  queue:
+    matrix:
+      Windows_NT_Build_Debug:
+        _BuildConfig: Debug
+        _PublishType: none
+        _operatingSystem: Windows_NT
+      Build_Release:
+        _BuildConfig: Release
+        _PublishType: blob    
   - template: eng/common/common.yml
+    parameters:
+      _operatingSystem: Windows_NT
   steps:
   - checkout: self
     clean: true
