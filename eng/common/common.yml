@@ -6,7 +6,8 @@ parameters:
   _operatingSystem: Windows_NT
 
 phases:
-  - ${{ if eq($[variables['_operatingSystem']], 'Windows_NT') }}:
+- phase:
+  - ${{ if eq(variables['_operatingSystem'], 'Windows_NT') }}:
     queue: 
       parallel: 2
       demands:
