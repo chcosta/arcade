@@ -29,7 +29,7 @@ phases:
       buildSteps:
       - task: AzureKeyVault@1
         inputs:
-          azureSubscription: 'DotNet-VSTS-Public'
+          azureSubscription: 'DotNet-Engineering-Services_KeyVault'
           KeyVaultName: EngKeyVault
           SecretsFilter: 'dotnetfeed-storage-access-key-1'
       # Build and Publish on the Release configuration

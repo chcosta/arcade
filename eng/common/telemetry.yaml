@@ -5,7 +5,7 @@ parameters:
 steps:
   - task: AzureKeyVault@1
     inputs:
-      azureSubscription: 'DotNet-VSTS-Public'
+      azureSubscription: 'HelixProd_KeyVault'
       KeyVaultName: HelixProdKV
       SecretsFilter: 'HelixApiAccessToken'  
   - bash: |
