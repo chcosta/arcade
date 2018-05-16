@@ -3,6 +3,11 @@ parameters:
   buildSteps: []
 
 steps:
+  - task: AzureKeyVault@1
+    inputs:
+      azureSubscription: 'DotNet-VSTS-Public'
+      KeyVaultName: HelixProdKV
+      SecretsFilter: 'HelixApiAccessToken'  
   - bash: |
       /bin/bash ./telemetry/start-job.sh --source "$Source" --type "$Type" --build "$Build" --queue-id "$QueueId" --attempt "$Attempt" -p "operatingSystem=$OperatingSystem" -p "configuration=$Configuration"
     condition: not(in(variables['Agent.OS'], 'Windows_NT'))
