@@ -3,7 +3,7 @@ phases:
   # variables apply to every build configuration in the matrix
   variables: 
     _PublishBlobFeedUrl: https://dotnetfeed.blob.core.windows.net/dotnet-tools-internal/index.json
-    _SignType: real
+    _SignType: test
     _UseEsrpSigning: true
     _TeamName: DotNetCore
     HelixSource: official/dotnet/arcade/$(Build.SourceBranch)
