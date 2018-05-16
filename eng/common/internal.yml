@@ -1,35 +1,14 @@
 parameters:
-  variables: {}
-  queue: {}
-  parallel: {}
-  demands: {}
-  matrix: {}
-  phaseName: unknown
-  buildNumber: none
-  _operatingSystem: Windows_NT
+  buildSteps: []
 
-phases:
-  - ${{ if eq(parameters._operatingSystem, 'Windows_NT') }}:
-    variables:
-      commandExtension: cmd
-    queue: Hosted VS2017
-    parallel: 2
-    demands:
-      - agent.os -equals Windows_NT
-    matrix:
-      Build_Debug:
-        _BuildConfig: Debug
-        _PublishType: none
-      Build_Release:
-        _BuildConfig: Release
-        _PublishType: blob
-    ${{ insert }}: ${{ parameters.queue }}
-    ${{ insert }}: ${{ parameters.parallel }}
-    ${{ insert }}: ${{ parameters.demands }}
-    ${{ insert }}: ${{ parameters.matrix }}
-    ${{ insert }}: ${{ parameters.variables }}
-
-  - ${{ if not(eq(parameters._operatingSystem, 'Windows_NT')) }}:
-    variables:
-      commandExtension: sh
-      ${{ insert }}: ${{ parameters.variables }}
+steps:
+  - template: telemetry.yaml
+    parameters:
+      buildSteps: 
+      - ${{ if not(eq(variables['Build.BuildNumber'], '')) }}:
+        - task: AzureKeyVault@1
+          inputs:
+            azureSubscription: 'DotNet-Engineering-Services_KeyVault'
+            KeyVaultName: EngKeyVault
+            SecretsFilter: 'dotnetfeed-storage-access-key-1'
+      - ${{ parameters.buildSteps }}

@@ -1,17 +1,19 @@
 parameters:
   variables: {}
-  _operatingSystem: Windows_NT
+  agentOs: Windows_NT
 
 phases:
 - phase:
-  - ${{ if eq(parameters._operatingSystem, 'Windows_NT') }}:
+  - ${{ if eq(parameters.agentOs, 'Windows_NT') }}:
     variables:
       scriptExtension: cmd
+      engCommonDirectory: eng\common\
+      pathSeparatorChar: \
       ${{ insert }}: ${{ parameters.variables }}
 
-  - ${{ if not($[variables['_operatingSystem']], 'Windows_NT')) }}:
-    queue: 
-      parallel: 2
-      demands:
-        - agent.os -equals Windows_NT
-      ${{ insert }}: ${{ parameters.queue }}
+  - ${{ if not($[variables['agentOs']], 'Windows_NT')) }}:
+    variables:
+      scriptExtension: sh
+      engCommonDirectory: eng/common/
+      pathSeparatorChar: /
+      ${{ insert }}: ${{ parameters.variables }}
