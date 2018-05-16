@@ -1,0 +1,29 @@
+parameters:
+  variables: {}
+  queue: {}
+  phaseName: unknown
+  buildNumber: none
+  _operatingSystem: Windows_NT
+
+phases:
+  - ${{ if eq(parameters._operatingSystem, 'Windows_NT') }}:
+    variables:
+      commandExtension: cmd
+      ${{ insert }}: ${{ parameters.variables }}
+    queue: Hosted VS2017
+      parallel: 2
+      demands:
+        - agent.os -equals Windows_NT
+      matrix:
+        Build_Debug:
+          _BuildConfig: Debug
+          _PublishType: none
+        Build_Release:
+          _BuildConfig: Release
+          _PublishType: blob
+      ${{ insert }}: ${{ parameters.queue }}
+
+  - ${{ if not(eq(parameters._operatingSystem, 'Windows_NT')) }}:
+    variables:
+      commandExtension: sh
+      ${{ insert }}: ${{ parameters.variables }}
