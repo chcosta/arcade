@@ -1,67 +1,72 @@
 phases:
-- phase: Windows_NT
-  # variables apply to every build configuration in the matrix
-  variables: 
-    _PublishBlobFeedUrl: https://dotnetfeed.blob.core.windows.net/dotnet-tools-internal/index.json
-    _SignType: test
-    _UseEsrpSigning: true
-    _TeamName: DotNetCore
-    HelixSource: official/dotnet/arcade/$(Build.SourceBranch)
-    HelixType: build/product
-    Windows_Queue: Hosted VS2017
-  queue:
-    matrix:
-      Windows_NT_Build_Debug:
-        _BuildConfig: Debug
-        _PublishType: none
-        _operatingSystem: Windows_NT
-      Build_Release:
-        _BuildConfig: Release
-        _PublishType: blob    
-  - template: eng/common/common.yml
-    parameters:
-      _operatingSystem: Windows_NT
-  steps:
-  - checkout: self
-    clean: true
-    fetchDepth: 1
-#  - template: eng/common/telemetry.yml
-#    parameters:
-#      agentOs: Windows_NT
-#      buildSteps:
-    - task: AzureKeyVault@1
-      inputs:
-        azureSubscription: 'DotNet-Engineering-Services_KeyVault'
-        KeyVaultName: EngKeyVault
-        SecretsFilter: 'dotnetfeed-storage-access-key-1'
-    # Build and Publish on the Release configuration
-    - script: eng\common\CIBuild.$(commandExtension) -configuration $(_BuildConfig) -prepareMachine
-                /p:PB_PublishType=$(_PublishType)
-                /p:PB_PublishBlobFeedUrl=$(_PublishBlobFeedUrl)
-                /p:PB_PublishBlobFeedKey=$(dotnetfeed-storage-access-key-1)
-                /p:SignType=$(_SignType)
-      name: Build_Publish
-      displayName: Build / Publish
-      env:
-        OfficialBuildId: $(BUILD.BUILDNUMBER)
-    # Copy build logs to a staging directory
-    - task: CopyFiles@2
-      displayName: Gather Logs
-      inputs:
-        SourceFolder: '$(Build.SourcesDirectory)\artifacts'
-        Contents: '**\*log'
-        TargetFolder: '$(Build.StagingDirectory)\BuildLogs'
-      continueOnError: true
-      condition: succeededOrFailed()
-    # Publish build logs to VSTS  
-    - task: PublishBuildArtifacts@1
-      displayName: Publish Logs to VSTS
-      inputs:
-        PathtoPublish: '$(Build.StagingDirectory)\BuildLogs'
-        ArtifactName: Windows_$(Agent.JobName)
-        publishLocation: Container
-      continueOnError: true
-      condition: succeededOrFailed()
+- template: build.yml
+  parameters:
+    _BuildConfig: Debug
+    _OperatingSystem: Windows_NT
+
+# - phase: Windows_NT
+#   # variables apply to every build configuration in the matrix
+#   variables: 
+#     _PublishBlobFeedUrl: https://dotnetfeed.blob.core.windows.net/dotnet-tools-internal/index.json
+#     _SignType: test
+#     _UseEsrpSigning: true
+#     _TeamName: DotNetCore
+#     HelixSource: official/dotnet/arcade/$(Build.SourceBranch)
+#     HelixType: build/product
+#     Windows_Queue: Hosted VS2017
+#   queue:
+#     matrix:
+#       Windows_NT_Build_Debug:
+#         _BuildConfig: Debug
+#         _PublishType: none
+#         _operatingSystem: Windows_NT
+#       Build_Release:
+#         _BuildConfig: Release
+#         _PublishType: blob    
+#   - template: eng/common/common.yml
+#     parameters:
+#       _operatingSystem: Windows_NT
+#   steps:
+#   - checkout: self
+#     clean: true
+#     fetchDepth: 1
+# #  - template: eng/common/telemetry.yml
+# #    parameters:
+# #      agentOs: Windows_NT
+# #      buildSteps:
+#     - task: AzureKeyVault@1
+#       inputs:
+#         azureSubscription: 'DotNet-Engineering-Services_KeyVault'
+#         KeyVaultName: EngKeyVault
+#         SecretsFilter: 'dotnetfeed-storage-access-key-1'
+#     # Build and Publish on the Release configuration
+#     - script: eng\common\CIBuild.$(commandExtension) -configuration $(_BuildConfig) -prepareMachine
+#                 /p:PB_PublishType=$(_PublishType)
+#                 /p:PB_PublishBlobFeedUrl=$(_PublishBlobFeedUrl)
+#                 /p:PB_PublishBlobFeedKey=$(dotnetfeed-storage-access-key-1)
+#                 /p:SignType=$(_SignType)
+#       name: Build_Publish
+#       displayName: Build / Publish
+#       env:
+#         OfficialBuildId: $(BUILD.BUILDNUMBER)
+#     # Copy build logs to a staging directory
+#     - task: CopyFiles@2
+#       displayName: Gather Logs
+#       inputs:
+#         SourceFolder: '$(Build.SourcesDirectory)\artifacts'
+#         Contents: '**\*log'
+#         TargetFolder: '$(Build.StagingDirectory)\BuildLogs'
+#       continueOnError: true
+#       condition: succeededOrFailed()
+#     # Publish build logs to VSTS  
+#     - task: PublishBuildArtifacts@1
+#       displayName: Publish Logs to VSTS
+#       inputs:
+#         PathtoPublish: '$(Build.StagingDirectory)\BuildLogs'
+#         ArtifactName: Windows_$(Agent.JobName)
+#         publishLocation: Container
+#       continueOnError: true
+#       condition: succeededOrFailed()
 
 # - phase: Linux
 #   variables:

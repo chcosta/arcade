@@ -1,19 +1,13 @@
 parameters:
   variables: {}
-  queue: {}
-  phaseName: unknown
-  buildNumber: none
   _operatingSystem: Windows_NT
 
 phases:
 - phase:
-  - ${{ if eq(variables['_operatingSystem'], 'Windows_NT') }}:
-    queue: 
-      parallel: 2
-      demands:
-        - agent.os -equals Windows_NT
-
-      ${{ insert }}: ${{ parameters.queue }}
+  - ${{ if eq(parameters._operatingSystem, 'Windows_NT') }}:
+    variables:
+      scriptExtension: cmd
+      ${{ insert }}: ${{ parameters.variables }}
 
   - ${{ if not($[variables['_operatingSystem']], 'Windows_NT')) }}:
     queue: 

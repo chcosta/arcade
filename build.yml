@@ -1,0 +1,26 @@
+parameters:
+  _BuildConfig: Debug
+  _OperatingSystem: Windows_NT
+
+phases:
+  - phase: ${{ parameters._OperatingSystem }}_${{ parameters._BuildConfig }}
+    - template: eng/common/common.yml
+    queue: Hosted VS2017
+    steps:
+    - checkout: self
+      clean: true
+      fetchDepth: 1
+      - task: AzureKeyVault@1
+      inputs:
+        azureSubscription: 'DotNet-Engineering-Services_KeyVault'
+        KeyVaultName: EngKeyVault
+        SecretsFilter: 'dotnetfeed-storage-access-key-1'
+      - script: eng\common\CIBuild.$(scriptExtension) -configuration $(_BuildConfig) -prepareMachine
+            /p:PB_PublishType=$(_PublishType)
+            /p:PB_PublishBlobFeedUrl=$(_PublishBlobFeedUrl)
+            /p:PB_PublishBlobFeedKey=$(dotnetfeed-storage-access-key-1)
+            /p:SignType=$(_SignType)
+        name: Build_Publish
+        displayName: Build / Publish
+        env:
+        OfficialBuildId: $(BUILD.BUILDNUMBER)        
