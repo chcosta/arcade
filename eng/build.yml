@@ -47,7 +47,7 @@ phases:
         - task: PublishBuildArtifacts@1
           displayName: Publish Logs to VSTS
           inputs:
-            PathtoPublish: '$(Build.StagingDirectory)$(pathSeparatorChar)[BuildLogs'
+            PathtoPublish: '$(Build.StagingDirectory)$(pathSeparatorChar)BuildLogs'
             ArtifactName: ${{ parameters.agentOs}_$(Agent.JobName)
             publishLocation: Container
           continueOnError: true
