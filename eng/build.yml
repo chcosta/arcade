@@ -17,7 +17,8 @@ phases:
     HelixSource: official/dotnet/arcade/$(Build.SourceBranch)
     HelixType: build/product
     _PREVIEW_VSTS_DOCKER_IMAGE: ${{ parameters.dockerImage }}
-  queue: ${{ parameters.queueName }}
+  queue:
+    name: ${{ parameters.queueName }}
     matrix: ${{ parameters.matrix }}
   steps:
   - checkout: self
