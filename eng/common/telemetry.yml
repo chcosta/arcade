@@ -2,8 +2,10 @@
 parameters:
   buildSteps: []
   agentOs: Windows_NT
+  OfficialBuildId: ''
 
 steps:
+- ${{ if not(eq(parameters.OfficialBuildId, '')) }}:
   - task: AzureKeyVault@1
     inputs:
       azureSubscription: 'HelixProd_KeyVault'
@@ -64,8 +66,9 @@ steps:
         BuildUri: https://devdiv.visualstudio.com/DevDiv/_build/index?buildId=$(Build.BuildId)&_a=summary
         Helix_JobToken: $(Helix_JobToken)
 
-  - ${{ parameters.buildSteps }}
+- ${{ parameters.buildSteps }}
 
+- ${{ if not(eq(parameters.OfficialBuildId, '')) }}:
   - ${{ if not(eq(parameters.agentOs, 'Windows_NT')) }}:
     - bash: |
         /bin/bash ./telemetry/build/end.sh
