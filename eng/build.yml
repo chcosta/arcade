@@ -5,7 +5,7 @@ parameters:
   queueName: ''
 
 phases:
-- template: /eng/common/common.yml
+- template: /eng/common/os-phase.yml
   parameters:
     agentOs: ${{ parameters.agentOs }}
     variables: 
@@ -16,8 +16,6 @@ phases:
       HelixSource: official/dotnet/arcade/$(Build.SourceBranch)
       HelixType: build/product
       _PREVIEW_VSTS_DOCKER_IMAGE: ${{ parameters.dockerImage }}
-      engCommonDirectory: \eng\common\
-      scriptExtension: cmd
     queue:
       name: ${{ parameters.queueName }}
       matrix: ${{ parameters.matrix }}

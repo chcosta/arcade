@@ -9,15 +9,15 @@ phases:
   ${{ if eq(parameters.agentOs, 'Windows_NT') }}:
     # Windows variables
     variables:
-#      scriptExtension: cmd
-#      engCommonDirectory: eng\common\
+      scriptExtension: cmd
+      engCommonDirectory: eng\common\
       pathSeparatorChar: \
       ${{ insert }}: ${{ parameters.variables }}
   # Linux variables
   ${{ if not(eq(parameters.agentOs, 'Windows_NT')) }}:
     variables:
-#      scriptExtension: sh
-#      engCommonDirectory: eng/common/
+      scriptExtension: sh
+      engCommonDirectory: eng/common/
       pathSeparatorChar: /
       ${{ insert }}: ${{ parameters.variables }}
   queue: ${{ parameters.queue }}
