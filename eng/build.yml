@@ -6,9 +6,9 @@ parameters:
 
 phases:
 - phase: ${{ parameters.agentOs }}
-  - template: /eng/common/common.yml
-    parameters:
-      agentOs: ${{ parameters.agentOs }}
+#  - template: /eng/common/common.yml
+#    parameters:
+#      agentOs: ${{ parameters.agentOs }}
   variables: 
     _PublishBlobFeedUrl: https://dotnetfeed.blob.core.windows.net/dotnet-tools-internal/index.json
     _SignType: test
