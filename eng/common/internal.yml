@@ -1,5 +1,6 @@
 parameters:
-  buildSteps: []
+  steps: []
+  dotnetfeed-storage-access-key-1': ''
 
 steps:
   - template: /eng/common/telemetry.yaml
@@ -11,4 +12,4 @@ steps:
             azureSubscription: 'DotNet-Engineering-Services_KeyVault'
             KeyVaultName: EngKeyVault
             SecretsFilter: 'dotnetfeed-storage-access-key-1'
-      - ${{ parameters.buildSteps }}
+      - ${{ parameters.steps }}
