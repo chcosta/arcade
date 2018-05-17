@@ -20,7 +20,8 @@ phases:
 - template: /eng/build.yml
   parameters:
     agentOs: Linux
-    queueName: DotNetCore-Linux
+    queueName: Hosted VS2017
+#    queueName: DotNetCore-Linux
     dockerImage: microsoft/dotnet-buildtools-prereqs:ubuntu-14.04-cross-0cd4667-20170319080304
     matrix:
       Build_Debug:
