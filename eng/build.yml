@@ -5,18 +5,18 @@ parameters:
   queueName: ''
 
 phases:
+- template: /eng/common/common.yml
+  parameters:
+    agentOs: ${{ parameters.agentOs }}
+    variables: 
+      _PublishBlobFeedUrl: https://dotnetfeed.blob.core.windows.net/dotnet-tools-internal/index.json
+      _SignType: test
+      _UseEsrpSigning: true
+      _TeamName: DotNetCore
+      HelixSource: official/dotnet/arcade/$(Build.SourceBranch)
+      HelixType: build/product
+      _PREVIEW_VSTS_DOCKER_IMAGE: ${{ parameters.dockerImage }}
 - phase: ${{ parameters.agentOs }}
-#  - template: /eng/common/common.yml
-#    parameters:
-#      agentOs: ${{ parameters.agentOs }}
-  variables: 
-    _PublishBlobFeedUrl: https://dotnetfeed.blob.core.windows.net/dotnet-tools-internal/index.json
-    _SignType: test
-    _UseEsrpSigning: true
-    _TeamName: DotNetCore
-    HelixSource: official/dotnet/arcade/$(Build.SourceBranch)
-    HelixType: build/product
-    _PREVIEW_VSTS_DOCKER_IMAGE: ${{ parameters.dockerImage }}
   queue:
     name: ${{ parameters.queueName }}
     matrix: ${{ parameters.matrix }}
