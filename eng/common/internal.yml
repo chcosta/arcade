@@ -1,12 +1,13 @@
 parameters:
   steps: []
   dotnetfeed-storage-access-key-1': ''
+  OfficialBuildId: ''
 
 steps:
   - template: /eng/common/telemetry.yaml
     parameters:
       buildSteps: 
-      - ${{ if not(eq(variables['Build.BuildNumber'], '')) }}:
+      - ${{ if not(eq(parameters.OfficialBuildId, '')) }}:
         - task: AzureKeyVault@1
           inputs:
             azureSubscription: 'DotNet-Engineering-Services_KeyVault'

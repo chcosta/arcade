@@ -25,6 +25,7 @@ phases:
       fetchDepth: 5
     - template: /eng/common/internal.yml
       parameters:
+        OfficialBuildId: $(BUILD.BUILDNUMBER)
         steps:
         - script: $(engCommonDirectory)cibuild.$(scriptExtension) -configuration $(buildConfig) -prepareMachine
                     /p:PB_PublishType=$(publishType)
