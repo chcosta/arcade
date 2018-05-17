@@ -4,7 +4,7 @@ parameters:
 
 phases:
 - ${{ if eq(parameters.agentOs, 'Windows_NT') }}:
-  - phase: ${{ parameters.agentOs }}
+  - phase: Windows_NT
     # Windows variables
     variables:
 #      scriptExtension: cmd
@@ -13,7 +13,7 @@ phases:
       ${{ insert }}: ${{ parameters.variables }}
   # Linux variables
   - ${{ if not(eq(parameters.agentOs, 'Windows_NT')) }}:
-    - phase: ${{ parameters.agentOs }}
+    - phase: Linux
       variables:
 #      scriptExtension: sh
 #      engCommonDirectory: eng/common/
