@@ -3,15 +3,16 @@ parameters:
   agentOs: Windows_NT
 
 phases:
-- phase:
-  - ${{ if eq(parameters.agentOs, 'Windows_NT') }}:
+- ${{ if eq(parameters.agentOs, 'Windows_NT') }}:
+  - phase:
     variables:
       scriptExtension: cmd
       engCommonDirectory: eng\common\
       pathSeparatorChar: \
       ${{ insert }}: ${{ parameters.variables }}
 
-  - ${{ if not($[variables['agentOs']], 'Windows_NT')) }}:
+- ${{ if not($[variables['agentOs']], 'Windows_NT')) }}:
+  - phase:
     variables:
       scriptExtension: sh
       engCommonDirectory: eng/common/
