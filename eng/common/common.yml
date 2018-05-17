@@ -7,15 +7,15 @@ phases:
 - ${{ if eq(parameters.agentOs, 'Windows_NT') }}:
   - phase:
     variables:
-      scriptExtension: cmd
-      engCommonDirectory: eng\common\
+#      scriptExtension: cmd
+#      engCommonDirectory: eng\common\
       pathSeparatorChar: \
       ${{ insert }}: ${{ parameters.variables }}
   # Linux variables
 - ${{ if not(eq(parameters.agentOs, 'Windows_NT')) }}:
   - phase:
     variables:
-      scriptExtension: sh
-      engCommonDirectory: eng/common/
+#      scriptExtension: sh
+#      engCommonDirectory: eng/common/
       pathSeparatorChar: /
       ${{ insert }}: ${{ parameters.variables }}
