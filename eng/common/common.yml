@@ -2,7 +2,8 @@ parameters:
   variables: {}
   agentOs: Windows_NT
 
-variables:
+- phase:
+  variables:
     # Windows variables
 - ${{ if eq(parameters.agentOs, 'Windows_NT') }}:
 #      scriptExtension: cmd
