@@ -21,4 +21,8 @@ phases:
       pathSeparatorChar: /
       ${{ insert }}: ${{ parameters.variables }}
   queue: ${{ parameters.queue }}
-  steps: ${{ parameters.steps }}
+  steps:
+    - template: /eng/common/internal.yml
+      parameters:
+        OfficialBuildId: ''
+        steps: ${{ parameters.steps }}
