@@ -27,12 +27,11 @@ phases:
 #    - template: /eng/common/internal.yml
 #      parameters:
 #        buildSteps:
-  - script: |
-            $(engCommonDirectory)cibuild.$(scriptExtension) -configuration $(buildConfig) -prepareMachine
-            /p:PB_PublishType=$(publishType)
-            /p:PB_PublishBlobFeedUrl=$(_PublishBlobFeedUrl)
-            /p:PB_PublishBlobFeedKey=$(dotnetfeed-storage-access-key-1)
-            /p:SignType=$(_SignType)
+  - script: $(engCommonDirectory)cibuild.$[variables['scriptExtension']] -configuration $(buildConfig) -prepareMachine
+              /p:PB_PublishType=$(publishType)
+              /p:PB_PublishBlobFeedUrl=$(_PublishBlobFeedUrl)
+              /p:PB_PublishBlobFeedKey=$(dotnetfeed-storage-access-key-1)
+              /p:SignType=$(_SignType)
     name: Build_Publish
     displayName: Build / Publish
     env:
