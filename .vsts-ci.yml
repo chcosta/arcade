@@ -1,5 +1,7 @@
 phases:
-- phase:
+- phase: foo
+  steps:
+  - script: echo foo
   - template: /eng/build.yml
     parameters:
       agentOs: Windows_NT
@@ -12,7 +14,9 @@ phases:
           buildConfig: Release
           publishType: blob
 
-- phase:
+- phase: bar
+  steps:
+  - script: echo bar
   - template: /eng/build.yml
     parameters:
       agentOs: Linux
