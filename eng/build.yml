@@ -5,6 +5,9 @@ parameters:
   queueName: ''
 
 phases:
+- template: /eng/common/common.yml
+  parameters:
+    agentOs: ${{ parameters.agentOs }}
 - phase: ${{ parameters.agentOs }}
   variables: 
     _PublishBlobFeedUrl: https://dotnetfeed.blob.core.windows.net/dotnet-tools-internal/index.json
@@ -14,9 +17,6 @@ phases:
     HelixSource: official/dotnet/arcade/$(Build.SourceBranch)
     HelixType: build/product
     _PREVIEW_VSTS_DOCKER_IMAGE: ${{ parameters.dockerImage }}
-    - template: /eng/common/common.yml
-      parameters:
-        agentOs: ${{ parameters.agentOs }}
   queue: ${{ parameters.queueName }}
   matrix: ${{ parameters.matrix }}
   steps:
@@ -26,7 +26,8 @@ phases:
 #    - template: /eng/common/internal.yml
 #      parameters:
 #        buildSteps:
-  - script: $(engCommonDirectory)cibuild.$(scriptExtension) -configuration $(buildConfig) -prepareMachine
+  - script: |
+            $(engCommonDirectory)cibuild.$(scriptExtension) -configuration $(buildConfig) -prepareMachine
             /p:PB_PublishType=$(publishType)
             /p:PB_PublishBlobFeedUrl=$(_PublishBlobFeedUrl)
             /p:PB_PublishBlobFeedKey=$(dotnetfeed-storage-access-key-1)
