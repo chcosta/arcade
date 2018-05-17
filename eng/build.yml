@@ -1,7 +1,7 @@
 parameters:
   agentOs: Windows_NT
   dockerImage: ''
-  matrix: []
+  matrix: ''
   queueName: ''
 
 phases:
