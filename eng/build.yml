@@ -16,6 +16,8 @@ phases:
       HelixSource: official/dotnet/arcade/$(Build.SourceBranch)
       HelixType: build/product
       _PREVIEW_VSTS_DOCKER_IMAGE: ${{ parameters.dockerImage }}
+      engCommonDirectory: \eng\common\
+      scriptExtension: cmd
 - phase: ${{ parameters.agentOs }}
   queue:
     name: ${{ parameters.queueName }}
@@ -52,6 +54,6 @@ phases:
     inputs:
       PathtoPublish: '$(Build.StagingDirectory)/BuildLogs'
       ArtifactName: ${{ parameters.agentOs }}_$(Agent.JobName)
-      publishLocation: Container
+      PublishLocation: Container
     continueOnError: true
     condition: succeededOrFailed()
