@@ -2,6 +2,7 @@ parameters:
   variables: {}
   agentOs: Windows_NT
 
+phases:
 - phase: ${{ parameters.agentOs }}
   variables:
     # Windows variables
