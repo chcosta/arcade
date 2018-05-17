@@ -18,7 +18,7 @@ phases:
     HelixType: build/product
     _PREVIEW_VSTS_DOCKER_IMAGE: ${{ parameters.dockerImage }}
   queue: ${{ parameters.queueName }}
-  matrix: ${{ parameters.matrix }}
+    matrix: ${{ parameters.matrix }}
   steps:
   - checkout: self
     clean: true
