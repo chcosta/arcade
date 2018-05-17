@@ -18,7 +18,6 @@ phases:
       _PREVIEW_VSTS_DOCKER_IMAGE: ${{ parameters.dockerImage }}
       engCommonDirectory: \eng\common\
       scriptExtension: cmd
-- phase: ${{ parameters.agentOs }}
   queue:
     name: ${{ parameters.queueName }}
     matrix: ${{ parameters.matrix }}
