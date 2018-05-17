@@ -23,32 +23,32 @@ phases:
     - checkout: self
       clean: true
       fetchDepth: 1
-    - template: /eng/common/internal.yml
-      parameters:
-        buildSteps:
-        - script: $(engCommonDirectory)cibuild.$(scriptExtension) -configuration $(buildConfig) -prepareMachine
-                  /p:PB_PublishType=$(publishType)
-                  /p:PB_PublishBlobFeedUrl=$(_PublishBlobFeedUrl)
-                  /p:PB_PublishBlobFeedKey=$(dotnetfeed-storage-access-key-1)
-                  /p:SignType=$(_SignType)
-          name: Build_Publish
-          displayName: Build / Publish
-          env:
-            OfficialBuildId: $(BUILD.BUILDNUMBER)
-        - task: CopyFiles@2
-          displayName: Gather Logs
-          inputs:
-            SourceFolder: '$(Build.SourcesDirectory)$(pathSeparatorChar)artifacts'
-            Contents: '**$(pathSeparatorChar)*log'
-            TargetFolder: '$(Build.StagingDirectory)$(pathSeparatorChar)BuildLogs'
-          continueOnError: true
-          condition: succeededOrFailed()
-        # Publish build logs to VSTS  
-        - task: PublishBuildArtifacts@1
-          displayName: Publish Logs to VSTS
-          inputs:
-            PathtoPublish: '$(Build.StagingDirectory)$(pathSeparatorChar)BuildLogs'
-            ArtifactName: ${{ parameters.agentOs }}_$(Agent.JobName)
-            publishLocation: Container
-          continueOnError: true
-          condition: succeededOrFailed()
+#    - template: /eng/common/internal.yml
+#      parameters:
+#        buildSteps:
+      - script: $(engCommonDirectory)cibuild.$(scriptExtension) -configuration $(buildConfig) -prepareMachine
+                /p:PB_PublishType=$(publishType)
+                /p:PB_PublishBlobFeedUrl=$(_PublishBlobFeedUrl)
+                /p:PB_PublishBlobFeedKey=$(dotnetfeed-storage-access-key-1)
+                /p:SignType=$(_SignType)
+        name: Build_Publish
+        displayName: Build / Publish
+        env:
+          OfficialBuildId: $(BUILD.BUILDNUMBER)
+      - task: CopyFiles@2
+        displayName: Gather Logs
+        inputs:
+          SourceFolder: '$(Build.SourcesDirectory)$(pathSeparatorChar)artifacts'
+          Contents: '**$(pathSeparatorChar)*log'
+          TargetFolder: '$(Build.StagingDirectory)$(pathSeparatorChar)BuildLogs'
+        continueOnError: true
+        condition: succeededOrFailed()
+      # Publish build logs to VSTS  
+      - task: PublishBuildArtifacts@1
+        displayName: Publish Logs to VSTS
+        inputs:
+          PathtoPublish: '$(Build.StagingDirectory)$(pathSeparatorChar)BuildLogs'
+          ArtifactName: ${{ parameters.agentOs }}_$(Agent.JobName)
+          publishLocation: Container
+        continueOnError: true
+        condition: succeededOrFailed()
