@@ -40,16 +40,16 @@ phases:
   - task: CopyFiles@2
     displayName: Gather Logs
     inputs:
-      SourceFolder: '$(Build.SourcesDirectory)$(pathSeparatorChar)artifacts'
-      Contents: '**$(pathSeparatorChar)*log'
-      TargetFolder: '$(Build.StagingDirectory)$(pathSeparatorChar)BuildLogs'
+      SourceFolder: '$(Build.SourcesDirectory)$[variables['pathSeparatorChar']]artifacts'
+      Contents: '**$[variables['pathSeparatorChar']]*log'
+      TargetFolder: '$(Build.StagingDirectory)$[variables['pathSeparatorChar']]BuildLogs'
     continueOnError: true
     condition: succeededOrFailed()
   # Publish build logs to VSTS  
   - task: PublishBuildArtifacts@1
     displayName: Publish Logs to VSTS
     inputs:
-      PathtoPublish: '$(Build.StagingDirectory)$(pathSeparatorChar)BuildLogs'
+      PathtoPublish: '$(Build.StagingDirectory)$[variables['pathSeparatorChar']]BuildLogs'
       ArtifactName: ${{ parameters.agentOs }}_$(Agent.JobName)
       publishLocation: Container
     continueOnError: true

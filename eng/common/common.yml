@@ -3,6 +3,7 @@ parameters:
   agentOs: Windows_NT
 
 phases:
+  # Windows variables
 - ${{ if eq(parameters.agentOs, 'Windows_NT') }}:
   - phase:
     variables:
@@ -10,7 +11,7 @@ phases:
       engCommonDirectory: eng\common\
       pathSeparatorChar: \
       ${{ insert }}: ${{ parameters.variables }}
-
+  # Linux variables
 - ${{ if not(eq(parameters.agentOs, 'Windows_NT')) }}:
   - phase:
     variables:
