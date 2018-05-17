@@ -1,10 +1,12 @@
 parameters:
   variables: {}
   agentOs: Windows_NT
+  queue: {}
+  steps: {}
 
 phases:
-- ${{ if eq(parameters.agentOs, 'Windows_NT') }}:
-  - phase: ${{ parameters.agentOs }}
+- phase: ${{ parameters.agentOs }}
+  - ${{ if eq(parameters.agentOs, 'Windows_NT') }}:
     # Windows variables
     variables:
 #      scriptExtension: cmd
@@ -12,10 +14,11 @@ phases:
       pathSeparatorChar: \
       ${{ insert }}: ${{ parameters.variables }}
   # Linux variables
-- ${{ if not(eq(parameters.agentOs, 'Windows_NT')) }}:
-  - phase: ${{ parameters.agentOs }}
+  - ${{ if not(eq(parameters.agentOs, 'Windows_NT')) }}:
     variables:
 #      scriptExtension: sh
 #      engCommonDirectory: eng/common/
       pathSeparatorChar: /
       ${{ insert }}: ${{ parameters.variables }}
+  queue: ${{ parameters.queue }}
+  steps: ${{ parameters.steps }}
