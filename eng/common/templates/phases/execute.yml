@@ -10,9 +10,9 @@ phases:
   - checkout: self
     clean: true
     fetchDepth: 5
-#  - ${{ if eq(parameters.phase.variables.enableTelemetry, true) }}:
-#    - template: /eng/common/templates/steps/telemetry.yml
-#      parameters:
-#        steps: ${{ parameters.phase.steps }}
-#  - ${{ if not(eq(parameters.phase.variables.enableTelemetry, true) }}:
-  - ${{ parameters.phase.steps }}
+  - ${{ if eq(parameters.phase.variables.enableTelemetry, true) }}:
+    - template: /eng/common/templates/steps/telemetry.yml
+      parameters:
+        steps: ${{ parameters.phase.steps }}
+  - ${{ if not(eq(parameters.phase.variables.enableTelemetry, true)) }}:
+    - ${{ parameters.phase.steps }}
