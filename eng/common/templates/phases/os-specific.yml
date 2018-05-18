@@ -16,9 +16,9 @@ phases:
       scriptExtension: sh
       engCommonDirectory: eng/common/
       ${{ insert }}: ${{ parameters.phase.variables }}
-      queue: ${{ parameters.phase.queue }}
-      steps:
-        - template: /eng/common/vsts-templates/steps/internal.yml
-          parameters:
-            OfficialBuildId: ''
-            steps: ${{ parameters.phase.steps }}
+  queue: ${{ parameters.phase.queue }}
+  steps:
+    - template: /eng/common/vsts-templates/steps/internal.yml
+      parameters:
+        OfficialBuildId: ''
+        steps: ${{ parameters.phase.steps }}
