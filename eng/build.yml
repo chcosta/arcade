@@ -2,12 +2,14 @@ parameters:
   agentOs: Windows_NT
   dockerImage: ''
   matrix: ''
+  OfficialBuildId: ''
   queueName: ''
 
 phases:
 - template: /eng/common/vsts-templates/phases/accessibility-level.yml
   parameters:
     agentOs: ${{ parameters.agentOs }}
+    OfficialBuildId: ${{ parameters.OfficialBuildId }}
     variables: 
       _PublishBlobFeedUrl: https://dotnetfeed.blob.core.windows.net/dotnet-tools-internal/index.json
       _SignType: test

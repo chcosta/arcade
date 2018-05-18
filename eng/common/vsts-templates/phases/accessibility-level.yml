@@ -1,6 +1,6 @@
 parameters:
   agentOs: Windows_NT
-  OfficialBuildId: $(BUILD.BUILDNUMBER)
+  OfficialBuildId: ''
   queue: {}
   steps: {}
   variables: {}
