@@ -49,7 +49,6 @@ phases:
         OfficialBuildId: $(BUILD.BUILDNUMBER)
         engCommonDirectory: $(engCommonDirectory)
         scriptExtension: $(scriptExtension)
-      condition: ${{ if or}}
     - task: CopyFiles@2
       displayName: Gather Logs
       inputs:
