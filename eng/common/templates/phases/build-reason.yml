@@ -35,13 +35,10 @@ phases:
               /p:PB_PublishType=$(publishType)
               /p:SignType=$(_SignType)
             ${{ insert }}: ${{ parameters.phase.variables }}
-          - template: /eng/common/templates/steps/telemetry.yml
-            parameters:
-              agentOs: ${{ parameters.agentOs }}
-              steps:
-              - task: AzureKeyVault@1
-                inputs:
-                  azureSubscription: 'DotNet-Engineering-Services_KeyVault'
-                  KeyVaultName: EngKeyVault
-                  SecretsFilter: 'dotnetfeed-storage-access-key-1'
-              ${{ insert }}: ${{ parameters.phase.steps }}
+          steps:
+          - task: AzureKeyVault@1
+            inputs:
+              azureSubscription: 'DotNet-Engineering-Services_KeyVault'
+              KeyVaultName: EngKeyVault
+              SecretsFilter: 'dotnetfeed-storage-access-key-1'
+          ${{ insert }}: ${{ parameters.phase.steps }}
