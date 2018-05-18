@@ -27,25 +27,24 @@ phases:
         # CI and PR builds
         ${{ if not(and(eq(parameters.buildReason, 'Manual'), eq(parameters.buildReason, 'Scheduled'))) }}:
           variables: 
-            BuildReasonArgs: ''
+            buildReasonArgs: ''
+            enableTelemetry: false
             ${{ insert }}: ${{ parameters.phase.variables }}
           steps: ${{ parameters.phase.steps }}
 
         # Internal builds
         ${{ if or(eq(parameters.buildReason, 'Manual'), eq(parameters.buildReason, 'Scheduled')) }}:
           variables:
-            BuildReasonArgs: /p:PB_PublishBlobFeedKey=$(dotnetfeed-storage-access-key-1)
+            buildReasonArgs: /p:PB_PublishBlobFeedKey=$(dotnetfeed-storage-access-key-1)
               /p:PB_PublishBlobFeedUrl=$(_PublishBlobFeedUrl)
               /p:PB_PublishType=$(publishType)
               /p:SignType=$(_SignType)
+            enableTelemetry: true
             ${{ insert }}: ${{ parameters.phase.variables }}
-          - template: /eng/common/templates/steps/telemetry.yml
-            parameters:
-              agentOs: ${{ parameters.agentOs }}
-              steps:
-                - task: AzureKeyVault@1
-                  inputs:
-                    azureSubscription: 'DotNet-Engineering-Services_KeyVault'
-                    KeyVaultName: EngKeyVault
-                    SecretsFilter: 'dotnetfeed-storage-access-key-1'
-                - ${{ parameters.phase.steps }}
+          steps:
+            - task: AzureKeyVault@1
+              inputs:
+                azureSubscription: 'DotNet-Engineering-Services_KeyVault'
+                KeyVaultName: EngKeyVault
+                SecretsFilter: 'dotnetfeed-storage-access-key-1'
+            - ${{ parameters.phase.steps }}
