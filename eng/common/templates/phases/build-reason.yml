@@ -36,9 +36,9 @@ phases:
               /p:SignType=$(_SignType)
             ${{ insert }}: ${{ parameters.phase.variables }}
           steps:
-          - task: AzureKeyVault@1
-            inputs:
-              azureSubscription: 'DotNet-Engineering-Services_KeyVault'
-              KeyVaultName: EngKeyVault
-              SecretsFilter: 'dotnetfeed-storage-access-key-1'
-          ${{ insert }}: ${{ parameters.phase.steps }}
+            - task: AzureKeyVault@1
+              inputs:
+                azureSubscription: 'DotNet-Engineering-Services_KeyVault'
+                KeyVaultName: EngKeyVault
+                SecretsFilter: 'dotnetfeed-storage-access-key-1'
+            ${{ insert }}: ${{ parameters.phase.steps }}
