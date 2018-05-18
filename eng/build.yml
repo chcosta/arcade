@@ -6,7 +6,7 @@ parameters:
   queueName: ''
 
 phases:
-- template: /eng/common/vsts-templates/phases/accessibility-level.yml
+- template: /eng/common/templates/phases/accessibility-level.yml
   parameters:
     agentOs: ${{ parameters.agentOs }}
     OfficialBuildId: ${{ parameters.OfficialBuildId }}
