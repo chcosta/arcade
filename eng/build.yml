@@ -20,7 +20,7 @@ parameters:
   queueName: ''
 
 phases:
-- template: /eng/common/templates/phases/accessiblity-level.yml
+- template: /eng/common/templates/phases/accessibility-level.yml
   parameters:
     phase:
       officialBuildId: ${{ parameters.officialBuildId }}
