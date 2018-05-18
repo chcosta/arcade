@@ -1,6 +1,6 @@
 parameters:
   agentOs: Windows_NT
-  OfficialBuildId: ''
+  officialBuildId: ''
   queue: {}
   steps: {}
   variables: {}
@@ -9,20 +9,18 @@ parameters:
 phases:
   - template: /eng/common/templates/phases/os-specific.yml
     parameters:
-    # Execute phase if buildReason is not defined or explicitly listed in parameters.buildReason
-      ${{ if or(eq(parameters.buildReason, ''), contains(parameters.buildReason, variables['BUILD.REASON'])) }}:
-        ${{ if eq(parameters.OfficialBuildId, '') }}:
-          variables:
-            InternalArgs: ''
-            ${{ insert }}: ${{ parameters.variables }}
-        ${{ if not(eq(parameters.OfficialBuildId, '')) }}:
-          variables:
-            InternalArgs: /p:PB_PublishBlobFeedKey=$(dotnetfeed-storage-access-key-1)
-              /p:PB_PublishBlobFeedUrl=$(_PublishBlobFeedUrl)
-              /p:PB_PublishType=$(publishType)
-              /p:SignType=$(_SignType)
-            ${{ insert }}: ${{ parameters.variables }}
-        agentOs: ${{ parameters.agentOs }}
-        OfficialBuildId: ${{ parameters.OfficialBuildId }}
-        queue: ${{ parameters.queue }}
-        steps: ${{ parameters.steps }}
+      ${{ if eq(parameters.officialBuildId, '') }}:
+        variables:
+          AdditionalBuildArgs: ''
+          ${{ insert }}: ${{ parameters.variables }}
+      ${{ if not(eq(parameters.officialBuildId, '')) }}:
+        variables:
+          AdditionalBuildArgs: /p:PB_PublishBlobFeedKey=$(dotnetfeed-storage-access-key-1)
+            /p:PB_PublishBlobFeedUrl=$(_PublishBlobFeedUrl)
+            /p:PB_PublishType=$(publishType)
+            /p:SignType=$(_SignType)
+          ${{ insert }}: ${{ parameters.variables }}
+      agentOs: ${{ parameters.agentOs }}
+      officialBuildId: ${{ parameters.officialBuildId }}
+      queue: ${{ parameters.queue }}
+      steps: ${{ parameters.steps }}

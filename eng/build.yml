@@ -1,15 +1,29 @@
+# build.yml
+# Description: Defines the build phase
+# Parameters:
+#   agentOs: [Windows_NT, Linux, OSX] Used in templates to define variables which are OS specific
+#   dockerImage: If defined, specifies docker image to run build steps in
+#   matrix: build matrix
+#   queueName: agent pool name
+
 parameters:
   agentOs: Windows_NT
   dockerImage: ''
-  matrix: ''
-  OfficialBuildId: ''
+  matrix: 
+    Build_Debug:
+      buildConfig: Debug
+      publishType: none
+    Build_Release:
+      buildConfig: Release
+      publishType: none
+  officialBuildId: ''
   queueName: ''
 
 phases:
 - template: /eng/common/templates/phases/accessibility-level.yml
   parameters:
+    officialBuildId: ${{ parameters.officialBuildId }}
     agentOs: ${{ parameters.agentOs }}
-    OfficialBuildId: ${{ parameters.OfficialBuildId }}
     variables: 
       _PublishBlobFeedUrl: https://dotnetfeed.blob.core.windows.net/dotnet-tools-internal/index.json
       _SignType: test
@@ -18,7 +32,7 @@ phases:
       HelixSource: official/dotnet/arcade/$(Build.SourceBranch)
       HelixType: build/product
       _PREVIEW_VSTS_DOCKER_IMAGE: ${{ parameters.dockerImage }}
-      InternalArgs: ''
+      AdditionalBuildArgs: ''
     queue:
       name: ${{ parameters.queueName }}
       matrix: ${{ parameters.matrix }}
@@ -27,7 +41,7 @@ phases:
       clean: true
       fetchDepth: 5
     - script: $(engCommonDirectory)cibuild.$(scriptExtension) -configuration $(buildConfig) -prepareMachine
-                $(InternalArgs)
+                $(AdditionalBuildArgs)
 #                 /p:PB_PublishBlobFeedKey=$(dotnetfeed-storage-access-key-1)
       name: Build_Publish
       displayName: Build / Publish
@@ -35,6 +49,7 @@ phases:
         OfficialBuildId: $(BUILD.BUILDNUMBER)
         engCommonDirectory: $(engCommonDirectory)
         scriptExtension: $(scriptExtension)
+      condition: ${{ if or}}
     - task: CopyFiles@2
       displayName: Gather Logs
       inputs:

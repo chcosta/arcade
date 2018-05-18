@@ -5,7 +5,7 @@ phases:
 - template: /eng/build.yml
   parameters:
     agentOs: Windows_NT
-    OfficialBuildId: $(BUILD_BUILDNUMBER)
+    officialBuildId: something
     queueName: Hosted VS2017
     matrix:
       Build_Debug:
@@ -27,16 +27,3 @@ phases:
       Build_Release:
         buildConfig: Release
         publishType: blob
-
-- template: /eng/build.yml
-  parameters:
-    agentOs: OSX
-    buildReason: IndividualCI,BatchedCI
-    queueName: Hosted macOS Preview
-    matrix:
-      Build_Debug:
-        buildConfig: Debug
-        publishType: none
-      Build_Release:
-        buildConfig: Release
-        publishType: none
