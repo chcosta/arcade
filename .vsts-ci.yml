@@ -1,7 +1,4 @@
 phases:
-- phase: foo
-  steps:
-  - script: echo foo
 - template: /eng/build.yml
   parameters:
     agentOs: Windows_NT
@@ -14,20 +11,30 @@ phases:
         buildConfig: Release
         publishType: blob
 
-# - phase: bar
-#   steps:
-#   - script: echo bar
-# - template: /eng/build.yml
-#   parameters:
-#     agentOs: Linux
-#     queueName: Hosted VS2017
-# #    queueName: DotNetCore-Linux
-#     dockerImage: microsoft/dotnet-buildtools-prereqs:ubuntu-14.04-cross-0cd4667-20170319080304
-#     matrix:
-#       Build_Debug:
-#         buildConfig: Debug
-#         publishType: none
-#       Build_Release:
-#         buildConfig: Release
-#         publishType: blob
-# 
+- template: /eng/build.yml
+  parameters:
+    agentOs: Linux
+    queueName: Hosted Linux Preview
+    dockerImage: microsoft/dotnet-buildtools-prereqs:ubuntu-14.04-cross-0cd4667-20170319080304
+    matrix:
+      Build_Debug:
+        buildConfig: Debug
+        publishType: none
+      Build_Release:
+        buildConfig: Release
+        publishType: blob
+
+${{ if or(eq(variables['BUILD.REASON'], 'IndividualCI'), eq(variables['BUILD.REASON'], 'BatchedCI')) }}
+  - template: /eng/build.yml
+    parameters:
+      agentOs: OSX
+      queueName: Hosted macOS Preview
+  #    queueName: DotNetCore-Linux
+      dockerImage: microsoft/dotnet-buildtools-prereqs:ubuntu-14.04-cross-0cd4667-20170319080304
+      matrix:
+        Build_Debug:
+          buildConfig: Debug
+          publishType: none
+        Build_Release:
+          buildConfig: Release
+          publishType: blob
