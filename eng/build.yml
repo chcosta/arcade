@@ -37,9 +37,6 @@ phases:
         name: ${{ parameters.queueName }}
         matrix: ${{ parameters.matrix }}
       steps:
-      - checkout: self
-        clean: true
-        fetchDepth: 5
       - script: $(engCommonDirectory)cibuild.$(scriptExtension) -configuration $(buildConfig) -prepareMachine $(BuildReasonArgs)
         name: Build_Publish
         displayName: Build / Publish
