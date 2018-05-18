@@ -5,7 +5,7 @@ parameters:
   queueName: ''
 
 phases:
-- template: /eng/common/os-phase.yml
+- template: /eng/common/vsts-templates/phases/os-specific.yml
   parameters:
     agentOs: ${{ parameters.agentOs }}
     variables: 
