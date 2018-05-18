@@ -40,8 +40,7 @@ phases:
     - checkout: self
       clean: true
       fetchDepth: 5
-    - script: $(engCommonDirectory)cibuild.$(scriptExtension) -configuration $(buildConfig) -prepareMachine
-                $(AdditionalBuildArgs)
+    - script: $(engCommonDirectory)cibuild.$(scriptExtension) -configuration $(buildConfig) -prepareMachine $(AdditionalBuildArgs)
 #                 /p:PB_PublishBlobFeedKey=$(dotnetfeed-storage-access-key-1)
       name: Build_Publish
       displayName: Build / Publish
@@ -49,6 +48,7 @@ phases:
         OfficialBuildId: $(BUILD.BUILDNUMBER)
         engCommonDirectory: $(engCommonDirectory)
         scriptExtension: $(scriptExtension)
+        AdditionalBuildArgs: $(AdditionalBuildArgs)
     - task: CopyFiles@2
       displayName: Gather Logs
       inputs:
