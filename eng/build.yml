@@ -40,7 +40,7 @@ phases:
       - checkout: self
         clean: true
         fetchDepth: 5
-      - template: env/common/templates/steps/accessibility-level-step.yml
+      - template: /eng/common/templates/steps/accessibility-level-step.yml
         parameters:
           step:
             script: $(engCommonDirectory)cibuild.$(scriptExtension) -configuration $(buildConfig) -prepareMachine
