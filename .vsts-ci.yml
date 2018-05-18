@@ -5,7 +5,7 @@ phases:
 - template: /eng/build.yml
   parameters:
     agentOs: Windows_NT
-    buildReason: Manual
+    buildReason: $(BUILD.REASON)
     queueName: Hosted VS2017
     matrix:
       Build_Debug:
