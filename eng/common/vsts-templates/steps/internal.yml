@@ -1,12 +1,11 @@
 parameters:
   steps: []
-  dotnetfeed-storage-access-key-1': ''
   OfficialBuildId: ''
 
 steps:
-  - template: /eng/common/telemetry.yml
+  - template: /eng/common/vsts-templates/steps/telemetry.yml
     parameters:
-      buildSteps: 
+      steps: 
       - ${{ if not(eq(parameters.OfficialBuildId, '')) }}:
         - task: AzureKeyVault@1
           inputs:

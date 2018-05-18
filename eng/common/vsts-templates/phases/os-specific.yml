@@ -20,7 +20,7 @@ phases:
       ${{ insert }}: ${{ parameters.variables }}
   queue: ${{ parameters.queue }}
   steps:
-    - template: /eng/common/internal.yml
+    - template: /eng/common/vsts-templates/steps/internal.yml
       parameters:
         OfficialBuildId: ''
         steps: ${{ parameters.steps }}

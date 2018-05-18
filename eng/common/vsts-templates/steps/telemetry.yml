@@ -1,6 +1,6 @@
 
 parameters:
-  buildSteps: []
+  steps: []
   agentOs: Windows_NT
   OfficialBuildId: ''
 
@@ -66,7 +66,7 @@ steps:
         BuildUri: https://devdiv.visualstudio.com/DevDiv/_build/index?buildId=$(Build.BuildId)&_a=summary
         Helix_JobToken: $(Helix_JobToken)
 
-- ${{ parameters.buildSteps }}
+- ${{ parameters.steps }}
 
 - ${{ if not(eq(parameters.OfficialBuildId, '')) }}:
   - ${{ if not(eq(parameters.agentOs, 'Windows_NT')) }}:

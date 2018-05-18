@@ -2,6 +2,7 @@ phases:
 - template: /eng/build.yml
   parameters:
     agentOs: Windows_NT
+    OfficialBuildId: $(BUILD_BUILDNUMBER)
     queueName: Hosted VS2017
     matrix:
       Build_Debug:

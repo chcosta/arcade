@@ -2,12 +2,14 @@ parameters:
   agentOs: Windows_NT
   dockerImage: ''
   matrix: ''
+  OfficialBuildId: ''
   queueName: ''
 
 phases:
-- template: /eng/common/os-phase.yml
+- template: /eng/common/vsts-templates/phases/accessibility-level.yml
   parameters:
     agentOs: ${{ parameters.agentOs }}
+    OfficialBuildId: ${{ parameters.OfficialBuildId }}
     variables: 
       _PublishBlobFeedUrl: https://dotnetfeed.blob.core.windows.net/dotnet-tools-internal/index.json
       _SignType: test
@@ -16,6 +18,7 @@ phases:
       HelixSource: official/dotnet/arcade/$(Build.SourceBranch)
       HelixType: build/product
       _PREVIEW_VSTS_DOCKER_IMAGE: ${{ parameters.dockerImage }}
+      InternalArgs: ''
     queue:
       name: ${{ parameters.queueName }}
       matrix: ${{ parameters.matrix }}
@@ -24,17 +27,14 @@ phases:
       clean: true
       fetchDepth: 5
     - script: $(engCommonDirectory)cibuild.$(scriptExtension) -configuration $(buildConfig) -prepareMachine
-                /p:PB_PublishType=$(publishType)
-                /p:PB_PublishBlobFeedUrl=$(_PublishBlobFeedUrl)
-                /p:PB_PublishBlobFeedKey=$(dotnetfeed-storage-access-key-1)
-                /p:SignType=$(_SignType)
+                $(InternalArgs)
+#                 /p:PB_PublishBlobFeedKey=$(dotnetfeed-storage-access-key-1)
       name: Build_Publish
       displayName: Build / Publish
       env:
         OfficialBuildId: $(BUILD.BUILDNUMBER)
         engCommonDirectory: $(engCommonDirectory)
         scriptExtension: $(scriptExtension)
-        dotnetfeed-storage-access-key-1: $(dotnetfeed-storage-access-key-1)
     - task: CopyFiles@2
       displayName: Gather Logs
       inputs:
