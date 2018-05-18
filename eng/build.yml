@@ -22,7 +22,7 @@ parameters:
 phases:
 - template: /eng/common/templates/phases/accessibility-level.yml
   parameters:
-    phase: ${{ parameters.agentOs }}
+    phase:
       officialBuildId: ${{ parameters.officialBuildId }}
       agentOs: ${{ parameters.agentOs }}
       variables: 
