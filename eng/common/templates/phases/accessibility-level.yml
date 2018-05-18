@@ -1,26 +1,27 @@
+# accessibility-level.yml
+# Description: Defines phase variables which are dependent on the build reason.  ie CI, PR, Official build
+# Parameters:
+#   agentOs: [Windows_NT, Linux, OSX] Used in templates to define variables which are OS specific
+#   officialBuildId: Currently used to define an official build (TODO: fix this)
+#   matrix: build matrix
+#   queueName: agent pool name
 parameters:
   agentOs: Windows_NT
   officialBuildId: ''
-  queue: {}
-  steps: {}
-  variables: {}
-  buildReason: ''
+  phase: {}
 
 phases:
   - template: /eng/common/templates/phases/os-specific.yml
     parameters:
-      ${{ if eq(parameters.officialBuildId, '') }}:
-        variables:
-          AdditionalBuildArgs: ''
-          ${{ insert }}: ${{ parameters.variables }}
-      ${{ if not(eq(parameters.officialBuildId, '')) }}:
-        variables:
-          AdditionalBuildArgs: /p:PB_PublishBlobFeedKey=$(dotnetfeed-storage-access-key-1)
-            /p:PB_PublishBlobFeedUrl=$(_PublishBlobFeedUrl)
-            /p:PB_PublishType=$(publishType)
-            /p:SignType=$(_SignType)
-          ${{ insert }}: ${{ parameters.variables }}
-      agentOs: ${{ parameters.agentOs }}
-      officialBuildId: ${{ parameters.officialBuildId }}
-      queue: ${{ parameters.queue }}
-      steps: ${{ parameters.steps }}
+      phase: ${{ parameters.phase }}
+        ${{ if eq(parameters.officialBuildId, '') }}:
+          variables:
+            AdditionalBuildArgs: ''
+            ${{ insert }}: ${{ parameters.phase.variables }}
+        ${{ if not(eq(parameters.officialBuildId, '')) }}:
+          variables:
+            AdditionalBuildArgs: /p:PB_PublishBlobFeedKey=$(dotnetfeed-storage-access-key-1)
+              /p:PB_PublishBlobFeedUrl=$(_PublishBlobFeedUrl)
+              /p:PB_PublishType=$(publishType)
+              /p:SignType=$(_SignType)
+            ${{ insert }}: ${{ parameters.phase.variables }}

@@ -22,48 +22,49 @@ parameters:
 phases:
 - template: /eng/common/templates/phases/accessibility-level.yml
   parameters:
-    officialBuildId: ${{ parameters.officialBuildId }}
-    agentOs: ${{ parameters.agentOs }}
-    variables: 
-      _PublishBlobFeedUrl: https://dotnetfeed.blob.core.windows.net/dotnet-tools-internal/index.json
-      _SignType: test
-      _UseEsrpSigning: true
-      _TeamName: DotNetCore
-      HelixSource: official/dotnet/arcade/$(Build.SourceBranch)
-      HelixType: build/product
-      _PREVIEW_VSTS_DOCKER_IMAGE: ${{ parameters.dockerImage }}
-      AdditionalBuildArgs: ''
-    queue:
-      name: ${{ parameters.queueName }}
-      matrix: ${{ parameters.matrix }}
-    steps:
-    - checkout: self
-      clean: true
-      fetchDepth: 5
-    - script: $(engCommonDirectory)cibuild.$(scriptExtension) -configuration $(buildConfig) -prepareMachine $(AdditionalBuildArgs)
-#                 /p:PB_PublishBlobFeedKey=$(dotnetfeed-storage-access-key-1)
-      name: Build_Publish
-      displayName: Build / Publish
-      env:
-        OfficialBuildId: $(BUILD.BUILDNUMBER)
-        engCommonDirectory: $(engCommonDirectory)
-        scriptExtension: $(scriptExtension)
-        AdditionalBuildArgs: $(AdditionalBuildArgs)
-    - task: CopyFiles@2
-      displayName: Gather Logs
-      inputs:
-        SourceFolder: '$(Build.SourcesDirectory)/artifacts'
-        Contents: '**/*log'
-        TargetFolder: '$(Build.StagingDirectory)/BuildLogs'
-      continueOnError: true
-      condition: succeededOrFailed()
-    # Publish build logs to VSTS  
-    - task: PublishBuildArtifacts@1
-      displayName: Publish Logs to VSTS
-      inputs:
-        PathtoPublish: '$(Build.StagingDirectory)/BuildLogs'
-        ArtifactName: ${{ parameters.agentOs }}_$(Agent.JobName)
-        PublishLocation: Container
-      continueOnError: true
-      condition: succeededOrFailed()
-  
+    phase: ${{ parameters.agentOs }}
+      officialBuildId: ${{ parameters.officialBuildId }}
+      agentOs: ${{ parameters.agentOs }}
+      variables: 
+        _PublishBlobFeedUrl: https://dotnetfeed.blob.core.windows.net/dotnet-tools-internal/index.json
+        _SignType: test
+        _UseEsrpSigning: true
+        _TeamName: DotNetCore
+        HelixSource: official/dotnet/arcade/$(Build.SourceBranch)
+        HelixType: build/product
+        _PREVIEW_VSTS_DOCKER_IMAGE: ${{ parameters.dockerImage }}
+        AdditionalBuildArgs: ''
+      queue:
+        name: ${{ parameters.queueName }}
+        matrix: ${{ parameters.matrix }}
+      steps:
+      - checkout: self
+        clean: true
+        fetchDepth: 5
+      - script: $(engCommonDirectory)cibuild.$(scriptExtension) -configuration $(buildConfig) -prepareMachine $(AdditionalBuildArgs)
+  #                 /p:PB_PublishBlobFeedKey=$(dotnetfeed-storage-access-key-1)
+        name: Build_Publish
+        displayName: Build / Publish
+        env:
+          OfficialBuildId: $(BUILD.BUILDNUMBER)
+          engCommonDirectory: $(engCommonDirectory)
+          scriptExtension: $(scriptExtension)
+          AdditionalBuildArgs: $(AdditionalBuildArgs)
+      - task: CopyFiles@2
+        displayName: Gather Logs
+        inputs:
+          SourceFolder: '$(Build.SourcesDirectory)/artifacts'
+          Contents: '**/*log'
+          TargetFolder: '$(Build.StagingDirectory)/BuildLogs'
+        continueOnError: true
+        condition: succeededOrFailed()
+      # Publish build logs to VSTS  
+      - task: PublishBuildArtifacts@1
+        displayName: Publish Logs to VSTS
+        inputs:
+          PathtoPublish: '$(Build.StagingDirectory)/BuildLogs'
+          ArtifactName: ${{ parameters.agentOs }}_$(Agent.JobName)
+          PublishLocation: Container
+        continueOnError: true
+        condition: succeededOrFailed()
+    

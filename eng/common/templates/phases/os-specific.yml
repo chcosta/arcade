@@ -1,8 +1,7 @@
 parameters:
   variables: {}
   agentOs: Windows_NT
-  queue: {}
-  steps: {}
+  phase: {}
 
 phases:
 - phase: ${{ parameters.agentOs }}
