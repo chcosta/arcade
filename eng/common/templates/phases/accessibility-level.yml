@@ -6,11 +6,11 @@ parameters:
   variables: {}
   buildReason: ''
 
-phases:
-- template: /eng/common/templates/phases/os-specific.yml
-  parameters:
+${{ if or(eq(parameters.buildReason, ''), contains(parameters.buildReason, variables['BUILD.REASON']))) }}:
+  phases:
+  - template: /eng/common/templates/phases/os-specific.yml
+    parameters:
     # Execute phase if buildReason is not defined or explicitly listed in parameters.buildReason
-    ${{ if or(eq(parameters.buildReason, ''), contains(parameters.buildReason, variables['BUILD.REASON']))) }}:
       ${{ if eq(parameters.OfficialBuildId, '') }}:
         variables:
           InternalArgs: ''
