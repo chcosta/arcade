@@ -1,5 +1,4 @@
 parameters:
-  variables: {}
   phase: {}
 
 phases:
@@ -11,7 +10,7 @@ phases:
       engCommonDirectory: eng\common\
       ${{ insert }}: ${{ parameters.phase.variables }}
   # Linux variables
-  ${{ if not(eq(parameters.phase. agentOs, 'Windows_NT')) }}:
+  ${{ if not(eq(parameters.phase.agentOs, 'Windows_NT')) }}:
     variables:
       scriptExtension: sh
       engCommonDirectory: eng/common/
