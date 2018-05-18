@@ -1,7 +1,11 @@
-# build-reason.yml
-# Description: Defines phase variables which are dependent on the build reason.  ie CI, PR, Official build
-#   Build reasons - https://docs.microsoft.com/en-us/vsts/build-release/concepts/definitions/build/variables?view=vsts&tabs=batch#buildreason
+# Template: build-reason.yml
+#
+# Description:
+#  Defines phase variables which are dependent on the build reason.  ie CI, PR, Official build
+#
 # Parameters:
+#  agentOs - [Windows_NT, Linux, OSX]
+#  buildReason - https://docs.microsoft.com/en-us/vsts/build-release/concepts/definitions/build/variables?view=vsts&tabs=batch#buildreason
 #  phase - Accepts a fully defined phase, adds variables and passes that phase to os-specific.yml
 #    phase:
 #      agentOs:
@@ -35,10 +39,13 @@ phases:
               /p:PB_PublishType=$(publishType)
               /p:SignType=$(_SignType)
             ${{ insert }}: ${{ parameters.phase.variables }}
-          steps:
-            - task: AzureKeyVault@1
-              inputs:
-                azureSubscription: 'DotNet-Engineering-Services_KeyVault'
-                KeyVaultName: EngKeyVault
-                SecretsFilter: 'dotnetfeed-storage-access-key-1'
-            - ${{ parameters.phase.steps }}
+          - template: /eng/common/templates/steps/telemetry.yml
+            parameters:
+              agentOs: ${{ parameters.agentOs }}
+              steps:
+                - task: AzureKeyVault@1
+                  inputs:
+                    azureSubscription: 'DotNet-Engineering-Services_KeyVault'
+                    KeyVaultName: EngKeyVault
+                    SecretsFilter: 'dotnetfeed-storage-access-key-1'
+                - ${{ parameters.phase.steps }}

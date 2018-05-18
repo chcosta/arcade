@@ -1,3 +1,11 @@
+# Template: os-layer.yml
+#
+# Description:
+#  Adds OS specific variables
+#
+# Parameters:
+#  agentOs
+#  phase
 parameters:
   agentOs: 'Windows_NT'
   phase: {}
