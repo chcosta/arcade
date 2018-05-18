@@ -33,7 +33,6 @@ phases:
         HelixSource: official/dotnet/arcade/$(Build.SourceBranch)
         HelixType: build/product
         _PREVIEW_VSTS_DOCKER_IMAGE: ${{ parameters.dockerImage }}
-        AdditionalBuildArgs: ' foo'
       queue:
         name: ${{ parameters.queueName }}
         matrix: ${{ parameters.matrix }}
@@ -49,7 +48,7 @@ phases:
           OfficialBuildId: $(BUILD.BUILDNUMBER)
           engCommonDirectory: $(engCommonDirectory)
           scriptExtension: $(scriptExtension)
-          AdditionalBuildArgs: variables['AdditionalBuildArgs']
+          AdditionalBuildArgs: ${{ variables.AdditionalBuildArgs }}
       - task: CopyFiles@2
         displayName: Gather Logs
         inputs:
