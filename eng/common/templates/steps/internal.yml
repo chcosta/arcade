@@ -3,7 +3,7 @@ parameters:
   OfficialBuildId: ''
 
 steps:
-  - template: /eng/common/vsts-templates/steps/telemetry.yml
+  - template: /eng/common/templates/steps/telemetry.yml
     parameters:
       steps: 
       - ${{ if not(eq(parameters.OfficialBuildId, '')) }}:
