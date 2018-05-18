@@ -1,0 +1,31 @@
+# build-reason.yml
+# Description: Defines phase variables which are dependent on the build reason.  ie CI, PR, Official build
+#   Build reasons - https://docs.microsoft.com/en-us/vsts/build-release/concepts/definitions/build/variables?view=vsts&tabs=batch#buildreason
+# Parameters:
+#  phase - Accepts a fully defined phase, adds variables and passes that phase to os-specific.yml
+#    phase:
+#      agentOs:
+#      queue:
+#      steps:
+#      variables:
+parameters:
+  agentOs: ''
+  buildReason: ''
+  phase: {}
+
+phases:
+  - template: /eng/common/templates/phases/os-specific.yml
+    parameters:
+      agentOs: ${{ parameters.agentOs }}
+      phase:
+        queue: ${{ parameters.phase.queue }}
+        steps: ${{ parameters.phase.steps }}
+        ${{ if not(and(eq(parameters.buildReason, 'Manual'), eq(parameters.buildReason, 'Scheduled'))) }}:
+          variables: ${{ parameters.phase.variables }}
+        ${{ if or(eq(parameters.buildReason, 'Manual'), eq(parameters.buildReason, 'Scheduled')) }}:
+          variables:
+            AdditionalBuildArgs: /p:PB_PublishBlobFeedKey=$(dotnetfeed-storage-access-key-1)
+              /p:PB_PublishBlobFeedUrl=$(_PublishBlobFeedUrl)
+              /p:PB_PublishType=$(publishType)
+              /p:SignType=$(_SignType)
+            ${{ insert }}: ${{ parameters.phase.variables }}

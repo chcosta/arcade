@@ -8,6 +8,7 @@
 
 parameters:
   agentOs: Windows_NT
+  buildReason: ''
   dockerImage: ''
   matrix: 
     Build_Debug:
@@ -16,15 +17,14 @@ parameters:
     Build_Release:
       buildConfig: Release
       publishType: none
-  officialBuildId: ''
   queueName: ''
 
 phases:
-- template: /eng/common/templates/phases/accessibility-level.yml
+- template: /eng/common/templates/phases/build-reason.yml
   parameters:
+    agentOs: ${{ parameters.agentOs }}
+    buildReason: ${{ parameters.buildReason }}
     phase:
-      officialBuildId: ${{ parameters.officialBuildId }}
-      agentOs: ${{ parameters.agentOs }}
       variables: 
         _PublishBlobFeedUrl: https://dotnetfeed.blob.core.windows.net/dotnet-tools-internal/index.json
         _SignType: test
@@ -64,4 +64,3 @@ phases:
           PublishLocation: Container
         continueOnError: true
         condition: succeededOrFailed()
-    
