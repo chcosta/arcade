@@ -2,12 +2,10 @@ parameters:
   step: {}
 
 steps:
-- name: ${{ parameters.step.name }}
-  displayName: ${{ parameters.step.displayName }}
-  ${{ if eq(parameters.officialBuildId, '') }}:
+- ${{ if eq(parameters.officialBuildId, '') }}:
     script: ${{ parameters.step.script }}
     env: ${{ parameters.step.env }}
-  ${{ if not(eq(parameters.officialBuildId, '')) }}:
+- ${{ if not(eq(parameters.officialBuildId, '')) }}:
     script: ${{ parameters.step.script }} $(AdditionalBuildArgs)
     env:
       ${{ insert }}: ${{ parameters.step.env }}
@@ -15,3 +13,6 @@ steps:
         /p:PB_PublishBlobFeedUrl=$(_PublishBlobFeedUrl)
         /p:PB_PublishType=$(publishType)
         /p:SignType=$(_SignType)
+  name: ${{ parameters.step.name }}
+  displayName: ${{ parameters.step.displayName }}
+      
