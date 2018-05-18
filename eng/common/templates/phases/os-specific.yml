@@ -1,25 +1,19 @@
 parameters:
   variables: {}
-  agentOs: Windows_NT
   phase: {}
 
 phases:
-- phase: ${{ parameters.agentOs }}
-  ${{ if eq(parameters.agentOs, 'Windows_NT') }}:
+- phase: ${{ parameters.phase.agentOs }}
+  ${{ if eq(parameters.phase.agentOs, 'Windows_NT') }}:
     # Windows variables
     variables:
       scriptExtension: cmd
       engCommonDirectory: eng\common\
-      ${{ insert }}: ${{ parameters.variables }}
+      ${{ insert }}: ${{ parameters.phase.variables }}
   # Linux variables
-  ${{ if not(eq(parameters.agentOs, 'Windows_NT')) }}:
+  ${{ if not(eq(parameters.phase. agentOs, 'Windows_NT')) }}:
     variables:
       scriptExtension: sh
       engCommonDirectory: eng/common/
-      ${{ insert }}: ${{ parameters.variables }}
-  queue: ${{ parameters.queue }}
-  steps:
-    - template: /eng/common/templates/steps/internal.yml
-      parameters:
-        OfficialBuildId: ''
-        steps: ${{ parameters.steps }}
+      ${{ insert }}: ${{ parameters.phase.variables }}
+  ${{ insert }}: ${{ parameters.phase }}
