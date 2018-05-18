@@ -1,0 +1,13 @@
+parameters:
+  phaseName: ''
+  phase: {}
+
+phases:
+- phase: ${{ parameters.phaseName }}
+  queue: ${{ parameters.phase.queue }}
+  variables: ${{ parameters.phase.variables }}
+  steps:
+  - checkout: self
+    clean: true
+    fetchDepth: 5
+  - ${{ parameters.phase.steps }}

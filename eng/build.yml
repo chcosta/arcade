@@ -20,7 +20,7 @@ parameters:
   queueName: ''
 
 phases:
-- template: /eng/common/templates/phases/build-reason.yml
+- template: /eng/common/templates/phases/build-reason-layer.yml
   parameters:
     agentOs: ${{ parameters.agentOs }}
     buildReason: ${{ parameters.buildReason }}

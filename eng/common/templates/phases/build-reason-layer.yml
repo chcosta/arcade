@@ -14,7 +14,7 @@ parameters:
   phase: {}
 
 phases:
-  - template: /eng/common/templates/phases/os-specific.yml
+  - template: /eng/common/templates/phases/os-layer.yml
     parameters:
       agentOs: ${{ parameters.agentOs }}
       phase:
