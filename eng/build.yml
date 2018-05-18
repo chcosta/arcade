@@ -40,14 +40,14 @@ phases:
       - checkout: self
         clean: true
         fetchDepth: 5
-      - script: $(engCommonDirectory)cibuild.$(scriptExtension) -configuration $(buildConfig) -prepareMachine $(AdditionalBuildArgs)
+      - script: $(engCommonDirectory)cibuild.$(scriptExtension) -configuration $(buildConfig) -prepareMachine $(BuildReasonArgs)
         name: Build_Publish
         displayName: Build / Publish
         env:
           OfficialBuildId: $(BUILD.BUILDNUMBER)
           engCommonDirectory: $(engCommonDirectory)
           scriptExtension: $(scriptExtension)
-          AdditionalBuildArgs: $(AdditionalBuildArgs)
+          BuildReasonArgs: $(BuildReasonArgs)
       - task: CopyFiles@2
         displayName: Gather Logs
         inputs:
