@@ -15,6 +15,9 @@ phases:
     ${{ if not(eq(parameters.OfficialBuildId, '')) }}:
       variables:
         InternalArgs: /p:PB_PublishBlobFeedKey=$(dotnetfeed-storage-access-key-1)
+          /p:PB_PublishBlobFeedUrl=$(_PublishBlobFeedUrl)
+          /p:PB_PublishType=$(publishType)
+          /p:SignType=$(_SignType)
         ${{ insert }}: ${{ parameters.variables }}
     agentOs: ${{ parameters.agentOs }}
     OfficialBuildId: ${{ parameters.OfficialBuildId }}

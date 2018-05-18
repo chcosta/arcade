@@ -25,9 +25,6 @@ phases:
       clean: true
       fetchDepth: 5
     - script: $(engCommonDirectory)cibuild.$(scriptExtension) -configuration $(buildConfig) -prepareMachine
-                /p:PB_PublishType=$(publishType)
-                /p:PB_PublishBlobFeedUrl=$(_PublishBlobFeedUrl)
-                /p:SignType=$(_SignType)
                 $(InternalArgs)
 #                 /p:PB_PublishBlobFeedKey=$(dotnetfeed-storage-access-key-1)
       name: Build_Publish
