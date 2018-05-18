@@ -25,7 +25,7 @@ phases:
           variables: 
             BuildReasonArgs: ''
             ${{ insert }}: ${{ parameters.phase.variables }}
-          steps: ${{ parameter.phase.steps }}
+          steps: ${{ parameters.phase.steps }}
 
         # Internal builds
         ${{ if or(eq(parameters.buildReason, 'Manual'), eq(parameters.buildReason, 'Scheduled')) }}:
