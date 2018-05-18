@@ -6,8 +6,6 @@
 #   matrix: build matrix
 #   queueName: agent pool name
 parameters:
-  agentOs: Windows_NT
-  officialBuildId: 'something'
   phase: {}
 
 phases:
@@ -17,12 +15,13 @@ phases:
         agentOs: ${{ parameters.phase.agentOs }}
         queue: ${{ parameters.phase.queue }}
         steps: ${{ parameters.phase.steps }}
-        ${{ if eq(parameters.officialBuildId, '') }}:
+        ${{ if eq(parameters.phase..officialBuildId, '') }}:
           variables:
             AdditionalBuildArgs: 'hi'
             ${{ insert }}: ${{ parameters.phase.variables }}
-        ${{ if not(eq(parameters.officialBuildId, '')) }}:
+        ${{ if not(eq(parameters.phase.officialBuildId, '')) }}:
           variables:
+            dotnetfeed-storage-access-key-1: ''
             AdditionalBuildArgs: /p:PB_PublishBlobFeedKey=$(dotnetfeed-storage-access-key-1)
               /p:PB_PublishBlobFeedUrl=$(_PublishBlobFeedUrl)
               /p:PB_PublishType=$(publishType)
