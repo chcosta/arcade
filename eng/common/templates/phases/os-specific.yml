@@ -4,17 +4,17 @@ parameters:
 
 phases:
 - phase: ${{ parameters.agentOs }}
+  queue: ${{ parameters.phase.queue }}
+  steps: ${{ parameters.phase.steps }}
+  # Windows variables
   ${{ if eq(parameters.agentOs, 'Windows_NT') }}:
-    # Windows variables
     variables:
       scriptExtension: cmd
       engCommonDirectory: eng\common\
       ${{ insert }}: ${{ parameters.phase.variables }}
-  # Linux variables
+  # Unix variables
   ${{ if not(eq(parameters.agentOs, 'Windows_NT')) }}:
     variables:
       scriptExtension: sh
       engCommonDirectory: eng/common/
       ${{ insert }}: ${{ parameters.phase.variables }}
-  queue: ${{ parameters.phase.queue }}
-  steps: ${{ parameters.phase.steps }}
