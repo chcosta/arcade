@@ -8,11 +8,7 @@ phases:
     phaseName: ${{ parameters.agentOs }}
     phase: 
       queue: ${{ parameters.phase.queue }}
-      steps:
-      - checkout: self
-        clean: true
-        fetchDepth: 5
-      - ${{ parameters.phase.steps }}
+      steps: ${{ parameters.phase.steps }}
       # Windows variables
       ${{ if eq(parameters.agentOs, 'Windows_NT') }}:
         variables:
