@@ -14,7 +14,7 @@ phases:
   - template: /eng/common/templates/phases/os-specific.yml
     parameters:
       phase:
-        ${{ instert }}: ${{ parameters.phase }}
+        ${{ insert }}: ${{ parameters.phase }}
         ${{ if eq(parameters.officialBuildId, '') }}:
           variables:
             AdditionalBuildArgs: ''
