@@ -25,7 +25,7 @@ phases:
         buildConfig: Release
         publishType: blob
 
-${{ if or(eq(variables['BUILD.REASON'], 'IndividualCI'), eq(variables['BUILD.REASON'], 'BatchedCI')) }}
+${{ if or(eq(variables['BUILD.REASON'], 'IndividualCI'), eq(variables['BUILD.REASON'], 'BatchedCI')) }}:
   - template: /eng/build.yml
     parameters:
       agentOs: OSX
