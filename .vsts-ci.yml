@@ -25,15 +25,15 @@ phases:
         buildConfig: Release
         publishType: blob
 
-  - template: /eng/build.yml
-    parameters:
-      agentOs: OSX
-      buildReason: IndividualCI,BatchedCI
-      queueName: Hosted macOS Preview
-      matrix:
-        Build_Debug:
-          buildConfig: Debug
-          publishType: none
-        Build_Release:
-          buildConfig: Release
-          publishType: none
+- template: /eng/build.yml
+  parameters:
+    agentOs: OSX
+    buildReason: IndividualCI,BatchedCI
+    queueName: Hosted macOS Preview
+    matrix:
+      Build_Debug:
+        buildConfig: Debug
+        publishType: none
+      Build_Release:
+        buildConfig: Release
+        publishType: none
