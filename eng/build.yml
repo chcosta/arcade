@@ -20,7 +20,7 @@ parameters:
   queueName: ''
 
 phases:
-- template: /eng/common/templates/phases/accessibility-level.yml
+- template: /eng/common/templates/phases/os-specific.yml
   parameters:
     phase:
       officialBuildId: ${{ parameters.officialBuildId }}
@@ -40,15 +40,16 @@ phases:
       - checkout: self
         clean: true
         fetchDepth: 5
-      - script: $(engCommonDirectory)cibuild.$(scriptExtension) -configuration $(buildConfig) -prepareMachine $(AdditionalBuildArgs)
-  #                 /p:PB_PublishBlobFeedKey=$(dotnetfeed-storage-access-key-1)
-        name: Build_Publish
-        displayName: Build / Publish
-        env:
-          OfficialBuildId: $(BUILD.BUILDNUMBER)
-          engCommonDirectory: $(engCommonDirectory)
-          scriptExtension: $(scriptExtension)
-          AdditionalBuildArgs: ${{ parameters.phase.variables.AdditionalBuildArgs }}
+      - template: env/common/templates/steps/accessibility-level-step.yml
+        parameters:
+          step:
+            script: $(engCommonDirectory)cibuild.$(scriptExtension) -configuration $(buildConfig) -prepareMachine
+            name: Build_Publish
+            displayName: Build / Publish
+            env:
+              OfficialBuildId: $(BUILD.BUILDNUMBER)
+              engCommonDirectory: $(engCommonDirectory)
+              scriptExtension: $(scriptExtension)
       - task: CopyFiles@2
         displayName: Gather Logs
         inputs:
