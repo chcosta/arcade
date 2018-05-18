@@ -49,7 +49,7 @@ phases:
           OfficialBuildId: $(BUILD.BUILDNUMBER)
           engCommonDirectory: $(engCommonDirectory)
           scriptExtension: $(scriptExtension)
-          AdditionalBuildArgs: $(AdditionalBuildArgs)
+          AdditionalBuildArgs: variables['AdditionalBuildArgs']
       - task: CopyFiles@2
         displayName: Gather Logs
         inputs:
