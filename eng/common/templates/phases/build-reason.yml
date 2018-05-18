@@ -44,4 +44,4 @@ phases:
                   azureSubscription: 'DotNet-Engineering-Services_KeyVault'
                   KeyVaultName: EngKeyVault
                   SecretsFilter: 'dotnetfeed-storage-access-key-1'
-                ${{ insert }}: ${{ parameters.phase.steps }}
+              ${{ insert }}: ${{ parameters.phase.steps }}
