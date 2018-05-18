@@ -15,15 +15,15 @@ phases:
         buildConfig: Release
         publishType: blob
 
-- template: /eng/build.yml
-  parameters:
-    agentOs: Linux
-    queueName: Hosted Linux Preview
-    dockerImage: microsoft/dotnet-buildtools-prereqs:ubuntu-14.04-cross-0cd4667-20170319080304
-    matrix:
-      Build_Debug:
-        buildConfig: Debug
-        publishType: none
-      Build_Release:
-        buildConfig: Release
-        publishType: blob
+#- template: /eng/build.yml
+#  parameters:
+#    agentOs: Linux
+#    queueName: Hosted Linux Preview
+#    dockerImage: microsoft/dotnet-buildtools-prereqs:ubuntu-14.04-cross-0cd4667-20170319080304
+#    matrix:
+#      Build_Debug:
+#        buildConfig: Debug
+#        publishType: none
+#      Build_Release:
+#        buildConfig: Release
+#        publishType: blob
