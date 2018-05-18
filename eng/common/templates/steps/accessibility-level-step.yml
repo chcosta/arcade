@@ -2,16 +2,16 @@ parameters:
   step: {}
 
 steps:
-- ${{ if eq(parameters.officialBuildId, '') }}:
-  - script: ${{ parameters.step.script }}
+- name: ${{ parameters.step.name }}
+  displayName: ${{ parameters.step.displayName }}
+  ${{ if eq(parameters.officialBuildId, '') }}:
+    script: ${{ parameters.step.script }}
     env: ${{ parameters.step.env }}
-- ${{ if not(eq(parameters.officialBuildId, '')) }}:
-  - script: ${{ parameters.step.script }} $(AdditionalBuildArgs)
+  ${{ if not(eq(parameters.officialBuildId, '')) }}:
+    script: ${{ parameters.step.script }} $(AdditionalBuildArgs)
     env:
       ${{ insert }}: ${{ parameters.step.env }}
       AdditionalBuildArgs: /p:PB_PublishBlobFeedKey=$(dotnetfeed-storage-access-key-1)
         /p:PB_PublishBlobFeedUrl=$(_PublishBlobFeedUrl)
         /p:PB_PublishType=$(publishType)
         /p:SignType=$(_SignType)
-  name: ${{ parameters.step.name }}
-  displayName: ${{ parameters.step.displayName }}
