@@ -6,7 +6,7 @@ parameters:
 steps:
 - ${{ if eq(parameters.conditionReasons, '') }}:
     - ${{ parameters.steps }}
-- ${{ if not(and(eq(parameters.conditionReasons, ''), startswith(parameters.conditionReasons, 'not '))) }}:
+- ${{ if not(startswith(parameters.conditionReasons, 'not ')) }}:
   - ${{ if contains(parameters.conditionReasons, parameters.buildReason) }}:
       - ${{ parameters.steps }}
 - ${{ if startswith(parameters.conditionReasons, 'not ') }}:
