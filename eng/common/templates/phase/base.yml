@@ -14,7 +14,7 @@ phases:
   - ${{ if eq(parameters.phase.variables.enableTelemetry, 'true') }}:
     - template: /eng/common/templates/steps/steps-telemetry.yml
       parameters:
-        agentOs: ${{ parameters.phase.agentOs }}
+        agentOs: ${{ parameters.agentOs }}
         steps: ${{ parameters.phase.steps }}
   - ${{ if not(eq(parameters.phase.variables.enableTelemetry, 'true')) }}:
     - ${{ parameters.phase.steps }}
