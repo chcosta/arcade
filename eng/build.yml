@@ -22,6 +22,7 @@ parameters:
 phases:
 - template: /eng/common/templates/phase/base.yml
   parameters:
+    agentOs: ${{ parameters.agentOs }}
     phaseName: ${{ parameters.agentOs }}
     phase:
       variables: 
@@ -68,7 +69,7 @@ phases:
             - template: /eng/common/templates/steps/script-os-variables.yml
               parameters:
                 script: eng/common/cibuild.$(scriptExtension) -configuration $(buildConfig) -prepareMachine $(BuildReasonArgs)
-                name: Build_Publish2
+                name: Build_Publish
                 displayName: Build / Publish
                 env:
                   OfficialBuildId: $(BUILD.BUILDNUMBER)
