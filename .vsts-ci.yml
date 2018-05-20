@@ -1,5 +1,5 @@
 phases:
-  phase: foo
+- phase: foo
    steps:
      - script: echo foo
 - template: /eng/build.yml
