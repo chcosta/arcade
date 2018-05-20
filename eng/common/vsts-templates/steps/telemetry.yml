@@ -16,6 +16,7 @@ steps:
           azureSubscription: 'HelixProd_KeyVault'
           KeyVaultName: HelixProdKV
           SecretsFilter: 'HelixApiAccessToken'
+        condition: eq(variables['Agent.JobStatus'], 'Always')
       - template: /eng/common/templates/steps/steps-unix.yml
         parameters:
           agentOs: ${{ parameters.agentOs }}
@@ -33,6 +34,7 @@ steps:
                 Attempt: 1
                 OperatingSystem: $(Agent.OS)
                 Configuration: $(_BuildConfig)
+              condition: eq(variables['Agent.JobStatus'], 'Always')
             - bash: |
                 /bin/bash ./telemetry/build/start.sh --build-uri "$BuildUri"
               workingDirectory: $(Build.SourcesDirectory)/eng/common
@@ -40,6 +42,7 @@ steps:
               env:
                 BuildUri: https://devdiv.visualstudio.com/DevDiv/_build/index?buildId=$(Build.BuildId)&_a=summary
                 Helix_JobToken: $(Helix_JobToken)
+              condition: eq(variables['Agent.JobStatus'], 'Always')
       - template: /eng/common/templates/steps/steps-windows.yml
         parameters:
           agentOs: ${{ parameters.agentOs }}
@@ -60,6 +63,7 @@ steps:
                 Attempt: 1
                 OperatingSystem: $(Agent.OS)
                 Configuration: $(_BuildConfig)
+              condition: eq(variables['Agent.JobStatus'], 'Always')
             - powershell: |
                 ./telemetry/build/start.ps1 -BuildUri $env:BuildUri
                 if ($LASTEXITCODE -ne 0) {
@@ -70,6 +74,7 @@ steps:
               env:
                 BuildUri: https://devdiv.visualstudio.com/DevDiv/_build/index?buildId=$(Build.BuildId)&_a=summary
                 Helix_JobToken: $(Helix_JobToken)
+              condition: eq(variables['Agent.JobStatus'], 'Always')
 
       - ${{ parameters.steps }}
 
@@ -84,6 +89,7 @@ steps:
               env:
                 Helix_JobToken: $(Helix_JobToken)
                 Helix_WorkItemId: $(Helix_WorkItemId)
+              condition: eq(variables['Agent.JobStatus'], 'Always')
 
       - template: /eng/common/templates/steps/steps-windows.yml
         parameters:
@@ -99,3 +105,4 @@ steps:
               env:
                 Helix_JobToken: $(Helix_JobToken)
                 Helix_WorkItemId: $(Helix_WorkItemId)
+              condition: eq(variables['Agent.JobStatus'], 'Always')
