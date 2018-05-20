@@ -5,7 +5,7 @@ phases:
 - template: /eng/build.yml
   parameters:
     agentOs: Windows_NT
-    buildReason: PullRequest
+    buildReason: Manual
     queueName: Hosted VS2017
     matrix:
       Build_Debug:
@@ -18,7 +18,7 @@ phases:
 - template: /eng/build.yml
   parameters:
     agentOs: Linux
-    buildReason: PullRequest
+    buildReason: Manual
     queueName: Hosted VS2017
     dockerImage: microsoft/dotnet-buildtools-prereqs:ubuntu-14.04-cross-0cd4667-20170319080304
     matrix:
