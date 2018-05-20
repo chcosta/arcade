@@ -4,12 +4,12 @@ parameters:
   steps: []
 
 steps:
-  ${{ if eq(parameters.conditionReasons, '') }}:
+- ${{ if eq(parameters.conditionReasons, '') }}:
     - ${{ parameters.steps }}
-  ${{ if not(startswith(parameters.conditionReasons, 'not ')) }}:
-    ${{ if contains(parameters.conditionReasons, parameters.buildReason) }}:
+- ${{ if not(startswith(parameters.conditionReasons, 'not ')) }}:
+  - ${{ if contains(parameters.conditionReasons, parameters.buildReason) }}:
       - ${{ parameters.steps }}
-  ${{ if startswith(parameters.conditionReasons, 'not ') }}:
-    ${{ if not(contains(parameters.conditionReasons, parameters.buildReason)) }}:
+- ${{ if startswith(parameters.conditionReasons, 'not ') }}:
+  - ${{ if not(contains(parameters.conditionReasons, parameters.buildReason)) }}:
       - ${{ parameters.steps }}
  
