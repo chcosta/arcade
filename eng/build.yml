@@ -20,10 +20,9 @@ parameters:
   queueName: ''
 
 phases:
-- template: /eng/common/templates/phases/build-reason-layer.yml
+- template: /eng/common/templates/phases/os-reason-layer.yml
   parameters:
     agentOs: ${{ parameters.agentOs }}
-    buildReason: ${{ parameters.buildReason }}
     phase:
       variables: 
         _PublishBlobFeedUrl: https://dotnetfeed.blob.core.windows.net/dotnet-tools-internal/index.json
@@ -37,14 +36,43 @@ phases:
         name: ${{ parameters.queueName }}
         matrix: ${{ parameters.matrix }}
       steps:
-      - script: $(engCommonDirectory)cibuild.$(scriptExtension) -configuration $(buildConfig) -prepareMachine $(BuildReasonArgs)
-        name: Build_Publish
-        displayName: Build / Publish
-        env:
-          OfficialBuildId: $(BUILD.BUILDNUMBER)
-          engCommonDirectory: $(engCommonDirectory)
-          scriptExtension: $(scriptExtension)
-          BuildReasonArgs: $(BuildReasonArgs)
+      - template: /eng/common/templates/steps/reasoned.yml
+        parameters:
+          buildReason: ${{ parameters.buildReason }}
+          conditionReasons: Manual,Scheduled
+          steps:
+            - task: AzureKeyVault@1
+              inputs:
+                azureSubscription: 'DotNet-Engineering-Services_KeyVault'
+                KeyVaultName: EngKeyVault
+                SecretsFilter: 'dotnetfeed-storage-access-key-1'
+            - script: $(engCommonDirectory)cibuild.$(scriptExtension)
+              -configuration $(buildConfig) 
+              -prepareMachine $(BuildReasonArgs)
+              /p:PB_PublishBlobFeedKey=$(dotnetfeed-storage-access-key-1)
+              /p:PB_PublishBlobFeedUrl=$(_PublishBlobFeedUrl)
+              /p:PB_PublishType=$(publishType)
+              /p:SignType=$(_SignType)
+            name: Build_Publish
+            displayName: Build / Publish
+            env:
+              OfficialBuildId: $(BUILD.BUILDNUMBER)
+              engCommonDirectory: $(engCommonDirectory)
+              scriptExtension: $(scriptExtension)
+              BuildReasonArgs: $(BuildReasonArgs)
+      - template: /eng/common/templates/steps/reasoned.yml
+        parameters:
+          buildReason: ${{ parameters.buildReason }}
+          conditionReasons: not Manual,Scheduled
+          steps:
+          - script: $(engCommonDirectory)cibuild.$(scriptExtension) -configuration $(buildConfig) -prepareMachine $(BuildReasonArgs)
+            name: Build_Publish
+            displayName: Build / Publish
+            env:
+              OfficialBuildId: $(BUILD.BUILDNUMBER)
+              engCommonDirectory: $(engCommonDirectory)
+              scriptExtension: $(scriptExtension)
+              BuildReasonArgs: $(BuildReasonArgs)
       - task: CopyFiles@2
         displayName: Gather Logs
         inputs:
