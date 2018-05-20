@@ -68,7 +68,7 @@ phases:
             - template: /eng/common/templates/steps/script-os-variables.yml
               parameters:
                 script: eng/common/cibuild.$(scriptExtension) -configuration $(buildConfig) -prepareMachine $(BuildReasonArgs)
-                name: Build_Publish
+                name: Build_Publish2
                 displayName: Build / Publish
                 env:
                   OfficialBuildId: $(BUILD.BUILDNUMBER)
