@@ -20,7 +20,7 @@ parameters:
   queueName: ''
 
 phases:
-- template: /eng/common/templates/phases/os-reason-layer.yml
+- template: /eng/common/templates/phases/os-layer.yml
   parameters:
     agentOs: ${{ parameters.agentOs }}
     phase:
