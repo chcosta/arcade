@@ -1,7 +1,7 @@
 phases:
 - phase: foo
-   steps:
-     - script: echo foo
+  steps:
+  - script: echo foo
 - template: /eng/build.yml
   parameters:
     agentOs: Windows_NT
