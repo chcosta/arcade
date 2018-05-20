@@ -4,7 +4,7 @@ phases:
   - script: echo foo
 - template: /eng/build.yml
   parameters:
-    agentOs: Windows_NT
+    _agentOs: Windows_NT
     buildReason: Manual
     queueName: Hosted VS2017
     matrix:
@@ -17,7 +17,7 @@ phases:
 
 - template: /eng/build.yml
   parameters:
-    agentOs: Linux
+    _agentOs: Linux
     buildReason: Manual
     queueName: Hosted VS2017
     dockerImage: microsoft/dotnet-buildtools-prereqs:ubuntu-14.04-cross-0cd4667-20170319080304

@@ -7,7 +7,7 @@
 #   queueName: agent pool name
 
 parameters:
-  agentOs: Windows_NT
+  _agentOs: Windows_NT
   buildReason: ''
   dockerImage: ''
   matrix: 
@@ -22,8 +22,8 @@ parameters:
 phases:
 - template: /eng/common/templates/phase/base.yml
   parameters:
-    agentOs: ${{ parameters.agentOs }}
-    phaseName: ${{ parameters.agentOs }}
+    _agentOs: ${{ parameters._agentOs }}
+    phaseName: ${{ parameters._agentOs }}
     phase:
       variables: 
         _PublishBlobFeedUrl: https://dotnetfeed.blob.core.windows.net/dotnet-tools-internal/index.json
