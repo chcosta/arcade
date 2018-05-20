@@ -8,7 +8,7 @@
 
 parameters:
   agentOs: Windows_NT
-  buildReason: 'Manual'
+  buildReason: ''
   dockerImage: ''
   matrix: 
     Build_Debug:
