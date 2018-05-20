@@ -20,9 +20,9 @@ parameters:
   queueName: ''
 
 phases:
-- template: /eng/common/templates/phases/os-layer.yml
+- template: /eng/common/templates/phase/base.yml
   parameters:
-    agentOs: ${{ parameters.agentOs }}
+    phaseName: ${{ parameters.agentOs }}
     phase:
       variables: 
         _PublishBlobFeedUrl: https://dotnetfeed.blob.core.windows.net/dotnet-tools-internal/index.json
@@ -32,11 +32,12 @@ phases:
         HelixSource: official/dotnet/arcade/$(Build.SourceBranch)
         HelixType: build/product
         _PREVIEW_VSTS_DOCKER_IMAGE: ${{ parameters.dockerImage }}
+        enableTelemetry: true
       queue:
         name: ${{ parameters.queueName }}
         matrix: ${{ parameters.matrix }}
       steps:
-      - template: /eng/common/templates/steps/reasoned.yml
+      - template: /eng/common/templates/steps/steps-reasoned.yml
         parameters:
           buildReason: ${{ parameters.buildReason }}
           conditionReasons: Manual,Scheduled
@@ -46,33 +47,31 @@ phases:
                 azureSubscription: 'DotNet-Engineering-Services_KeyVault'
                 KeyVaultName: EngKeyVault
                 SecretsFilter: 'dotnetfeed-storage-access-key-1'
-            - script: $(engCommonDirectory)cibuild.$(scriptExtension) 
-                -configuration $(buildConfig) 
-                -prepareMachine $(BuildReasonArgs) 
-                /p:PB_PublishBlobFeedKey=$(dotnetfeed-storage-access-key-1) 
-                /p:PB_PublishBlobFeedUrl=$(_PublishBlobFeedUrl) 
-                /p:PB_PublishType=$(publishType) 
-                /p:SignType=$(_SignType)
-              name: Build_Publish
-              displayName: Build / Publish
-              env:
-                OfficialBuildId: $(BUILD.BUILDNUMBER)
-                engCommonDirectory: $(engCommonDirectory)
-                scriptExtension: $(scriptExtension)
-                BuildReasonArgs: $(BuildReasonArgs)
-      - template: /eng/common/templates/steps/reasoned.yml
+            - template: /eng/common/templates/steps/script-os-variables.yml
+              parameters:
+                script: eng/common/cibuild.$(scriptExtension) 
+                    -configuration $(buildConfig) 
+                    -prepareMachine $(BuildReasonArgs) 
+                    /p:PB_PublishBlobFeedKey=$(dotnetfeed-storage-access-key-1) 
+                    /p:PB_PublishBlobFeedUrl=$(_PublishBlobFeedUrl) 
+                    /p:PB_PublishType=$(publishType) 
+                    /p:SignType=$(_SignType)
+                name: Build_Publish
+                displayName: Build / Publish
+                env:
+                  OfficialBuildId: $(BUILD.BUILDNUMBER)
+      - template: /eng/common/templates/steps/steps-reasoned.yml
         parameters:
           buildReason: ${{ parameters.buildReason }}
           conditionReasons: not Manual,Scheduled
           steps:
-          - script: $(engCommonDirectory)cibuild.$(scriptExtension) -configuration $(buildConfig) -prepareMachine $(BuildReasonArgs)
-            name: Build_Publish
-            displayName: Build / Publish
-            env:
-              OfficialBuildId: $(BUILD.BUILDNUMBER)
-              engCommonDirectory: $(engCommonDirectory)
-              scriptExtension: $(scriptExtension)
-              BuildReasonArgs: $(BuildReasonArgs)
+            - template: /eng/common/templates/steps/script-os-variables.yml
+              parameters:
+                script: eng/common/cibuild.$(scriptExtension) -configuration $(buildConfig) -prepareMachine $(BuildReasonArgs)
+                name: Build_Publish
+                displayName: Build / Publish
+                env:
+                  OfficialBuildId: $(BUILD.BUILDNUMBER)
       - task: CopyFiles@2
         displayName: Gather Logs
         inputs:

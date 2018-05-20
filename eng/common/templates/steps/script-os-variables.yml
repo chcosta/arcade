@@ -1,0 +1,22 @@
+parameters:
+  agentOs: Windows_NT
+  script: ''
+  name: ''
+  displayName: ''
+  env: ''
+
+steps:
+- script: ${{ parameters.script }}
+  ${{ if eq(parameters.displayName, '') }}:
+    displayName: ${{ parameters.Name }}
+  ${{ if eq(parameters.agentOs, 'Windows_NT') }}:
+    env:
+      scriptExtension: cmd
+      pathSeparatorChar: \
+      ${{ insert }}: ${{ parameters.env }}
+    name: ${{ parameters.name }}
+  ${{ if not(eq(parameters.agentOs, 'Windows_NT')) }}:
+    env:
+      scriptExtension: sh
+      pathSeparatorChar: /
+      ${{ insert }}: ${{ parameters.variables }}
