@@ -4,7 +4,7 @@ phases:
   - script: echo foo
 - template: /eng/build.yml
   parameters:
-   _agentOs: Windows_NT
+    agentOs: Windows_NT
     buildReason: Manual
     queueName: Hosted VS2017
     matrix:
