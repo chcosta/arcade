@@ -46,21 +46,20 @@ phases:
                 azureSubscription: 'DotNet-Engineering-Services_KeyVault'
                 KeyVaultName: EngKeyVault
                 SecretsFilter: 'dotnetfeed-storage-access-key-1'
-            - script: |
-              $(engCommonDirectory)cibuild.$(scriptExtension)
-              -configuration $(buildConfig) 
-              -prepareMachine $(BuildReasonArgs)
-              /p:PB_PublishBlobFeedKey=$(dotnetfeed-storage-access-key-1)
-              /p:PB_PublishBlobFeedUrl=$(_PublishBlobFeedUrl)
-              /p:PB_PublishType=$(publishType)
-              /p:SignType=$(_SignType)
-            name: Build_Publish
-            displayName: Build / Publish
-            env:
-              OfficialBuildId: $(BUILD.BUILDNUMBER)
-              engCommonDirectory: $(engCommonDirectory)
-              scriptExtension: $(scriptExtension)
-              BuildReasonArgs: $(BuildReasonArgs)
+            - script: $(engCommonDirectory)cibuild.$(scriptExtension) 
+                -configuration $(buildConfig) 
+                -prepareMachine $(BuildReasonArgs) 
+                /p:PB_PublishBlobFeedKey=$(dotnetfeed-storage-access-key-1) 
+                /p:PB_PublishBlobFeedUrl=$(_PublishBlobFeedUrl) 
+                /p:PB_PublishType=$(publishType) 
+                /p:SignType=$(_SignType)
+              name: Build_Publish
+              displayName: Build / Publish
+              env:
+                OfficialBuildId: $(BUILD.BUILDNUMBER)
+                engCommonDirectory: $(engCommonDirectory)
+                scriptExtension: $(scriptExtension)
+                BuildReasonArgs: $(BuildReasonArgs)
       - template: /eng/common/templates/steps/reasoned.yml
         parameters:
           buildReason: ${{ parameters.buildReason }}
