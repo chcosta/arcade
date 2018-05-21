@@ -3,6 +3,8 @@ phases:
   parameters:
     agentOs: Windows_NT
     queueName: Hosted VS2017
+    demands:
+      - agent.os -equals Windows_NT
     matrix:
       Build_Debug:
         buildConfig: Debug
@@ -15,6 +17,8 @@ phases:
   parameters:
     agentOs: Linux
     queueName: DotNetCore-Linux
+    demands:
+      - agent.os -equals Linux
     dockerImage: microsoft/dotnet-buildtools-prereqs:ubuntu-14.04-cross-0cd4667-20170319080304
     matrix:
       Build_Debug:
