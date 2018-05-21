@@ -25,6 +25,8 @@ phases:
   parameters:
     agentOs: ${{ parameters.agentOs }}
     phaseName: ${{ parameters.agentOs }}
+    containerName: ${{ parameters.containerName }}
+    enableTelemetry: true
     phase:
       variables: 
         _PublishBlobFeedUrl: https://dotnetfeed.blob.core.windows.net/dotnet-tools-internal/index.json
@@ -34,7 +36,7 @@ phases:
         HelixSource: official/dotnet/arcade/$(Build.SourceBranch)
         HelixType: build/product
         containerName: ${{ parameters.containerName }}
-        enableTelemetry: true
+        _agentOs: ${{ parameters.agentOs }}
       queue:
         name: ${{ parameters.queueName }}
         matrix: ${{ parameters.matrix }}
@@ -85,7 +87,7 @@ phases:
               displayName: Publish Logs to VSTS
               inputs:
                 PathtoPublish: '$(Build.StagingDirectory)/BuildLogs'
-                ArtifactName: ${{ parameters.agentOs }}_$(Agent.JobName)
+                ArtifactName: $(_agentOs)_$(Agent.JobName)
                 PublishLocation: Container
               continueOnError: true
               condition: succeededOrFailed()

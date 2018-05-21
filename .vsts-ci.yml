@@ -10,7 +10,7 @@ phases:
 - template: /eng/build.yml
   parameters:
     agentOs: Windows_NT
-    buildReason: Manual
+    buildReason: PullRequest
     queueName: Hosted VS2017
     matrix:
       Build_Debug:
@@ -23,7 +23,7 @@ phases:
 - template: /eng/build.yml
   parameters:
     agentOs: Linux
-    buildReason: Manual
+    buildReason: PullRequest
     queueName: DotNetCore-Linux
     containerName: ubuntu1404cross
     matrix:
