@@ -18,6 +18,7 @@ parameters:
       buildConfig: Release
       publishType: none
   queueName: ''
+  containerName: ''
 
 phases:
 - template: /eng/common/templates/phase/base.yml
