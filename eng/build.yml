@@ -74,21 +74,21 @@ phases:
                 env:
                   OfficialBuildId: $(BUILD.BUILDNUMBER)
             - task: CopyFiles@2
-            displayName: Gather Logs
-            inputs:
-              SourceFolder: '$(Build.SourcesDirectory)/artifacts'
-              Contents: '**/*log'
-              TargetFolder: '$(Build.StagingDirectory)/BuildLogs'
-            continueOnError: true
-            condition: succeededOrFailed()
-          - task: PublishBuildArtifacts@1
-            displayName: Publish Logs to VSTS
-            inputs:
-              PathtoPublish: '$(Build.StagingDirectory)/BuildLogs'
-              ArtifactName: ${{ parameters.agentOs }}_$(Agent.JobName)
-              PublishLocation: Container
-            continueOnError: true
-            condition: succeededOrFailed()
+              displayName: Gather Logs
+              inputs:
+                SourceFolder: '$(Build.SourcesDirectory)/artifacts'
+                Contents: '**/*log'
+                TargetFolder: '$(Build.StagingDirectory)/BuildLogs'
+              continueOnError: true
+              condition: succeededOrFailed()
+            - task: PublishBuildArtifacts@1
+              displayName: Publish Logs to VSTS
+              inputs:
+                PathtoPublish: '$(Build.StagingDirectory)/BuildLogs'
+                ArtifactName: ${{ parameters.agentOs }}_$(Agent.JobName)
+                PublishLocation: Container
+              continueOnError: true
+              condition: succeededOrFailed()
       - template: /eng/common/templates/steps/steps-reasoned.yml
         parameters:
           buildReason: ${{ parameters.buildReason }}
