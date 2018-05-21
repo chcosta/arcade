@@ -7,6 +7,12 @@ parameters:
 
 steps:
 - script: ${{ parameters.script }}
+  name: $${{ parameters.name }}
+  ${{ if eq(parameters.displayName, '') }}:
+    displayName: ${{ parameters.name }}
+  ${{ if ne(parameters.displayName, '') }}:
+    displayName: ${{ parameters.displayName }}
+    
   ${{ if eq(parameters.agentOs, 'Windows_NT') }}:
     env:
       scriptExtension: cmd
