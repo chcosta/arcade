@@ -7,7 +7,7 @@ phases:
 - phase: ${{ parameters.phaseName }}
   ${{ if eq(parameters.phase.variables['containerName'], '') }}:
     queue: ${{ parameters.phase.queue }}
-  ${{ if eq(parameters.phase.variables['containerName'], '') }}:
+  ${{ if ne(parameters.phase.variables['containerName'], '') }}:
     queue:
       container: ${{ parameters.phase.variables['containerName'] }}    
       ${{ insert }}: ${{ parameters.phase.queue }}
