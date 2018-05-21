@@ -32,7 +32,7 @@ phases:
         _TeamName: DotNetCore
         HelixSource: official/dotnet/arcade/$(Build.SourceBranch)
         HelixType: build/product
-        _PREVIEW_VSTS_DOCKER_IMAGE: ${{ parameters.dockerImage }}
+        containerName: ${{ parameters.containerName }}
         enableTelemetry: true
       queue:
         name: ${{ parameters.queueName }}
@@ -48,7 +48,7 @@ phases:
                 azureSubscription: 'DotNet-Engineering-Services_KeyVault'
                 KeyVaultName: EngKeyVault
                 SecretsFilter: 'dotnetfeed-storage-access-key-1'
-            - template: /eng/common/templates/steps/script-os-variables.yml
+            - template: /eng/common/templates/steps/script-extension.yml
               parameters:
                 script: eng/common/cibuild.$(scriptExtension) 
                     -configuration $(buildConfig) 
@@ -66,7 +66,7 @@ phases:
           buildReason: ${{ parameters.buildReason }}
           conditionReasons: not Manual,Scheduled
           steps:
-            - template: /eng/common/templates/steps/script-os-variables.yml
+            - template: /eng/common/templates/steps/script-extension.yml
               parameters:
                 script: eng/common/cibuild.$(scriptExtension) -configuration $(buildConfig) -prepareMachine $(BuildReasonArgs)
                 name: Build_Publish

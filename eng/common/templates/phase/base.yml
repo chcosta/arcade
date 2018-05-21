@@ -5,7 +5,12 @@ parameters:
 
 phases:
 - phase: ${{ parameters.phaseName }}
-  queue: ${{ parameters.phase.queue }}
+  ${{ if eq(parameters.phase.variables['containerName'], '') }}
+    queue: ${{ parameters.phase.queue }}
+  ${{ if eq(parameters.phase.variables['containerName'], '') }}
+    queue:
+      container: ${{ parameters.phase.variables['containerName'] }}    
+      ${{ insert }}: ${{ parameters.phase.queue }}
   variables: ${{ parameters.phase.variables }}
   steps:
   - checkout: self

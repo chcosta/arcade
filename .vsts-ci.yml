@@ -1,3 +1,8 @@
+resources:
+  containers:
+  - container: ubuntu1404cross
+    image: microsoft/dotnet-buildtools-prereqs:ubuntu-14.04-cross-0cd4667-20170319080304
+
 phases:
 - phase: foo
   steps:
@@ -19,8 +24,8 @@ phases:
   parameters:
     agentOs: Linux
     buildReason: Manual
-    queueName: Hosted VS2017
-#    dockerImage: microsoft/dotnet-buildtools-prereqs:ubuntu-14.04-cross-0cd4667-20170319080304
+    queueName: DotNetCore-Linux
+    containerName: ubuntu1404cross
     matrix:
       Build_Debug:
         buildConfig: Debug
