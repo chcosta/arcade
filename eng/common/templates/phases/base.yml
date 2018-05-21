@@ -37,6 +37,6 @@ phases:
           agentOs: Windows_NT
         ${{ notIn(parameters.phase.queue.demands, 'agent.os -equals Windows_NT') }}:
           agentOs: Linux
-        - ${{ parameters.phase.steps }}
+        steps: ${{ parameters.phase.steps }}
   - ${{ if not(eq(parameters.enableTelemetry, 'true')) }}:
     - ${{ parameters.phase.steps }}
