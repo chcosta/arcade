@@ -16,14 +16,14 @@ parameters:
       buildConfig: Release
       publishType: none
   queueName: ''
-  containerName: ''
+  imageName: ''
 
 phases:
 - template: /eng/common/templates/phase/base.yml
   parameters:
     agentOs: ${{ parameters.agentOs }}
     phaseName: ${{ parameters.agentOs }}
-    containerName: ${{ parameters.containerName }}
+    imageName: ${{ parameters.imageName }}
     enableTelemetry: true
     phase:
       variables: 
@@ -33,7 +33,6 @@ phases:
         _TeamName: DotNetCore
         HelixSource: official/dotnet/arcade/$(Build.SourceBranch)
         HelixType: build/product
-        containerName: ${{ parameters.containerName }}
         _agentOs: ${{ parameters.agentOs }}
       queue:
         name: ${{ parameters.queueName }}

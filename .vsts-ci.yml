@@ -1,8 +1,3 @@
-resources:
-  containers:
-  - container: ubuntu1404cross
-    image: microsoft/dotnet-buildtools-prereqs:ubuntu-14.04-cross-0cd4667-20170319080304
-
 phases:
 - phase: foo
   steps:
@@ -25,7 +20,7 @@ phases:
     agentOs: Linux
     buildReason: PullRequest
     queueName: DotNetCore-Linux
-    containerName: ubuntu1404cross
+    imageName: microsoft/dotnet-buildtools-prereqs:ubuntu-14.04-cross-0cd4667-20170319080304
     matrix:
       Build_Debug:
         buildConfig: Debug
