@@ -5,7 +5,6 @@ parameters:
   displayName: ''
   env: ''
 
-steps:
 - script: ${{ parameters.script }}
   name: ${{ parameters.name }}
   ${{ if eq(parameters.displayName, '') }}:
@@ -17,7 +16,7 @@ steps:
     env:
       scriptExtension: cmd
       ${{ insert }}: ${{ parameters.env }}
-  ${{ if not(eq(parameters.agentOs, 'Windows_NT')) }}:
+  ${{ if ne(parameters.agentOs, 'Windows_NT') }}:
     env:
       scriptExtension: sh
-      ${{ insert }}: ${{ parameters.variables }}
+      ${{ insert }}: ${{ parameters.env }}
