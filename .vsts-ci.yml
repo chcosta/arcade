@@ -30,6 +30,10 @@
 phases:
 - phase: foo
   steps:
+  - template: foo.yml
+  parameters:
+    steps:
+    - script: echo step 0
   - script: echo step 1
   - template: foo.yml
     parameters:
