@@ -39,59 +39,75 @@ phases:
         name: ${{ parameters.queueName }}
         matrix: ${{ parameters.matrix }}
       steps:
-      - template: /eng/common/templates/steps/steps-reasoned.yml
+      - template: /eng/common/templates/steps/steps-ordered.yml
         parameters:
-          buildReason: ${{ parameters.buildReason }}
-          conditionReasons: Manual,Scheduled
-          steps:
-            - task: AzureKeyVault@1
-              inputs:
-                azureSubscription: 'DotNet-Engineering-Services_KeyVault'
-                KeyVaultName: EngKeyVault
-                SecretsFilter: 'dotnetfeed-storage-access-key-1'
-            - script: eng/common/cibuild.$(scriptExtension) 
-                  -configuration $(buildConfig) 
-                  -prepareMachine
-                  /p:PB_PublishBlobFeedKey=$(dotnetfeed-storage-access-key-1) 
-                  /p:PB_PublishBlobFeedUrl=$(_PublishBlobFeedUrl) 
-                  /p:PB_PublishType=$(publishType) 
-                  /p:SignType=$(_SignType)
-              name: Build_Publish
-              displayName: Build / Publish
-              env:
-                OfficialBuildId: $(BUILD.BUILDNUMBER)
+          build:
+          - template: /eng/common/templates/steps/steps-reasoned.yml
+            parameters:
+              buildReason: ${{ parameters.buildReason }}
+              conditionReasons: Manual,Scheduled
+              steps:
+                - task: AzureKeyVault@1
+                  inputs:
+                    azureSubscription: 'DotNet-Engineering-Services_KeyVault'
+                    KeyVaultName: EngKeyVault
+                    SecretsFilter: 'dotnetfeed-storage-access-key-1'
                 ${{ if eq(parameters.agentOs, 'Windows_NT') }}:
-                  scriptExtension: cmd
+                  - script: eng\common\cibuild.cmd
+                      -configuration $(buildConfig) 
+                      -prepareMachine
+                      /p:PB_PublishBlobFeedKey=$(dotnetfeed-storage-access-key-1) 
+                      /p:PB_PublishBlobFeedUrl=$(_PublishBlobFeedUrl) 
+                      /p:PB_PublishType=$(publishType) 
+                      /p:SignType=$(_SignType)
+                    name: Build_Publish
+                    displayName: Build / Publish
+                    env:
+                      OfficialBuildId: $(BUILD.BUILDNUMBER)
                 ${{ if ne(parameters.agentOs, 'Windows_NT') }}:
-                  scriptExtension: sh
+                  - script: eng/common/cibuild.sh
+                      -configuration $(buildConfig) 
+                      -prepareMachine
+                      /p:PB_PublishBlobFeedKey=$(dotnetfeed-storage-access-key-1) 
+                      /p:PB_PublishBlobFeedUrl=$(_PublishBlobFeedUrl) 
+                      /p:PB_PublishType=$(publishType) 
+                      /p:SignType=$(_SignType)
+                    name: Build_Publish
+                    displayName: Build / Publish
+                    env:
+                      OfficialBuildId: $(BUILD.BUILDNUMBER)
                       
-      - template: /eng/common/templates/steps/steps-reasoned.yml
-        parameters:
-          buildReason: ${{ parameters.buildReason }}
-          conditionReasons: not Manual,Scheduled
-          steps:
-          - script: eng/common/cibuild.$(scriptExtension) -configuration $(buildConfig) -prepareMachine
-            name: Build_Publish
-            displayName: Build / Publish
-            env:
-              OfficialBuildId: $(BUILD.BUILDNUMBER)
-              ${{ if eq(parameters.agentOs, 'Windows_NT') }}:
-                scriptExtension: cmd
-              ${{ if ne(parameters.agentOs, 'Windows_NT') }}:
-                scriptExtension: sh
-      - task: CopyFiles@2
-        displayName: Gather Logs
-        inputs:
-          SourceFolder: '$(Build.SourcesDirectory)/artifacts'
-          Contents: '**/*log'
-          TargetFolder: '$(Build.StagingDirectory)/BuildLogs'
-        continueOnError: true
-        condition: succeededOrFailed()
-      - task: PublishBuildArtifacts@1
-        displayName: Publish Logs to VSTS
-        inputs:
-          PathtoPublish: '$(Build.StagingDirectory)/BuildLogs'
-          ArtifactName: ${{ parameters.agentOs }}_$(Agent.JobName)
-          PublishLocation: Container
-        continueOnError: true
-        condition: succeededOrFailed()
+          - template: /eng/common/templates/steps/steps-reasoned.yml
+            parameters:
+              buildReason: ${{ parameters.buildReason }}
+              conditionReasons: not Manual,Scheduled
+              steps:
+                ${{ if eq(parameters.agentOs, 'Windows_NT') }}:
+                  - script: eng\common\cibuild.cmd -configuration $(buildConfig) -prepareMachine
+                    name: Build_Publish
+                    displayName: Build / Publish
+                    env:
+                      OfficialBuildId: $(BUILD.BUILDNUMBER)
+                ${{ if ne(parameters.agentOs, 'Windows_NT') }}:
+                  - script: eng/common/cibuild.sh -configuration $(buildConfig) -prepareMachine
+                    name: Build_Publish
+                    displayName: Build / Publish
+                    env:
+                      OfficialBuildId: $(BUILD.BUILDNUMBER)
+          postBuild:
+          - task: CopyFiles@2
+            displayName: Gather Logs
+            inputs:
+              SourceFolder: '$(Build.SourcesDirectory)/artifacts'
+              Contents: '**/*log'
+              TargetFolder: '$(Build.StagingDirectory)/BuildLogs'
+            continueOnError: true
+            condition: succeededOrFailed()
+          - task: PublishBuildArtifacts@1
+            displayName: Publish Logs to VSTS
+            inputs:
+              PathtoPublish: '$(Build.StagingDirectory)/BuildLogs'
+              ArtifactName: ${{ parameters.agentOs }}_$(Agent.JobName)
+              PublishLocation: Container
+            continueOnError: true
+            condition: succeededOrFailed()
