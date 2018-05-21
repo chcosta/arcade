@@ -63,8 +63,8 @@ phases:
                   OfficialBuildId: $(BUILD.BUILDNUMBER)
             - ${{ if ne(parameters.agentOs, 'Windows_NT') }}:
               - script: eng/common/cibuild.sh
-                  -configuration $(buildConfig) 
-                  -prepareMachine
+                  --configuration $(buildConfig) 
+                  --prepareMachine
                   /p:PB_PublishBlobFeedKey=$(dotnetfeed-storage-access-key-1) 
                   /p:PB_PublishBlobFeedUrl=$(_PublishBlobFeedUrl) 
                   /p:PB_PublishType=$(publishType) 
@@ -101,24 +101,8 @@ phases:
                 env:
                   OfficialBuildId: $(BUILD.BUILDNUMBER)
             - ${{ if ne(parameters.agentOs, 'Windows_NT') }}:
-              - script: eng/common/cibuild.sh -configuration $(buildConfig) -prepareMachine
+              - script: eng/common/cibuild.sh --configuration $(buildConfig) --prepareMachine
                 name: Build_Publish
                 displayName: Build / Publish
                 env:
                   OfficialBuildId: $(BUILD.BUILDNUMBER)
-            - task: CopyFiles@2
-              displayName: Gather Logs
-              inputs:
-                SourceFolder: '$(Build.SourcesDirectory)/artifacts'
-                Contents: '**/*log'
-                TargetFolder: '$(Build.StagingDirectory)/BuildLogs'
-              continueOnError: true
-              condition: succeededOrFailed()
-            - task: PublishBuildArtifacts@1
-              displayName: Publish Logs to VSTS
-              inputs:
-                PathtoPublish: '$(Build.StagingDirectory)/BuildLogs'
-                ArtifactName: ${{ parameters.agentOs }}_$(Agent.JobName)
-                PublishLocation: Container
-              continueOnError: true
-              condition: succeededOrFailed()
