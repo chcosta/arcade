@@ -52,7 +52,7 @@ phases:
                     azureSubscription: 'DotNet-Engineering-Services_KeyVault'
                     KeyVaultName: EngKeyVault
                     SecretsFilter: 'dotnetfeed-storage-access-key-1'
-                ${{ if eq(parameters.agentOs, 'Windows_NT') }}:
+                - ${{ if eq(parameters.agentOs, 'Windows_NT') }}:
                   - script: eng\common\cibuild.cmd
                       -configuration $(buildConfig) 
                       -prepareMachine
@@ -64,7 +64,7 @@ phases:
                     displayName: Build / Publish
                     env:
                       OfficialBuildId: $(BUILD.BUILDNUMBER)
-                ${{ if ne(parameters.agentOs, 'Windows_NT') }}:
+                - ${{ if ne(parameters.agentOs, 'Windows_NT') }}:
                   - script: eng/common/cibuild.sh
                       -configuration $(buildConfig) 
                       -prepareMachine
@@ -82,13 +82,13 @@ phases:
               buildReason: ${{ parameters.buildReason }}
               conditionReasons: not Manual,Scheduled
               steps:
-                ${{ if eq(parameters.agentOs, 'Windows_NT') }}:
+                - ${{ if eq(parameters.agentOs, 'Windows_NT') }}:
                   - script: eng\common\cibuild.cmd -configuration $(buildConfig) -prepareMachine
                     name: Build_Publish
                     displayName: Build / Publish
                     env:
                       OfficialBuildId: $(BUILD.BUILDNUMBER)
-                ${{ if ne(parameters.agentOs, 'Windows_NT') }}:
+                - ${{ if ne(parameters.agentOs, 'Windows_NT') }}:
                   - script: eng/common/cibuild.sh -configuration $(buildConfig) -prepareMachine
                     name: Build_Publish
                     displayName: Build / Publish
