@@ -13,6 +13,8 @@ parameters:
   enableTelemetry: ''
   phaseName: ''
   phase: {}
+  demands:
+    - agent.os -equals Window_NT
 
 phases:
 - phase: ${{ parameters.phaseName }}
@@ -30,9 +32,9 @@ phases:
   - ${{ if eq(parameters.enableTelemetry, 'true') }}:
     - template: /eng/common/templates/steps/telemetry.yml
       parameters:
-        ${{ in(phase.queue.demands, 'agent.os -equals Windows_NT') }}:
+        ${{ in(parameters.phase.queue.demands, 'agent.os -equals Windows_NT') }}:
           agentOs: Windows_NT
-        ${{ notIn(phase.queue.demands, 'agent.os -equals Windows_NT') }}:
+        ${{ notIn(parameters.phase.queue.demands, 'agent.os -equals Windows_NT') }}:
           agentOs: Linux
         steps: ${{ parameters.phase.steps }}
   - ${{ if not(eq(parameters.enableTelemetry, 'true')) }}:
