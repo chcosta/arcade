@@ -1,9 +1,0 @@
-parameters:
-  preBuild: []
-  build: []
-  postBuild: []
-
-steps:
-  - ${{ parameters.preBuild }}
-  - ${{ parameters.build }}
-  - ${{ parameters.postBuild}}

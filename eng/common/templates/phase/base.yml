@@ -11,7 +11,7 @@ phases:
     queue: ${{ parameters.phase.queue }}
   ${{ if ne(parameters.containerName, '') }}:
     queue:
-      container: ${{ parameters.phase.variables['containerName'] }}    
+      container: ${{ parameters.containerName }}    
       ${{ insert }}: ${{ parameters.phase.queue }}
   variables: ${{ parameters.phase.variables }}
   steps:
