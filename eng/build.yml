@@ -49,31 +49,36 @@ phases:
                 azureSubscription: 'DotNet-Engineering-Services_KeyVault'
                 KeyVaultName: EngKeyVault
                 SecretsFilter: 'dotnetfeed-storage-access-key-1'
-            - template: /eng/common/templates/steps/script-extension.yml
-              parameters:
-                script: eng/common/cibuild.$(scriptExtension) 
-                    -configuration $(buildConfig) 
-                    -prepareMachine
-                    /p:PB_PublishBlobFeedKey=$(dotnetfeed-storage-access-key-1) 
-                    /p:PB_PublishBlobFeedUrl=$(_PublishBlobFeedUrl) 
-                    /p:PB_PublishType=$(publishType) 
-                    /p:SignType=$(_SignType)
-                name: Build_Publish
-                displayName: Build / Publish
-                env:
-                  OfficialBuildId: $(BUILD.BUILDNUMBER)
+            - script: eng/common/cibuild.$(scriptExtension) 
+                  -configuration $(buildConfig) 
+                  -prepareMachine
+                  /p:PB_PublishBlobFeedKey=$(dotnetfeed-storage-access-key-1) 
+                  /p:PB_PublishBlobFeedUrl=$(_PublishBlobFeedUrl) 
+                  /p:PB_PublishType=$(publishType) 
+                  /p:SignType=$(_SignType)
+              name: Build_Publish
+              displayName: Build / Publish
+              env:
+                OfficialBuildId: $(BUILD.BUILDNUMBER)
+                ${{ if eq(parameters.agentOs, 'Windows_NT') }}:
+                  scriptExtension: cmd
+                ${{ if ne(parameters.agentOs, 'Windows_NT') }}:
+                  scriptExtension: sh
+                      
       - template: /eng/common/templates/steps/steps-reasoned.yml
         parameters:
           buildReason: ${{ parameters.buildReason }}
           conditionReasons: not Manual,Scheduled
           steps:
-            - template: /eng/common/templates/steps/script-extension.yml
-              parameters:
-                script: eng/common/cibuild.$(scriptExtension) -configuration $(buildConfig) -prepareMachine
-                name: Build_Publish
-                displayName: Build / Publish
-                env:
-                  OfficialBuildId: $(BUILD.BUILDNUMBER)
+          - script: eng/common/cibuild.$(scriptExtension) -configuration $(buildConfig) -prepareMachine
+            name: Build_Publish
+            displayName: Build / Publish
+            env:
+              OfficialBuildId: $(BUILD.BUILDNUMBER)
+              ${{ if eq(parameters.agentOs, 'Windows_NT') }}:
+                scriptExtension: cmd
+              ${{ if ne(parameters.agentOs, 'Windows_NT') }}:
+                scriptExtension: sh
       - task: CopyFiles@2
         displayName: Gather Logs
         inputs:
