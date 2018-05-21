@@ -73,14 +73,14 @@ phases:
           condition: and(succeeded(), or( eq(variables.Build.Reason, 'Manual'), eq(variables.Build.Reason, 'Scheduled')))
       - ${{ if eq(parameters.agentOs, 'Windows_NT') }}:
         - script: eng\common\cibuild.cmd -configuration $(buildConfig) -prepareMachine
-          name: Build_Publish
+          name: Build_Publish_CI
           displayName: Build / Publish
           env:
             OfficialBuildId: $(BUILD.BUILDNUMBER)
           condition: and(succeededOrFailed(), and( ne(variables.Build.Reason, 'Manual'), ne(variables.Build.Reason, 'Scheduled')))
       - ${{ if ne(parameters.agentOs, 'Windows_NT') }}:
         - script: eng/common/cibuild.sh --configuration $(buildConfig) --prepareMachine
-          name: Build_Publish
+          name: Build_Publish_CI
           displayName: Build / Publish
           env:
             OfficialBuildId: $(BUILD.BUILDNUMBER)
