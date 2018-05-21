@@ -4,16 +4,16 @@ parameters:
   steps: []
 
 steps:
-- task: AzureKeyVault@1
-  inputs:
-    azureSubscription: 'HelixProd_KeyVault'
-    KeyVaultName: HelixProdKV
-    SecretsFilter: 'HelixApiAccessToken'
-  condition: or( eq(variables.Build.Reason, 'Manual'), eq(variables.Build.Reason, 'Scheduled'))
 - template: /eng/common/templates/steps/steps-unix.yml
   parameters:
     agentOs: ${{ parameters.agentOs }}
     steps:
+      - task: AzureKeyVault@1
+        inputs:
+          azureSubscription: 'HelixProd_KeyVault'
+          KeyVaultName: HelixProdKV
+          SecretsFilter: 'HelixApiAccessToken'
+        condition: or( eq(variables.Build.Reason, 'Manual'), eq(variables.Build.Reason, 'Scheduled'))
       - bash: |
           /bin/bash ./telemetry/start-job.sh --source "$Source" --type "$Type" --build "$Build" --queue-id "$QueueId" --attempt "$Attempt" -p "operatingSystem=$OperatingSystem" -p "configuration=$Configuration"
         workingDirectory: $(Build.SourcesDirectory)/eng/common
@@ -36,10 +36,28 @@ steps:
           BuildUri: https://devdiv.visualstudio.com/DevDiv/_build/index?buildId=$(Build.BuildId)&_a=summary
           Helix_JobToken: $(Helix_JobToken)
         condition: or( eq(variables.Build.Reason, 'Manual'), eq(variables.Build.Reason, 'Scheduled'))
+
+      - ${{ parameters.steps }}
+
+      - bash: |
+          /bin/bash ./telemetry/build/end.sh
+        workingDirectory: $(Build.SourcesDirectory)/eng/common
+        displayName: Send Build End Telemetry
+        env:
+          Helix_JobToken: $(Helix_JobToken)
+          Helix_WorkItemId: $(Helix_WorkItemId)
+        condition: or( eq(variables.Build.Reason, 'Manual'), eq(variables.Build.Reason, 'Scheduled'))
+
 - template: /eng/common/templates/steps/steps-windows.yml
   parameters:
     agentOs: ${{ parameters.agentOs }}
     steps:
+      - task: AzureKeyVault@1
+        inputs:
+          azureSubscription: 'HelixProd_KeyVault'
+          KeyVaultName: HelixProdKV
+          SecretsFilter: 'HelixApiAccessToken'
+        condition: or( eq(variables.Build.Reason, 'Manual'), eq(variables.Build.Reason, 'Scheduled'))
       - powershell: |
           ./telemetry/start-job.ps1 -Source $env:Source -Type $env:Type -Build $env:Build -QueueId $env:QueueId -Attempt $env:Attempt -Properties @{ operatingSystem=$env:OperatingSystem; configuration=$env:Configuration } -Verbose
           if ($LASTEXITCODE -ne 0) {
@@ -68,31 +86,14 @@ steps:
           BuildUri: https://devdiv.visualstudio.com/DevDiv/_build/index?buildId=$(Build.BuildId)&_a=summary
           Helix_JobToken: $(Helix_JobToken)
         condition: or( eq(variables.Build.Reason, 'Manual'), eq(variables.Build.Reason, 'Scheduled'))
-
-- ${{ parameters.steps }}
-
-- template: /eng/common/templates/steps/steps-unix.yml
-  parameters:
-    agentOs: ${{ parameters.agentOs }}
-    steps:
-      - bash: |
-          /bin/bash ./telemetry/build/end.sh
-        workingDirectory: $(Build.SourcesDirectory)/eng/common
-        displayName: Send Build End Telemetry
-        env:
-          Helix_JobToken: $(Helix_JobToken)
-          Helix_WorkItemId: $(Helix_WorkItemId)
-        condition: or( eq(variables.Build.Reason, 'Manual'), eq(variables.Build.Reason, 'Scheduled'))
-
-- template: /eng/common/templates/steps/steps-windows.yml
-  parameters:
-    agentOs: ${{ parameters.agentOs }}
-    steps:
+      
+      - ${{ parameters.steps }}
+      
       - powershell: |
-          ./telemetry/build/end.ps1
-          if ($LASTEXITCODE -ne 0) {
-            exit $LASTEXITCODE
-          }
+        ./telemetry/build/end.ps1
+        if ($LASTEXITCODE -ne 0) {
+          exit $LASTEXITCODE
+        }
         workingDirectory: $(Build.SourcesDirectory)/eng/common
         displayName: Send Build End Telemetry
         env:
