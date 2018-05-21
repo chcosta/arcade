@@ -2,4 +2,4 @@ parameters:
   steps: []
 
 steps:
-  - ${{ parameters: steps }}
+  - ${{ parameters.steps }}
