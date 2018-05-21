@@ -8,8 +8,6 @@ steps:
   parameters:
     agentOs: ${{ parameters.agentOs }}
     steps:
-      - script: echo BuildReason - $(Build_Reason) - $(Build.Reason)
-        name: buildreason
       - task: AzureKeyVault@1
         inputs:
           azureSubscription: 'HelixProd_KeyVault'
@@ -29,7 +27,7 @@ steps:
           Attempt: 1
           OperatingSystem: $(Agent.OS)
           Configuration: $(_BuildConfig)
-        condition: or( eq(variables.Build.Reason, 'Manual'), eq(variables.Build.Reason, 'Scheduled'))
+        condition: and(succeededorfailed(), in(variables['Build.Reason'], 'Manual', 'Scheduled'))
       - bash: |
           /bin/bash ./telemetry/build/start.sh --build-uri "$BuildUri"
         workingDirectory: $(Build.SourcesDirectory)/eng/common
