@@ -22,7 +22,7 @@ parameters:
   demands: []
 
 phases:
-  phase: foo
+- phase: foo
     steps:
     - script: echo foo
 - template: /eng/common/templates/phases/base.yml
