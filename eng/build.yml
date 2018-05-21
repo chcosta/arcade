@@ -1,10 +1,11 @@
 # build.yml
 # Description: Defines the build phase
 # Parameters:
-#   agentOs: [Windows_NT, Linux, OSX] Used in templates to define variables which are OS specific
+#   agentOs: [Windows_NT (default), Linux, OSX] Used in templates to define variables which are OS specific
 #   dockerImage: If defined, specifies docker image to run build steps in
 #   matrix: build matrix
 #   queueName: agent pool name
+#   enableTelemetry: send telemetry if build is not a PR or CI build
 
 parameters:
   agentOs: Windows_NT
@@ -16,15 +17,16 @@ parameters:
       buildConfig: Release
       publishType: none
   queueName: ''
-  imageName: ''
+  dockerImage: ''
+  enableTelemetry: true
 
 phases:
 - template: /eng/common/templates/phase/base.yml
   parameters:
     agentOs: ${{ parameters.agentOs }}
     phaseName: ${{ parameters.agentOs }}
-    imageName: ${{ parameters.imageName }}
-    enableTelemetry: true
+    dockerImage: ${{ parameters.dockerImage }}
+    enableTelemetry: ${{ parameters.enableTelemetry }}
     phase:
       variables: 
         _PublishBlobFeedUrl: https://dotnetfeed.blob.core.windows.net/dotnet-tools-internal/index.json
@@ -84,7 +86,6 @@ phases:
           env:
             OfficialBuildId: $(BUILD.BUILDNUMBER)
           condition: and(succeededOrFailed(), and( ne(variables.Build.Reason, 'Manual'), ne(variables.Build.Reason, 'Scheduled')))
-
       - task: CopyFiles@2
         displayName: Gather Logs
         inputs:
