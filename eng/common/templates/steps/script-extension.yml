@@ -17,7 +17,6 @@ steps:
     env:
       scriptExtension: cmd
       ${{ insert }}: ${{ parameters.env }}
-    name: ${{ parameters.name }}
   ${{ if not(eq(parameters.agentOs, 'Windows_NT')) }}:
     env:
       scriptExtension: sh
