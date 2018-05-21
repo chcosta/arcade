@@ -22,6 +22,9 @@ parameters:
   demands: []
 
 phases:
+  phase: foo
+    steps:
+    - script: echo foo
 - template: /eng/common/templates/phases/base.yml
   parameters:
     agentOs: ${{ parameters.agentOs }}
