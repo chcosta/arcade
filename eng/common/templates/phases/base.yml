@@ -38,6 +38,6 @@ phases:
           agentOs: Linux
         steps: 
           - script: echo ${{ parameters.phase.queue.demands }}
-          ${{ insert }}: ${{ parameters.phase.steps }}
+          - ${{ parameters.phase.steps }}
   - ${{ if not(eq(parameters.enableTelemetry, 'true')) }}:
     - ${{ parameters.phase.steps }}
