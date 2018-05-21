@@ -93,7 +93,7 @@ phases:
           Contents: '**/*log'
           TargetFolder: '$(Build.StagingDirectory)/BuildLogs'
         continueOnError: true
-        condition: and(succeededOrFailed())
+        condition: succeededOrFailed()
       - task: PublishBuildArtifacts@1
         displayName: Publish Logs to VSTS
         inputs:
@@ -101,5 +101,5 @@ phases:
           ArtifactName: $(_agentOs)_$(Agent.JobName)
           PublishLocation: Container
         continueOnError: true
-        condition: and(succeededOrFailed())
+        condition: succeededOrFailed()
           
