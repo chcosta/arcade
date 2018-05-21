@@ -29,6 +29,7 @@ phases:
   - checkout: self
     clean: true
     fetchDepth: 5
+  - script: echo ${{ parameters.phase.queue.demands }}
   - ${{ if eq(parameters.enableTelemetry, 'true') }}:
     - template: /eng/common/templates/steps/telemetry.yml
       parameters:
@@ -36,8 +37,6 @@ phases:
           agentOs: Windows_NT
         ${{ notIn(parameters.phase.queue.demands, 'agent.os -equals Windows_NT') }}:
           agentOs: Linux
-        steps: 
-          - script: echo ${{ parameters.phase.queue.demands }}
-          - ${{ parameters.phase.steps }}
+        - ${{ parameters.phase.steps }}
   - ${{ if not(eq(parameters.enableTelemetry, 'true')) }}:
     - ${{ parameters.phase.steps }}
