@@ -8,12 +8,14 @@ steps:
   parameters:
     agentOs: ${{ parameters.agentOs }}
     steps:
+      - script: echo BuildReason - $(Build_Reason) - $(Build.Reason)
+        name: buildreason
       - task: AzureKeyVault@1
         inputs:
           azureSubscription: 'HelixProd_KeyVault'
           KeyVaultName: HelixProdKV
           SecretsFilter: 'HelixApiAccessToken'
-        condition: or( eq(variables.Build.Reason, 'Manual'), eq(variables.Build.Reason, 'Scheduled'))
+        condition: and(succeededorfailed(), in(variables['Build.Reason'], 'Manual', 'Scheduled'))
       - bash: |
           /bin/bash ./telemetry/start-job.sh --source "$Source" --type "$Type" --build "$Build" --queue-id "$QueueId" --attempt "$Attempt" -p "operatingSystem=$OperatingSystem" -p "configuration=$Configuration"
         workingDirectory: $(Build.SourcesDirectory)/eng/common
@@ -35,7 +37,7 @@ steps:
         env:
           BuildUri: https://devdiv.visualstudio.com/DevDiv/_build/index?buildId=$(Build.BuildId)&_a=summary
           Helix_JobToken: $(Helix_JobToken)
-        condition: or( eq(variables.Build.Reason, 'Manual'), eq(variables.Build.Reason, 'Scheduled'))
+        condition: and(succeededorfailed(), in(variables['Build.Reason'], 'Manual', 'Scheduled'))
 
       - ${{ parameters.steps }}
 
@@ -46,8 +48,7 @@ steps:
         env:
           Helix_JobToken: $(Helix_JobToken)
           Helix_WorkItemId: $(Helix_WorkItemId)
-        condition: or( eq(variables.Build.Reason, 'Manual'), eq(variables.Build.Reason, 'Scheduled'))
-
+        condition: and(succeededorfailed(), in(variables['Build.Reason'], 'Manual', 'Scheduled'))
 - template: /eng/common/templates/steps/steps-windows.yml
   parameters:
     agentOs: ${{ parameters.agentOs }}
@@ -57,7 +58,7 @@ steps:
           azureSubscription: 'HelixProd_KeyVault'
           KeyVaultName: HelixProdKV
           SecretsFilter: 'HelixApiAccessToken'
-        condition: or( eq(variables.Build.Reason, 'Manual'), eq(variables.Build.Reason, 'Scheduled'))
+        condition: and(succeededorfailed(), in(variables['Build.Reason'], 'Manual', 'Scheduled'))
       - powershell: |
           ./telemetry/start-job.ps1 -Source $env:Source -Type $env:Type -Build $env:Build -QueueId $env:QueueId -Attempt $env:Attempt -Properties @{ operatingSystem=$env:OperatingSystem; configuration=$env:Configuration } -Verbose
           if ($LASTEXITCODE -ne 0) {
@@ -74,7 +75,7 @@ steps:
           Attempt: 1
           OperatingSystem: $(Agent.OS)
           Configuration: $(_BuildConfig)
-        condition: or( eq(variables.Build.Reason, 'Manual'), eq(variables.Build.Reason, 'Scheduled'))
+        condition: and(succeededorfailed(), in(variables['Build.Reason'], 'Manual', 'Scheduled'))
       - powershell: |
           ./telemetry/build/start.ps1 -BuildUri $env:BuildUri
           if ($LASTEXITCODE -ne 0) {
@@ -85,8 +86,8 @@ steps:
         env:
           BuildUri: https://devdiv.visualstudio.com/DevDiv/_build/index?buildId=$(Build.BuildId)&_a=summary
           Helix_JobToken: $(Helix_JobToken)
-        condition: or( eq(variables.Build.Reason, 'Manual'), eq(variables.Build.Reason, 'Scheduled'))
-      
+        condition: and(succeededorfailed(), in(variables['Build.Reason'], 'Manual', 'Scheduled'))
+
       - ${{ parameters.steps }}
       
       - powershell: |
@@ -99,4 +100,4 @@ steps:
         env:
           Helix_JobToken: $(Helix_JobToken)
           Helix_WorkItemId: $(Helix_WorkItemId)
-        condition: or( eq(variables.Build.Reason, 'Manual'), eq(variables.Build.Reason, 'Scheduled'))
+        condition: and(succeededorfailed(), in(variables['Build.Reason'], 'Manual', 'Scheduled'))
