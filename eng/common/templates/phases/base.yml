@@ -13,8 +13,6 @@ parameters:
   enableTelemetry: ''
   phaseName: ''
   phase: {}
-  demands:
-    - agent.os -equals Window_NT
 
 phases:
 - phase: ${{ parameters.phaseName }}
@@ -24,7 +22,6 @@ phases:
   ${{ if ne(parameters.dockerImage, '') }}:
     variables:
       _PREVIEW_VSTS_DOCKER_IMAGE: ${{ parameters.dockerImage }}
-      mydemands: ${{ parameters.phase.queue.demands }}
       ${{ insert }}: ${{ parameters.phase.variables }}
   steps:
   - checkout: self
@@ -36,7 +33,7 @@ phases:
       parameters:
         ${{ in(parameters.phase.queue.demands, 'agent.os -equals Windows_NT') }}:
           agentOs: Windows_NT
-        ${{ notIn(parameters.phase.queue.demands, 'agent.os -equals Windows_NT') }}:
+        ${{ not(in(parameters.phase.queue.demands, 'agent.os -equals Windows_NT')) }}:
           agentOs: Linux
         steps: ${{ parameters.phase.steps }}
   - ${{ if not(eq(parameters.enableTelemetry, 'true')) }}:
