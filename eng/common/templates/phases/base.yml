@@ -8,11 +8,13 @@
 #   phase: defined phase object
 
 parameters:
-  agentOs: Windows_NT
   dockerImage: ''
   enableTelemetry: ''
   phaseName: ''
-  phase: {}
+  phase:
+    queue:
+      demands:
+      - agent.os -equals Windows_NT
 
 phases:
 - phase: ${{ parameters.phaseName }}
@@ -34,6 +36,6 @@ phases:
           agentOs: Windows_NT
         ${{ if notIn(parameters.phase.queue.demands, 'agent.os -equals Windows_NT') }}:
           agentOs: Linux
-          steps: ${{ parameters.phase.steps }}
+        steps: ${{ parameters.phase.steps }}
   - ${{ if not(eq(parameters.enableTelemetry, 'true')) }}:
     - ${{ parameters.phase.steps }}

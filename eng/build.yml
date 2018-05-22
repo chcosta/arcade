@@ -19,6 +19,7 @@ parameters:
   queueName: ''
   dockerImage: ''
   enableTelemetry: true
+  demands: []
 
 phases:
 - template: /eng/common/templates/phases/base.yml
@@ -38,6 +39,7 @@ phases:
       queue:
         name: ${{ parameters.queueName }}
         matrix: ${{ parameters.matrix }}
+        demands: ${{ parameters.demands }}
       steps:
       - task: AzureKeyVault@1
         inputs:
