@@ -31,9 +31,9 @@ phases:
   - ${{ if eq(parameters.enableTelemetry, 'true') }}:
     - template: /eng/common/templates/steps/telemetry.yml
       parameters:
-        ${{ in(parameters.phase.queue.demands, 'agent.os -equals Windows_NT') }}:
+        ${{ if in(parameters.phase.queue.demands, 'agent.os -equals Windows_NT') }}:
           agentOs: Windows_NT
-        ${{ not(in(parameters.phase.queue.demands, 'agent.os -equals Windows_NT')) }}:
+        ${{ if notIn(parameters.phase.queue.demands, 'agent.os -equals Windows_NT') }}:
           agentOs: Linux
         steps: ${{ parameters.phase.steps }}
   - ${{ if not(eq(parameters.enableTelemetry, 'true')) }}:
