@@ -17,7 +17,7 @@ parameters:
       - agent.os -equals Windows_NT
 
 phases:
-- phase:
+- phase: ${{ parameters.phaseName }}
   queue: ${{ parameters.phase.queue }}
   ${{ if eq(parameters.dockerImage, '') }}:
     variables: ${{ parameters.phase.variables }}
