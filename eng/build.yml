@@ -41,6 +41,16 @@ phases:
         matrix: ${{ parameters.matrix }}
         demands: ${{ parameters.demands }}
       steps:
+      - task: ms-vseng.MicroBuildTasks.30666190-6959-11e5-9f96-f56098202fef.MicroBuildSigningPlugin@1
+        displayName: Install MicroBuild plugin
+        inputs:
+          signType: '$(_SignType)'
+          zipSources: false
+          esrpSigning: '$(_UseEsrpSigning)'
+        env:
+          TeamName: $(_TeamName)
+        continueOnError: false
+        condition: and(succeeded(), in(variables._SignType, 'real', 'test'), in(variables['Build.Reason'], 'Manual', 'Scheduled'))        
       - task: AzureKeyVault@1
         inputs:
           azureSubscription: 'DotNet-Engineering-Services_KeyVault'
@@ -74,7 +84,7 @@ phases:
             OfficialBuildId: $(BUILD.BUILDNUMBER)
           condition: and(succeeded(), in(variables['Build.Reason'], 'Manual', 'Scheduled'))
       - ${{ if eq(parameters.agentOs, 'Windows_NT') }}:
-        - script: eng\common\cibuild.cmd -configuration $(buildConfig) -prepareMachine /p:SignType=$(_SignType)
+        - script: eng\common\cibuild.cmd -configuration $(buildConfig) -prepareMachine /p:SignType=test
 
           name: Build_Publish_CI
           displayName: Build / Publish
@@ -82,7 +92,7 @@ phases:
             OfficialBuildId: $(BUILD.BUILDNUMBER)
             condition: and(succeeded(), notIn(variables['Build.Reason'], 'Manual', 'Scheduled'))
       - ${{ if ne(parameters.agentOs, 'Windows_NT') }}:
-        - script: eng/common/cibuild.sh --configuration $(buildConfig) --prepareMachine /p:SignType=$(_SignType)
+        - script: eng/common/cibuild.sh --configuration $(buildConfig) --prepareMachine /p:SignType=test
 
           name: Build_Publish_CI
           displayName: Build / Publish
