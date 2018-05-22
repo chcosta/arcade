@@ -8,14 +8,13 @@
 #   phase: defined phase object
 
 parameters:
-  agentOs: Windows_NT
   dockerImage: ''
   enableTelemetry: ''
   phaseName: ''
   phase: {}
 
 phases:
-- phase: ${{ parameters.phaseName }}
+- phase:
   queue: ${{ parameters.phase.queue }}
   ${{ if eq(parameters.dockerImage, '') }}:
     variables: ${{ parameters.phase.variables }}
