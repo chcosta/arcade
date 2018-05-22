@@ -11,7 +11,10 @@ parameters:
   dockerImage: ''
   enableTelemetry: ''
   phaseName: ''
-  phase: {}
+  phase:
+    queue:
+      demands:
+      - agent.os -equals Windows_NT
 
 phases:
 - phase:
