@@ -30,7 +30,7 @@ phases:
     phase:
       variables: 
         _PublishBlobFeedUrl: https://dotnetfeed.blob.core.windows.net/dotnet-tools-internal/index.json
-        _SignType: test
+        _SignType: real
         _UseEsrpSigning: true
         _TeamName: DotNetCore
         _HelixSource: official/dotnet/arcade/$(Build.SourceBranch)
