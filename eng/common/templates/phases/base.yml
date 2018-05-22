@@ -24,12 +24,13 @@ phases:
   ${{ if ne(parameters.dockerImage, '') }}:
     variables:
       _PREVIEW_VSTS_DOCKER_IMAGE: ${{ parameters.dockerImage }}
+      mydemands: ${{ parameters.phase.queue.demands }}
       ${{ insert }}: ${{ parameters.phase.variables }}
   steps:
   - checkout: self
     clean: true
     fetchDepth: 5
-  - script: echo ${{ parameters.phase.queue.demands }}
+  - script: echo $(mydemands)
   - ${{ if eq(parameters.enableTelemetry, 'true') }}:
     - template: /eng/common/templates/steps/telemetry.yml
       parameters:
