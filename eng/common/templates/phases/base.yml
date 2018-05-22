@@ -29,7 +29,6 @@ phases:
   - checkout: self
     clean: true
     fetchDepth: 5
-  - script: echo $(mydemands)
   - ${{ if eq(parameters.enableTelemetry, 'true') }}:
     - template: /eng/common/templates/steps/telemetry.yml
       parameters:
