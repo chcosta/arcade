@@ -1,3 +1,6 @@
+trigger:
+- templates
+
 resources:
   repositories:
   - repository: arcade
@@ -7,31 +10,93 @@ resources:
     ref: refs/heads/templates
     
 phases:
-- template: /eng/build.yml
+- template: /eng/common/templates/phases/arcade-sdk-ci.yml@arcade
   parameters:
     agentOs: Windows_NT
+    ciBuildArgs: -configuration $(_BuildConfig) -prepareMachine    
+
     phase:
       queue:
         name: Hosted VS2017
         parallel: 2
         matrix:
           Build_Debug:
-            _BuildArgs: -configuration Debug -prepareMachine
+            _BuildConfig: Debug
           Build_Release:
-            _BuildArgs: -configuration Release -prepareMachine
+            _BuildConfig: Release
 
-- template: /eng/build.yml
+      preBuildSteps:
+      - task: BatchScript@1 
+        displayName: VsDevCmd 
+        inputs: 
+          filename: 'C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\Common7\Tools\VsDevCmd.bat' 
+          modifyEnvironment: true 
+
+      postBuildSteps:
+      - task: PublishTestResults@2 
+        displayName: Publish .NET Framework Test Results 
+        inputs: 
+          testRunTitle: 'Windows-on-core Full Framework' 
+          testRunner: XUnit 
+          testResultsFiles: 'artifacts/**/*UnitTests_net46*.xml' 
+          publishRunAttachments: true 
+          mergeTestResults: true 
+        condition: always() 
+      - task: PublishTestResults@2 
+        displayName: Publish .NET Core 2.0 Test Results 
+        inputs: 
+          testRunTitle: 'Windows-on-core .NET Core 2.0' 
+          testRunner: XUnit 
+          testResultsFiles: 'artifacts/**/*UnitTests_netcoreapp2.0*.xml' 
+          publishRunAttachments: true 
+          mergeTestResults: true 
+        condition: always() 
+      - task: PublishTestResults@2 
+        displayName: Publish .NET Core 2.1 Test Results 
+        inputs: 
+          testRunTitle: 'Windows-on-core .NET Core 2.1' 
+          testRunner: XUnit 
+          testResultsFiles: 'artifacts/**/*UnitTests_netcoreapp2.1*.xml' 
+          publishRunAttachments: true 
+          mergeTestResults: true 
+        condition: always() 
+
+- template: /eng/common/templates/phases/arcade-sdk-ci.yml@arcade
   parameters:
     agentOs: Linux
-    dockerImage: microsoft/dotnet-buildtools-prereqs:ubuntu-14.04-cross-0cd4667-20170319080304
-    queue: 
-      name: DotNetCore-Linux
-      demands:
-        - agent.os -equals Linux
-      parallel: 2
-      matrix:
-        Build_Debug:
-          _BuildArgs: --configuration $(_BuildConfig) --prepareMachine
-        Build_Release:
-          _BuildArgs: --configuration $(_BuildConfig) --prepareMachine
+    ciBuildArgs: --configuration $(_BuildConfig) --prepareMachine
+    phase:
 
+      variables:
+        _PREVIEW_VSTS_DOCKER_IMAGE: microsoft/dotnet-buildtools-prereqs:ubuntu-14.04-cross-0cd4667-20170319080304
+
+      queue: 
+        name: DotNetCore-Linux
+        demands:
+          - agent.os -equals Linux
+        parallel: 2
+        matrix:
+          Build_Debug:
+            _BuildConfig: Debug 
+          Build_Release:
+            _BuildConfig: Release
+
+      postBuildSteps:
+      - task: PublishTestResults@2 
+        displayName: Publish .NET Core 2.0 Test Results 
+        inputs: 
+          testRunTitle: 'Linux .NET Core 2.0' 
+          testRunner: XUnit 
+          testResultsFiles: 'artifacts/**/*UnitTests_netcoreapp2.0*.xml' 
+          publishRunAttachments: true 
+          mergeTestResults: true 
+        condition: always() 
+      - task: PublishTestResults@2 
+        displayName: Publish .NET Core 2.1 Test Results 
+        inputs: 
+          testRunTitle: 'Linux .NET Core 2.1' 
+          testRunner: XUnit 
+          testResultsFiles: 'artifacts/**/*UnitTests_netcoreapp2.1*.xml' 
+          publishRunAttachments: true 
+          mergeTestResults: true 
+        condition: always() 

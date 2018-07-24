@@ -2,35 +2,35 @@
 # Description: Defines the build phase
 # Parameters:
 #   agentOs: [Windows_NT (default), Linux, OSX] Used in templates to define variables which are OS specific
-#   dockerImage: If defined, specifies docker image to run build steps in
-#   matrix: build matrix
-#   queueName: agent pool name
-#   enableTelemetry: send telemetry if build is not a PR or CI build
-
+#   fetchDepth: Limit fetching to the specified number of commits from the tip of each remote branch history
+#   phase: defined phase object
+#      optionally includes preBuildSteps / postbuildSteps
 parameters:
-  dockerImage: ''
-  queue: {}
+  agentOs: ''
+  ciBuildArgs: ''
+  clean: true
+  fetchDepth: ''
+  phase: {}
 
 phases:
 - phase: ${{ parameters.agentOs }}
   queue: ${{ parameters.phase.queue }}
-  ${{ if and(ne(parameters.phase.variables, ''), eq(parameters.dockerImage, '')) }}:
+  ${{ if and(ne(parameters.phase.variables, '') }}:
     variables: ${{ parameters.phase.variables }}
-  ${{ if ne(parameters.dockerImage, '') }}:
-    variables:
-      _PREVIEW_VSTS_DOCKER_IMAGE: ${{ parameters.dockerImage }}
-      ${{ insert }}: ${{ parameters.phase.variables }}
   steps:
   - checkout: self
     clean: ${{ parameters.clean }}
     ${{ if ne(parameters.fetchDepth, '') }}:
       fetchDepth: ${{ parameters.fetchDepth }}
-  - ${{ parameters.phase.steps }}
+  - ${{ if ne(parameters.phase.preBuildSteps, '') }}:
+    - ${{ parameters.phase.preBuildSteps }}
   - ${{ if eq(parameters.agentOs, 'Windows_NT') }}:
-    - script: eng\common\cibuild.cmd $(_BuildArgs)
+    - script: eng\common\cibuild.cmd ${{ parameters.ciBuildArgs }}
       name: Build
       condition: succeeded()
   - ${{ if ne(parameters.agentOs, 'Windows_NT') }}:
-    - script: eng/common/cibuild.sh $(_BuildArgs)
+    - script: eng/common/cibuild.sh ${{ parameters.ciBuildArgs }}
       name: Build
       condition: succeeded()
+  - ${{ if ne(parameters.phase.postBuildSteps, '') }}:
+    - ${{ parameters.phase.postBuildSteps }}
