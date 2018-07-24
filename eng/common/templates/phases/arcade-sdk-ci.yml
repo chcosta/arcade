@@ -15,7 +15,7 @@ parameters:
 phases:
 - phase: ${{ parameters.agentOs }}
   queue: ${{ parameters.phase.queue }}
-  ${{ if and(ne(parameters.phase.variables, '') }}:
+  ${{ if ne(parameters.phase.variables, '') }}:
     variables: ${{ parameters.phase.variables }}
   steps:
   - checkout: self
