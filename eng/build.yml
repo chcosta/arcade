@@ -4,9 +4,9 @@ parameters:
   enableTelemetry: true
   # install Microbuild plugin if not a public build
   enableMicrobuild: true
-  # queue YAML object - https://github.com/Microsoft/vsts-agent/blob/master/docs/preview/yamlgettingstarted-schema.md#queue
-  queue: {}
-  # variables YAML object - https://github.com/Microsoft/vsts-agent/blob/master/docs/preview/yamlgettingstarted-schema.md#phase
+  # pool YAML object - https://docs.microsoft.com/en-us/azure/devops/pipelines/yaml-schema?view=vsts&tabs=schema#pool
+  pool: {}
+  # variables YAML object - https://docs.microsoft.com/en-us/azure/devops/pipelines/yaml-schema?view=vsts&tabs=schema#job
   variables: {}
 
 # Common conditionals:  There are a number of common conditionals that are useful.  Generally these are used to decide what resources can be accessed,
@@ -16,7 +16,7 @@ parameters:
 #   - and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest') - Not running in public and not a pull request.
 #   - or(eq(variables['System.TeamProject'], 'public'), in(variables['Build.Reason'], 'PullRequest') - Running in public or a pull request.
 
-phases:
+jobs:
 - template: /eng/common/templates/phases/base.yml
   parameters:
     enableTelemetry: ${{ parameters.enableTelemetry }}
@@ -25,7 +25,7 @@ phases:
 
     name: ${{ parameters.name }}
 
-    queue: ${{ parameters.queue }}
+    pool: ${{ parameters.pool }}
 
     variables: 
       ${{ insert }}: ${{ parameters.variables }}
@@ -76,7 +76,7 @@ phases:
       condition: and(succeeded(), ne(variables['Agent.Os'], 'Windows_NT'))
 
     - task: PublishBuildArtifacts@1
-      displayName: Publish Logs to VSTS
+      displayName: Publish Logs to Azure DevOps
       inputs:
         PathtoPublish: '$(Build.SourcesDirectory)/artifacts/log/$(_BuildConfig)'
         PublishLocation: Container
