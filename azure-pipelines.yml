@@ -33,7 +33,7 @@ jobs:
         - name: _PublishBlobFeedUrl
           value: https://dotnetfeed.blob.core.windows.net/dotnet-core/index.json
         - name: _SignArgs
-          value: /p:DotNetSignType=none /p:TeamName=$(_TeamName) /p:Sign=false
+          value: /p:DotNetSignType=$(_SignType) /p:TeamName=$(_TeamName) /p:Sign=false
         - name: _PublishArgs
           value: /p:DotNetPublishBlobFeedKey=$(dotnetfeed-storage-access-key-1)
             /p:DotNetPublishBlobFeedUrl=$(_PublishBlobFeedUrl)
@@ -62,7 +62,7 @@ jobs:
             # PRs or external builds are not signed.
             ${{ if or(eq(variables['System.TeamProject'], 'public'), in(variables['Build.Reason'], 'PullRequest')) }}:
               _PublishType: none
-              _SignType: test
+              _SignType: ''
               _DotNetPublishToBlobFeed : false
             ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:
               _PublishType: blob
