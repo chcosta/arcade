@@ -33,7 +33,7 @@ jobs:
         - name: _PublishBlobFeedUrl
           value: https://dotnetfeed.blob.core.windows.net/dotnet-core/index.json
         - name: _SignArgs
-          value: /p:DotNetSignType=none /p:TeamName=$(_TeamName)
+          value: /p:DotNetSignType=none /p:TeamName=$(_TeamName) /p:Sign=false
         - name: _PublishArgs
           value: /p:DotNetPublishBlobFeedKey=$(dotnetfeed-storage-access-key-1)
             /p:DotNetPublishBlobFeedUrl=$(_PublishBlobFeedUrl)
