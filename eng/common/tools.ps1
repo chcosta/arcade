@@ -108,22 +108,20 @@ function InitializeDotNetCli([bool]$install) {
   }
 
   # Find the first path on %PATH% that contains the dotnet.exe
-  if ($useInstalledDotNetCli -and ($env:DOTNET_INSTALL_DIR -eq $null)) {
+  if ($useInstalledDotNetCli -and -not $containsDotnetLocal -and ($env:DOTNET_INSTALL_DIR -eq $null)) {
     $dotnetCmd = Get-Command "dotnet.exe" -ErrorAction SilentlyContinue
     if ($dotnetCmd -ne $null) {
       $env:DOTNET_INSTALL_DIR = Split-Path $dotnetCmd.Path -Parent
     }
   }
-
   $dotnetSdkVersion = $GlobalJson.tools.dotnet
-
+  
   # Use dotnet installation specified in DOTNET_INSTALL_DIR if it contains the required SDK version,
   # otherwise install the dotnet CLI and SDK to repo local .dotnet directory to avoid potential permission issues.
-  if (($env:DOTNET_INSTALL_DIR -ne $null) -and (Test-Path(Join-Path $env:DOTNET_INSTALL_DIR "sdk\$dotnetSdkVersion"))) {
+  if ((-not $containsDotnetLocal) -and ($env:DOTNET_INSTALL_DIR -ne $null) -and (Test-Path(Join-Path $env:DOTNET_INSTALL_DIR "sdk\$dotnetSdkVersion"))) {
     $dotnetRoot = $env:DOTNET_INSTALL_DIR
   } else {
     $dotnetRoot = Join-Path $RepoRoot ".dotnet"
-
     if (-not (Test-Path(Join-Path $dotnetRoot "sdk\$dotnetSdkVersion"))) {
       if ($install) {
         InstallDotNetSdk $dotnetRoot $dotnetSdkVersion
@@ -132,7 +130,6 @@ function InitializeDotNetCli([bool]$install) {
         ExitWithExitCode 1
       }
     }
-
     $env:DOTNET_INSTALL_DIR = $dotnetRoot
   }
 
@@ -147,12 +144,11 @@ function InitializeDotNetCli([bool]$install) {
     Write-Host "##vso[task.setvariable variable=DOTNET_MULTILEVEL_LOOKUP]0"
     Write-Host "##vso[task.setvariable variable=DOTNET_SKIP_FIRST_TIME_EXPERIENCE]1"
   }
-
   return $global:_DotNetInstallDir = $dotnetRoot
 }
 
 function GetDotNetInstallScript([string] $dotnetRoot) {
-  $installScript = "$dotnetRoot\dotnet-install.ps1"
+  $installScript = Join-Path $dotnetRoot "dotnet-install.ps1"
   if (!(Test-Path $installScript)) {
     Create-Directory $dotnetRoot
     Invoke-WebRequest "https://dot.net/v1/dotnet-install.ps1" -OutFile $installScript
@@ -162,9 +158,21 @@ function GetDotNetInstallScript([string] $dotnetRoot) {
 }
 
 function InstallDotNetSdk([string] $dotnetRoot, [string] $version, [string] $architecture = "") {
+  InstallDotNet $dotnetRoot $version $architecture
+}
+
+function InstallDotNet([string] $dotnetRoot, [string] $version, [string] $architecture = "", [string] $runtime = "", [bool] $skipNonVersionedFiles = $false) {
   $installScript = GetDotNetInstallScript $dotnetRoot
-  $archArg = if ($architecture) { $architecture } else { "<auto>" }
-  & $installScript -Version $version -InstallDir $dotnetRoot -Architecture $archArg
+  $installParameters = @{
+    Version = $version
+    InstallDir = $dotnetRoot
+  }
+
+  if ($architecture) { $installParameters.Architecture = $architecture }
+  if ($runtime) { $installParameters.Runtime = $runtime }
+  if ($skipNonVersionedFiles) { $installParameters.SkipNonVersionedFiles = $skipNonVersionedFiles }
+  
+  & $installScript @installParameters
   if ($lastExitCode -ne 0) {
     Write-Host "Failed to install dotnet cli (exit code '$lastExitCode')." -ForegroundColor Red
     ExitWithExitCode $lastExitCode
@@ -419,7 +427,14 @@ function InitializeToolset() {
   $bl = if ($binaryLog) { "/bl:" + (Join-Path $LogDir "ToolsetRestore.binlog") } else { "" }
 
   '<Project Sdk="Microsoft.DotNet.Arcade.Sdk"/>' | Set-Content $proj
-  MSBuild $proj $bl /t:__WriteToolsetLocation /clp:ErrorsOnly`;NoSummary /p:__ToolsetLocationOutputFile=$toolsetLocationFile
+
+  $writeDotNetVersionsPropsFile = $containsDotnetLocal
+  # Don't generate versions file for additional dotnet runtimes if global.json does not contain "dotnet-local",
+  # building from source build, or "DotNetCoreVersions.Generated.props" already exists
+  if (($null -ne $env:DotNetCoreSdkDir) -or (Test-Path (Join-Path $toolsetDir "DotNetCoreVersions.Generated.props"))) {
+    $writeDotNetVersionsPropsFile = $false
+  }
+  MSBuild $proj $bl /t:__WriteToolsetLocation /clp:ErrorsOnly`;NoSummary /p:__ToolsetLocationOutputFile=$toolsetLocationFile /p:__WriteDotNetVersionsPropsFile=$writeDotNetVersionsPropsFile
 
   $path = Get-Content $toolsetLocationFile -TotalCount 1
   if (!(Test-Path $path)) {
@@ -466,13 +481,11 @@ function MSBuild() {
   if ($warnAsError) { 
     $cmdArgs += " /warnaserror /p:TreatWarningsAsErrors=true" 
   }
-
   foreach ($arg in $args) {
     if ($arg -ne $null -and $arg.Trim() -ne "") {
       $cmdArgs += " `"$arg`""
     }
   }
-  
   $exitCode = Exec-Process $buildTool.Path $cmdArgs
 
   if ($exitCode -ne 0) {
@@ -512,7 +525,8 @@ $ToolsDir = Join-Path $RepoRoot ".tools"
 $LogDir = Join-Path (Join-Path $ArtifactsDir "log") $configuration
 $TempDir = Join-Path (Join-Path $ArtifactsDir "tmp") $configuration
 $GlobalJson = Get-Content -Raw -Path (Join-Path $RepoRoot "global.json") | ConvertFrom-Json
-
+# true if global.json contains a "dotnet-local" section
+$containsDotnetLocal = if ($GlobalJson.tools.PSObject.Properties.Name -Match 'dotnet-local') { $true } else { $false }
 Create-Directory $ToolsetDir
 Create-Directory $TempDir
 Create-Directory $LogDir

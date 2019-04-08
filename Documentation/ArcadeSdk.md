@@ -212,7 +212,6 @@ optimizations by setting 'RestoreUsingNuGetTargets' to false.
 
 CoreFx does not use the default build projects in its repo - [example](https://github.com/dotnet/corefx/blob/66392f577c7852092f668876822b6385bcafbd44/eng/Build.props).
 
-
 ### /eng/Versions.props: A single file listing component versions and used tools
 
 The file is present in the repo and defines versions of all dependencies used in the repository, the NuGet feeds they should be restored from and the version of the components produced by the repo build.
@@ -251,6 +250,58 @@ The toolset defines a set of tools (or features) that each repo can opt into or 
 The toolset also defines default versions for various tools and dependencies, such as MicroBuild, XUnit, VSSDK, etc. These defaults can be overridden in the Versions.props file.
 
 See [DefaultVersions](https://github.com/dotnet/arcade/blob/master/src/Microsoft.DotNet.Arcade.Sdk/tools/DefaultVersions.props) for a list of *UsingTool* properties and default versions.
+
+#### Example: Restoring multiple .NET Core Runtimes for running tests
+
+in /global.json, specify a `dotnet-local` section and list the [shared runtime versions](https://dotnet.microsoft.com/download/dotnet-core) you want installed.
+
+```json
+{
+  "tools": {
+    "dotnet": "3.0.100-preview3-010431",
+    "dotnet-local": {
+      "runtimes": [ "2.1.7" ]
+    }
+  },
+```
+
+For an architecture specific runtime, list the runtimes under the architecture moniker.
+
+```json
+{
+  "tools": {
+    "dotnet": "3.0.100-preview3-010431",
+    "dotnet-local": {
+      "x86": {
+        "runtimes": [ "2.1.7" ]
+      }
+    }
+  },
+```
+
+When the Arcade scripts (`tools.ps1` \ `tools.sh`) are invoked to restore the Arcade SDK, it will also use these values to generate a file named `/artifacts/toolset/DotNetCoreVersions.Generated.props` which will define additional "DotNetCoreRuntimeVersion" item groups.
+
+/artifacts/DotNetCoreVersions.Generated.props
+
+```xml
+<Project>
+  <ItemGroup>
+    <DotNetCoreRuntimeVersion Include="2.1.7" />
+    <DotNetCoreRuntimeVersion Include="$(MicrosoftNETCoreAppVersion)" />
+  </ItemGroup>
+  ...
+</Project>
+```
+
+If either `DotNetCoreVersions.Generated.props` exists, or "DotNetCoreRuntimeVersion" item groups are defined in `/eng/Version.props`, then those additional shared runtimes will be installed.
+
+During toolset restore, Arcade will install the `DotNetCoreRuntimeVersion`'s specified into `/.dotnet`
+
+Note: defining `dotnet-local` in your global.json will signal to Arcade to install a local version of the SDK for the runtimes to use rather than depending on a matching global SDK.
+
+#### I added an entry to global.json, but when I restore the expected runtime does not show up
+
+The code that restores runtimes only runs when the Arcade SDK is first retored.  Delete the `artifacts/toolset` directory and Arcade will re-initialize / restore additional runtimes.
 
 ### /eng/Tools.props (optional)
 

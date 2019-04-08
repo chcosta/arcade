@@ -101,7 +101,7 @@ function InitializeDotNetCli {
   fi
 
   # Find the first path on $PATH that contains the dotnet.exe
-  if [[ "$use_installed_dotnet_cli" == true && -z "${DOTNET_INSTALL_DIR:-}" ]]; then
+  if [[ "$use_installed_dotnet_cli" == true && $contains_dotnetlocal == false && -z "${DOTNET_INSTALL_DIR:-}" ]]; then
     local dotnet_path=`command -v dotnet`
     if [[ -n "$dotnet_path" ]]; then
       ResolvePath "$dotnet_path"
@@ -115,7 +115,7 @@ function InitializeDotNetCli {
 
   # Use dotnet installation specified in DOTNET_INSTALL_DIR if it contains the required SDK version,
   # otherwise install the dotnet CLI and SDK to repo local .dotnet directory to avoid potential permission issues.
-  if [[ -n "${DOTNET_INSTALL_DIR:-}" && -d "$DOTNET_INSTALL_DIR/sdk/$dotnet_sdk_version" ]]; then
+  if [[ $contains_dotnetlocal == false && -n "${DOTNET_INSTALL_DIR:-}" && -d "$DOTNET_INSTALL_DIR/sdk/$dotnet_sdk_version" ]]; then
     dotnet_root="$DOTNET_INSTALL_DIR"
   else
     dotnet_root="$repo_root/.dotnet"
@@ -149,16 +149,34 @@ function InitializeDotNetCli {
 function InstallDotNetSdk {
   local root=$1
   local version=$2
+  local architecture=""
+  if [[ $# == 3 ]]; then
+    architecture=$3
+  fi
+  InstallDotNet "$root" "$version" $architecture
+}
+
+function InstallDotNet {
+  local root=$1
+  local version=$2
 
   GetDotNetInstallScript "$root"
   local install_script=$_GetDotNetInstallScript
-
-  local arch_arg=""
-  if [[ $# == 3 ]]; then
-    arch_arg="--architecture $3"
+  local archArg=''
+  if [[ "$#" -ge "3" ]]; then
+    archArg="--architecture $3"
   fi
 
-  bash "$install_script" --version $version --install-dir "$root" $arch_arg || {
+  local runtimeArg=''
+  if [[ "$#" -ge "4" ]]; then
+    runtimeArg="--runtime $4"
+  fi
+
+  local skipNonVersionedFilesArg=""
+  if [[ "$#" -ge "5" ]]; then
+    skipNonVersionedFilesArg="--skip-non-versioned-files"
+  fi
+  bash "$install_script" --verbose --version $version --install-dir "$root" $archArg $runtimeArg $skipNonVersionedFilesArg || {
     local exit_code=$?
     echo "Failed to install dotnet SDK (exit code '$exit_code')." >&2
     ExitWithExitCode $exit_code
@@ -246,7 +264,13 @@ function InitializeToolset {
   fi
   
   echo '<Project Sdk="Microsoft.DotNet.Arcade.Sdk"/>' > "$proj"
-  MSBuild "$proj" $bl /t:__WriteToolsetLocation /clp:ErrorsOnly\;NoSummary /p:__ToolsetLocationOutputFile="$toolset_location_file"
+  writeDotNetVersionsPropsFile=$contains_dotnetlocal
+  # Don't generate versions file for additional dotnet runtimes if global.json does not contain "dotnet-local",
+  # building from source build, or "DotNetCoreVersions.Generated.props" already exists
+  if [[ -n "${DotNetCoreSdkDir:-}" || -a "$toolset_dir/DotNetCoreVersions.Generated.props" ]]; then
+    writeDotNetVersionsPropsFile=false
+  fi
+  MSBuild "$proj" $bl /t:__WriteToolsetLocation /clp:ErrorsOnly\;NoSummary /p:__ToolsetLocationOutputFile="$toolset_location_file" /p:__WriteDotNetVersionsPropsFile=$writeDotNetVersionsPropsFile
 
   local toolset_build_proj=`cat "$toolset_location_file"`
 
@@ -311,6 +335,13 @@ log_dir="$artifacts_dir/log/$configuration"
 temp_dir="$artifacts_dir/tmp/$configuration"
 
 global_json_file="$repo_root/global.json"
+
+# determine if global.json contains a "dotnet-local" entry
+contains_dotnetlocal=false
+dotnetlocal_key=`grep -m 1 "dotnet-local" "$global_json_file"`
+if [[ -a "$dotnetlocal_key" ]]; then
+  contains_dotnetlocal=true
+fi
 
 # HOME may not be defined in some scenarios, but it is required by NuGet
 if [[ -z $HOME ]]; then

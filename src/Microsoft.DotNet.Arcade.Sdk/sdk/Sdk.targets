@@ -23,4 +23,7 @@
 
   <Import Project="..\tools\Imports.targets" Condition="!$(_SuppressSdkImports) and !$(_SuppressAllTargets)" />
   <Import Project="..\tools\Empty.targets" Condition="!$(_SuppressSdkImports) and $(_SuppressAllTargets)"/>
+
+  <Import Project="..\tools\GenerateDotNetVersionsFile.targets" Condition="'$(__WriteDotNetVersionsPropsFile)' == 'true'" />
+
 </Project>
