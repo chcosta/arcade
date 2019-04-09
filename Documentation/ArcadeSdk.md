@@ -279,7 +279,7 @@ For an architecture specific runtime, list the runtimes under the architecture m
   },
 ```
 
-When the Arcade scripts (`tools.ps1` \ `tools.sh`) are invoked to restore the Arcade SDK, it will also use these values to generate a file named `/artifacts/toolset/DotNetCoreVersions.Generated.props` which will define additional "DotNetCoreRuntimeVersion" item groups.
+When the Arcade toolset is restored, it will generate a file named `/artifacts/toolset/DotNetCoreVersions.Generated.props` that defines additional "DotNetCoreRuntimeVersion" item groups.
 
 /artifacts/DotNetCoreVersions.Generated.props
 
