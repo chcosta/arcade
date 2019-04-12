@@ -13,4 +13,6 @@
 
   <Import Project="..\tools\Settings.props" Condition="!$(_SuppressSdkImports)" />
 
+  <Import Project="..\tools\RepoLayout.props" Condition="$(_SuppressSdkImports)" /> 
+  <Import Project="..\tools\BuildTasks.props" Condition="$(_SuppressSdkImports)" />
 </Project>

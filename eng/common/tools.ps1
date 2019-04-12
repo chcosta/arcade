@@ -114,7 +114,7 @@ function InitializeDotNetCli([bool]$install) {
       $env:DOTNET_INSTALL_DIR = Split-Path $dotnetCmd.Path -Parent
     }
   }
-  $dotnetSdkVersion = $GlobalJson.tools.dotnet
+  $dotnetSdkVersion = $GlobalJson.tools.dotnet.sdk
   
   # Use dotnet installation specified in DOTNET_INSTALL_DIR if it contains the required SDK version,
   # otherwise install the dotnet CLI and SDK to repo local .dotnet directory to avoid potential permission issues.

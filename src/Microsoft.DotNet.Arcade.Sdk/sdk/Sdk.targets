@@ -10,6 +10,8 @@
     <_SuppressAllTargets Condition="'$(DotNetBuildFromSource)' == 'true' and '$(ExcludeFromSourceBuild)' == 'true'">true</_SuppressAllTargets>
   </PropertyGroup>
 
+<UsingTask TaskName="Microsoft.DotNet.Arcade.Sdk.GenerateDotNetVersionsPropsFile" AssemblyFile="$(ArcadeSdkBuildTasksAssembly)" />
+
   <!-- 
     Output the location of the Build.proj so that the build driver can find where it was restored.
     Ideally we would have msbuild API to do that for an SDK: https://github.com/Microsoft/msbuild/issues/2992
@@ -23,11 +25,12 @@
     </ItemGroup>
 
     <GenerateDotNetVersionsPropsFile
-      DotNetVersionPropsPath="$(ArtifactsToolsetDir)DotNetCoreVersions.Generated.props"
+      VersionsPropsPath="$(RepoRoot)eng\Versions.props"
       GlobalJsonPath="$(RepoRoot)global.json"
       Condition="'$(__WriteDotNetVersionsPropsFile)' == 'true'" />
   </Target>
 
   <Import Project="..\tools\Imports.targets" Condition="!$(_SuppressSdkImports) and !$(_SuppressAllTargets)" />
   <Import Project="..\tools\Empty.targets" Condition="!$(_SuppressSdkImports) and $(_SuppressAllTargets)"/>
+
 </Project>

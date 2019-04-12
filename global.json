@@ -1,9 +1,22 @@
 {
+  "sdk": {
+    "version": "2.2.202"
+  },
   "tools": {
-    "dotnet": "2.2.202"
+    "dotnet": {
+      "sdk": "2.2.202",
+      "runtimes": {
+        "dotnet": {
+          "auto": [ "MicrosoftNetCoreAppVersion" ]
+        },
+        "aspnetcore": {
+          "x64": [ "2.2.3" ]
+        }
+      }
+    }
   },
   "msbuild-sdks": {
-    "Microsoft.DotNet.Arcade.Sdk": "1.0.0-beta.19207.1",
+    "Microsoft.DotNet.Arcade.Sdk": "1.0.0-ci",
     "Microsoft.DotNet.Helix.Sdk": "2.0.0-beta.19207.1"
   }
 }

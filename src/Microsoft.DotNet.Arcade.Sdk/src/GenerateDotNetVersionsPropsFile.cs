@@ -1,11 +1,13 @@
 using Microsoft.Build.Construction;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
+using NuGet.Versioning;
 using System.IO;
 using System.Text.Json;
 using System.Text;
 using System.Linq;
 using System.Collections.Generic;
+using Microsoft.Build.Evaluation;
 
 namespace Microsoft.DotNet.Arcade.Sdk
 {
@@ -19,21 +21,14 @@ namespace Microsoft.DotNet.Arcade.Sdk
     public class GenerateDotNetVersionsPropsFile : Task
     {
 #endif
-        [Required]
-        public string DotNetVersionPropsPath { get; set; }
+        public string VersionsPropsPath { get; set; }
 
         [Required]
         public string GlobalJsonPath { get; set; }
 
-        private static readonly string s_RuntimeItemGroupName = "DotNetCoreRuntimeVersion";
-
         public override bool Execute()
         {
-            if(File.Exists(DotNetVersionPropsPath))
-            {
-                Log.LogMessage($"Generated file {DotNetVersionPropsPath} already exists, exiting");
-                return true;
-            }
+            System.Diagnostics.Debugger.Launch();
 
             if(!File.Exists(GlobalJsonPath))
             {
@@ -51,35 +46,54 @@ namespace Microsoft.DotNet.Arcade.Sdk
                 {
                     if (toolsElement.TryGetProperty("dotnet-local", out JsonElement dotnetLocalElement))
                     {
-                        var runtimeItems = new List<KeyValuePair<string, IEnumerable<KeyValuePair<string, string>>>>();
+                        var runtimeItems = new Dictionary<string, IEnumerable<KeyValuePair<string, string>>>();
                         foreach (var dotnetLocalChildren in dotnetLocalElement.EnumerateObject())
                         {
-                            // Parses '{ "tools": { "dotnet-local": { "runtimes": [] } } }'
+                            // Parses 
+                            // { "tools": { 
+                            //     "dotnet-local": {
+                            //       "runtimes": 
+                            //         "dotnet": []
+                            //         "aspnetcore": []
+                            // } } }
+
+                            /*
+                             * dotnet:
+                             *   architecture: x64
+                             *   version: 1.1.0
+                             */
                             if (dotnetLocalChildren.Name == "runtimes")
                             {
-                                runtimeItems.AddRange(GetItemsFromJsonElementArray(dotnetLocalChildren.Value.EnumerateArray()));
-                            }
-                            else
-                            {
-                                // Parses '{ "tools": { "dotnet-local": { "x64": { "runtimes": [] } } } }'
-                                if (dotnetLocalChildren.Value.TryGetProperty("runtimes", out JsonElement runtimes))
+                                foreach (var runtime in dotnetLocalChildren.Value.EnumerateObject())
                                 {
-                                    runtimeItems.AddRange(GetItemsFromJsonElementArray(runtimes.EnumerateArray(), dotnetLocalChildren.Name));
+                                    runtimeItems.Add(runtime.Name, GetItemsFromJsonElementArray(runtime.Value.EnumerateObject()));
                                 }
                             }
                         }
                         if (runtimeItems.Count > 0)
                         {
-                            Log.LogMessage($"Generating file {DotNetVersionPropsPath}");
-                            StringBuilder versionPropsContent = new StringBuilder();
-                            var project = ProjectRootElement.Create();
-                            var itemGroup = project.AddItemGroup();
-
-                            foreach (var item in runtimeItems)
+                            System.Linq.ILookup<string, ProjectProperty> properties = null;
+                            if (File.Exists(VersionsPropsPath))
                             {
-                                itemGroup.AddItem(s_RuntimeItemGroupName, item.Key, item.Value);
+                                var proj = Project.FromFile(VersionsPropsPath, new Build.Definition.ProjectOptions());
+                                properties = proj.AllEvaluatedProperties.ToLookup(p => p.Name);
                             }
-                            project.Save(DotNetVersionPropsPath, Encoding.UTF8);
+                            
+                            foreach(var runtimeItem in runtimeItems)
+                            {
+                                System.Console.WriteLine($"{runtimeItem.Key}:");
+                                foreach(var item in runtimeItem.Value)
+                                {
+                                    if (SemanticVersion.TryParse(item.Key, out SemanticVersion version))
+                                    {
+                                        System.Console.WriteLine($"- {item.Key}, {item.Value}");
+                                    }
+                                    else
+                                    {
+                                        System.Console.WriteLine($"- {item.Key} == {properties[item.Key].FirstOrDefault().EvaluatedValue}, {item.Value}");
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -87,18 +101,16 @@ namespace Microsoft.DotNet.Arcade.Sdk
             return true;
         }
 
-        private IEnumerable<KeyValuePair<string, IEnumerable<KeyValuePair<string, string>>>> GetItemsFromJsonElementArray(JsonElement.ArrayEnumerator tokens, string architecture = null)
+        private IEnumerable<KeyValuePair<string, string>> GetItemsFromJsonElementArray(JsonElement.ObjectEnumerator tokens)
         {
-            var items = new Dictionary<string, IEnumerable<KeyValuePair<string, string>>>();
-            var metadata = new KeyValuePair<string, string>();
-            if(architecture != null)
-            {
-                metadata = new KeyValuePair<string, string>("architecture", architecture);
-            }
+            var items = new List<KeyValuePair<string, string>>();
 
-            foreach(var property in tokens)
+            foreach(var architecture in tokens)
             {
-                items.Add(property.GetString(), architecture != null ? new KeyValuePair<string, string>[] { metadata } : null);
+                foreach (var version in architecture.Value.EnumerateArray())
+                {
+                    items.Add(new KeyValuePair<string, string>(version.GetString(), architecture.Name));
+                }
             }
             return items.ToArray();
         }
