@@ -57,7 +57,7 @@
 
   <ItemGroup>
     <Compile Include="..\Common\AssemblyResolution.cs" Link="src\AssemblyResolution.cs" />
-    <Compile Remove="src\GenerateDotNetVersionsPropsFile.cs" Condition="'$(DotNetBuildFromSource)' == 'true'" />
+    <Compile Remove="src\InstallDotNetCore.cs" Condition="'$(DotNetBuildFromSource)' == 'true'" />
   </ItemGroup>
   
   <Target Name="_GenerateSdkVersionFile"

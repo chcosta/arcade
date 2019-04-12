@@ -10,7 +10,7 @@
     <_SuppressAllTargets Condition="'$(DotNetBuildFromSource)' == 'true' and '$(ExcludeFromSourceBuild)' == 'true'">true</_SuppressAllTargets>
   </PropertyGroup>
 
-<UsingTask TaskName="Microsoft.DotNet.Arcade.Sdk.GenerateDotNetVersionsPropsFile" AssemblyFile="$(ArcadeSdkBuildTasksAssembly)" />
+<UsingTask TaskName="Microsoft.DotNet.Arcade.Sdk.InstallDotNetCore" AssemblyFile="$(ArcadeSdkBuildTasksAssembly)" />
 
   <!-- 
     Output the location of the Build.proj so that the build driver can find where it was restored.
@@ -24,9 +24,15 @@
       <FileWrites Include="$(__ToolsetLocationOutputFile)" />
     </ItemGroup>
 
-    <GenerateDotNetVersionsPropsFile
+    <PropertyGroup>
+      <_DotNetInstallScript>$(RepositoryEngineeringDir)common\dotnet-install.cmd</_DotNetInstallScript>
+      <_DotNetInstallScript Condition="'$(OS)' != 'Windows_NT'">$(RepositoryEngineeringDir)common\dotnet-install.sh</_DotNetInstallScript>
+    </PropertyGroup>
+
+    <InstallDotNetCore
       VersionsPropsPath="$(RepoRoot)eng\Versions.props"
       GlobalJsonPath="$(RepoRoot)global.json"
+      DotNetInstallScript="$(_DotNetInstallScript)"
       Condition="'$(__WriteDotNetVersionsPropsFile)' == 'true'" />
   </Target>
 

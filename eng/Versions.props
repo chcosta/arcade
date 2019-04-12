@@ -79,7 +79,4 @@
       https://dotnet.myget.org/F/symreader/api/v3/index.json
     </RestoreSources>
   </PropertyGroup>
-  <ItemGroup>
-    <DotNetCoreRuntimeVersion Include="2.2.3" />
-  </ItemGroup>
 </Project>

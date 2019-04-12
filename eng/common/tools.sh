@@ -61,16 +61,22 @@ function ResolvePath {
 function ReadGlobalVersion {
   local key=$1
 
-  local line=`grep -m 1 "$key" "$global_json_file"`
   local pattern="\"$key\" *: *\"(.*)\""
-
-  if [[ ! $line =~ $pattern ]]; then
+  local value=""
+  while IFS= read -r result
+  do
+    if [[ $result =~ $pattern ]]; then
+      value=${BASH_REMATCH[1]}
+      break
+    fi
+  done < <(grep "$key" "$global_json_file")
+  if [[ -z $value ]]; then
     echo "Error: Cannot find \"$key\" in $global_json_file" >&2
     ExitWithExitCode 1
   fi
 
   # return value
-  _ReadGlobalVersion=${BASH_REMATCH[1]}
+  _ReadGlobalVersion=$value
 }
 
 function InitializeDotNetCli {
@@ -109,7 +115,8 @@ function InitializeDotNetCli {
     fi
   fi
 
-  ReadGlobalVersion "dotnet"
+echo "chcosta"
+  ReadGlobalVersion "sdk"
   local dotnet_sdk_version=$_ReadGlobalVersion
   local dotnet_root=""
 
@@ -335,11 +342,12 @@ log_dir="$artifacts_dir/log/$configuration"
 temp_dir="$artifacts_dir/tmp/$configuration"
 
 global_json_file="$repo_root/global.json"
-
 # determine if global.json contains a "dotnet-local" entry
 contains_dotnetlocal=false
-dotnetlocal_key=`grep -m 1 "dotnet-local" "$global_json_file"`
-if [[ -a "$dotnetlocal_key" ]]; then
+dotnetlocal_key=`grep -m 1 "runtimes" "$global_json_file"` || true
+echo "chcosta - dotnetlocal_key: $dotnetlocal_key"
+if [[ -n "$dotnetlocal_key" ]]; then
+  echo "is true"
   contains_dotnetlocal=true
 fi
 
@@ -357,3 +365,4 @@ if [[ $ci == true ]]; then
   export TEMP="$temp_dir"
   export TMP="$temp_dir"
 fi
+echo "done"

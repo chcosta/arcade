@@ -168,8 +168,8 @@ function InstallDotNet([string] $dotnetRoot, [string] $version, [string] $archit
     InstallDir = $dotnetRoot
   }
 
-  if ($architecture) { $installParameters.Architecture = $architecture }
-  if ($runtime) { $installParameters.Runtime = $runtime }
+  if ($architecture) { Write-Host "chcosta set architecture to '$architecture'"; $installParameters.Architecture = $architecture }
+  if ($runtime) { Write-Host "chcosta set runtime"; $installParameters.Runtime = $runtime }
   if ($skipNonVersionedFiles) { $installParameters.SkipNonVersionedFiles = $skipNonVersionedFiles }
   
   & $installScript @installParameters
@@ -526,7 +526,8 @@ $LogDir = Join-Path (Join-Path $ArtifactsDir "log") $configuration
 $TempDir = Join-Path (Join-Path $ArtifactsDir "tmp") $configuration
 $GlobalJson = Get-Content -Raw -Path (Join-Path $RepoRoot "global.json") | ConvertFrom-Json
 # true if global.json contains a "dotnet-local" section
-$containsDotnetLocal = if ($GlobalJson.tools.PSObject.Properties.Name -Match 'dotnet-local') { $true } else { $false }
+$containsDotnetLocal = if ($GlobalJson.tools.dotnet.PSObject.Properties.Name -Match 'runtimes') { $true } else { $false }
+Write-Host "containsDotNetLocal: $containsDotnetLocal"
 Create-Directory $ToolsetDir
 Create-Directory $TempDir
 Create-Directory $LogDir

@@ -13,16 +13,21 @@ scriptroot="$( cd -P "$( dirname "$source" )" && pwd )"
 
 version='Latest'
 architecture=''
+runtime='dotnet'
 while [[ $# > 0 ]]; do
   opt="$(echo "$1" | awk '{print tolower($0)}')"
   case "$opt" in
-    --version|-v)
+    -version|-v)
       shift
       version="$1"
       ;;
-    --architecture|-a)
+    -architecture|-a)
       shift
       architecture="$1"
+      ;;
+    -runtime|-r)
+      shift
+      runtime="$1"
       ;;
     *)
       echo "Invalid argument: $1"
@@ -35,7 +40,7 @@ done
 
 . "$scriptroot/tools.sh"
 dotnetRoot="$repo_root/.dotnet"
-InstallDotNet $dotnetRoot $version "$architecture" "dotnet" true || {
+InstallDotNet $dotnetRoot $version "$architecture" $runtime true || {
   local exit_code=$?
   echo "dotnet-install.sh failed (exit code '$exit_code')." >&2
   ExitWithExitCode $exit_code

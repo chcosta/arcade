@@ -2,14 +2,15 @@
 Param(
   [string] $verbosity = "minimal",
   [string] $architecture = "",
-  [string] $version = "Latest"
+  [string] $version = "Latest",
+  [string] $runtime = "dotnet"
 )
 
 . $PSScriptRoot\tools.ps1
 
 try {
   $dotnetRoot = Join-Path $RepoRoot ".dotnet"
-  InstallDotNet $dotnetRoot $version $architecture "dotnet" $true
+  InstallDotNet $dotnetRoot $version $architecture $runtime $true
 } 
 catch {
   Write-Host $_
