@@ -1,5 +1,5 @@
 parameters:
-  HelixSource: 'pr/dotnet-github-anon-kaonashi-bot'
+  HelixSource: ''
   HelixType: ̓'tests/default'
   HelixBuild: $(Build.BuildNumber)
   HelixTargetQueues: ''
