@@ -8,17 +8,29 @@
 
 After this phase completes, we will be surfacing reasonable errors from our builds that help us differentiate categories of failures. We will surface data to the Azure DevOps Timeline API.  We will also provide the tools such that if surfaced failures do not provide enough differentiable value, we can tweak the telemetry / guidance.
 
+## Phase 1a - .NET Core Engineering Telemetry Reporting
+
+Phase 1a and 1b (below) are parallel work streams.
+
 ### Work Items
 
 - In progress - provide guidance on what “good” error telemetry is
 
 - In progress - report powershell pipeline errors
 
-- Done - report bash pipeline errors 
+- Done - report bash pipeline errors
 
 - Done - report Linux MSBuild errors
 
-- Done - report Windows MSBuild errors 
+- Done - report Windows MSBuild errors
+
+## Phase 1b - Continue Gathering Telemetry
+
+In parallel with phase 1a (above).
+
+Jeff Schwartz (w/ Jared Parsons help) is going to update Jared Parsons telemetry gathering tool to push to a Kusto (staging) database so that we have real data we can look at and later converge in Phase 2.
+
+Jeff is also going to look at what data is useful and the kind of reports that are valuable, working towards Phase 3 where applicable.
 
 ## Phase 2 – Capture telemetry
 
@@ -30,9 +42,9 @@ After this phase completes, data from the Azure DevOps Timeline API will be stor
 
 ### Work Items
 
-- Determine the storage medium for telemetry: ie Kusto? Other?
+- Setup Kusto database for storing telemetry results
 
-- Determine the storage format
+- Determine the format for Kusto tables
 
 - Create an Azure DevOps task that can be used to gather telemetry the Timeline API and move into our database / format
 
@@ -52,7 +64,7 @@ After this phase completes, teams will be able to look at telemetry driven repor
 
 - Provide a place to view reports.
 
-- Current thinking is Azure DevOps dashboard and / or each builds "Build Analytics" tab
+  - Current thinking is Azure DevOps dashboard and / or each builds "Build Analytics" tab
 
 ### Open Issues
 
@@ -62,12 +74,16 @@ After this phase completes, teams will be able to look at telemetry driven repor
 
 - Chcosta - The Build Analytics tab's "task failure trends" section doesn't appear to be working
 
-- Chcosta - To reach out to Jeff Schwartz for what he found valuable / problematic in his investigations
+- Chcosta - To work with Jeff Schwartz for what he found valuable / problematic in his investigations
 
-## Phase 4 – Test telemetry
+## Phase 4 – Reasses
 
 **Estimated Completion Date:** TBD
 
 ### Summary
 
+Assess the state of our system and prioritize additional goals
+
 - Work with Jared / Nate to determine how best to manage / report on test flakiness
+
+- Are we tackling the right issues / surfacing the right data? Do we have coverage in the right areas (CI, PR, official)?
