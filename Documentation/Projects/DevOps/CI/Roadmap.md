@@ -1,0 +1,73 @@
+# .NET Core CI Telemetry Roadmap
+
+## Phase 1 - Build telemetry reporting
+
+**Estimated Completion Date:** 5/28
+
+### Summary
+
+After this phase completes, we will be surfacing reasonable errors from our builds that help us differentiate categories of failures. We will surface data to the Azure DevOps Timeline API.  We will also provide the tools such that if surfaced failures do not provide enough differentiable value, we can tweak the telemetry / guidance.
+
+### Work Items
+
+- In progress - provide guidance on what “good” error telemetry is
+
+- In progress - report powershell pipeline errors
+
+- Done - report bash pipeline errors 
+
+- Done - report Linux MSBuild errors
+
+- Done - report Windows MSBuild errors 
+
+## Phase 2 – Capture telemetry
+
+**Estimated Completion Date:** TBD
+
+### Summary
+
+After this phase completes, data from the Azure DevOps Timeline API will be stored in a database we own where it can be used to drive phase 3.
+
+### Work Items
+
+- Determine the storage medium for telemetry: ie Kusto? Other?
+
+- Determine the storage format
+
+- Create an Azure DevOps task that can be used to gather telemetry the Timeline API and move into our database / format
+
+- Provide guidance on how to capture telemetry
+
+## Phase 3 – Provide reports
+
+**Estimated Completion Date:** TBD
+
+### Summary
+
+After this phase completes, teams will be able to look at telemetry driven reports that can be used to help them understand the health of their CI system and make decisions about what tasks require attention.
+
+### Work Items
+
+- Determine what information is useful to make decisions about CI “health”
+
+- Provide a place to view reports.
+
+- Current thinking is Azure DevOps dashboard and / or each builds "Build Analytics" tab
+
+### Open Issues
+
+- Chcosta - can we extend the Build Analytics tab.  
+
+- Chcosta - Can Azure DevOps automatically surface information we put in the Timeline API if we structure it correctly?
+
+- Chcosta - The Build Analytics tab's "task failure trends" section doesn't appear to be working
+
+- Chcosta - To reach out to Jeff Schwartz for what he found valuable / problematic in his investigations
+
+## Phase 4 – Test telemetry
+
+**Estimated Completion Date:** TBD
+
+### Summary
+
+- Work with Jared / Nate to determine how best to manage / report on test flakiness
