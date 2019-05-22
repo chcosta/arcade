@@ -28,7 +28,7 @@ Phase 1a and 1b (below) are parallel work streams.
 
 In parallel with phase 1a (above).
 
-Jeff Schwartz (w/ Jared Parsons help) is going to update Jared Parsons telemetry gathering tool to push to a Kusto (staging) database so that we have real data we can look at and later converge in Phase 2.
+Jeff Schwartz (w/ Jared Parsons' help) is going to update Jared Parsons' telemetry gathering tool to push to a Kusto (staging) database or at least set up the process such that repos can capture telemetry and self-report it to a central location.  This will give us real data that we can analyze during CI council and we can later converge with the workstreams in Phases 2/3.
 
 Jeff is also going to look at what data is useful and the kind of reports that are valuable, working towards Phase 3 where applicable.
 
