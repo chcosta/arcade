@@ -8,11 +8,11 @@
 
 After this phase completes, we will be surfacing reasonable errors from our builds that help us differentiate categories of failures. We will surface data to the Azure DevOps Timeline API.  We will also provide the tools such that if surfaced failures do not provide enough differentiable value, we can tweak the telemetry / guidance.
 
-## Phase 1a - .NET Core Engineering Telemetry Reporting
+### Phase 1a - .NET Core Engineering Telemetry Reporting
 
 Phase 1a and 1b (below) are parallel work streams.
 
-### Work Items
+#### Work Items
 
 - In progress - provide guidance on what “good” error telemetry is
 
@@ -24,7 +24,7 @@ Phase 1a and 1b (below) are parallel work streams.
 
 - Done - report Windows MSBuild errors
 
-## Phase 1b - Continue Gathering Telemetry
+### Phase 1b - Continue Gathering Telemetry
 
 In parallel with phase 1a (above).
 
