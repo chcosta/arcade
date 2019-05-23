@@ -14,9 +14,9 @@ Phase 1a and 1b (below) are parallel work streams.
 
 #### Work Items
 
-- In progress - provide guidance on what “good” error telemetry is
+- In progress - provide [guidance](https://github.com/dotnet/core-eng/issues/6390) on what “good” error telemetry is
 
-- In progress - report powershell pipeline errors
+- In progress - [report powershell pipeline errors](https://github.com/dotnet/arcade/issues/2038)
 
 - Done - report bash pipeline errors
 
