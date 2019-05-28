@@ -14,7 +14,7 @@ Phase 1a and 1b (below) are parallel work streams.
 
 #### Work Items
 
-- In progress - provide [guidance](https://github.com/dotnet/core-eng/issues/6390) on what “good” error telemetry is
+- In progress - provide [guidance](https://github.com/dotnet/core-eng/issues/6390) on what “good” error telemetry is.  Guidance can also include general rules for different types of failures (timeouts, cancelled jobs, bad yaml parsing, other azdo failures, etc...)
 
 - In progress - [report powershell pipeline errors](https://github.com/dotnet/arcade/issues/2038)
 
@@ -34,7 +34,7 @@ Jeff is also going to look at what data is useful and the kind of reports that a
 
 ## Phase 2 – Capture telemetry
 
-**Estimated Completion Date:** TBD
+**Estimated Completion Date:** 6/28/2019
 
 ### Summary
 
@@ -48,7 +48,7 @@ After this phase completes, data from the Azure DevOps Timeline API will be stor
 
 - Create an Azure DevOps task that can be used to gather telemetry the Timeline API and move into our database / format
 
-- Provide guidance on how to capture telemetry
+- Create an dnceng build definition that runs on a scheduled trigger which will be used to gather telemetry on a defined candence (daily? hourly? weekly?)
 
 ## Phase 3 – Provide reports
 
