@@ -84,7 +84,7 @@ After this phase completes, teams will be able to look at telemetry driven repor
 
 - Chcosta - To work with Jeff Schwartz for what he found valuable / problematic in his investigations
 
-## Phase 4 – Reasses
+## Phase 4 – Reassess
 
 **Estimated Completion Date:** TBD
 
