@@ -48,6 +48,14 @@ After this phase completes, data from the Azure DevOps Timeline API will be stor
 
 - Create an Azure DevOps task that can be used to gather telemetry the Timeline API and move into our database / format
 
+  - Modify and package https://github.com/jaredpar/AzureUtil
+  
+  - Task acquires AzureUtil package and [LightIngest](https://kusto.azurewebsites.net/docs/tools/lightingest.html) package
+  
+  - Task authenticates with Azure Key Vault to acquire secrets for lightingest
+  
+  - Task ingests into Kusto database
+
 - Create an dnceng build definition that runs on a scheduled trigger which will be used to gather telemetry on a defined candence (daily? hourly? weekly?)
 
 ## Phase 3 – Provide reports
