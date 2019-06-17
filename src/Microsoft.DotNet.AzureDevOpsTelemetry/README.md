@@ -12,6 +12,7 @@ This is packaged as a .NET global tool.  You can install it like this...
 
 ## Usage
 
+```TEXT
 Usage: azdot -organization (organization name) -project (project name) [optional parameters]
   Optional parameters:
     -pat (value)    # Personal authentication token for Azure DevOps
@@ -19,3 +20,4 @@ Usage: azdot -organization (organization name) -project (project name) [optional
     -maxdatetime (value)  # latest date time to return build records from (Default is now)
     -outfile (value)      # tsv file to write results to (Default is results.tsv)
     -buildreasonfilter (value)  # Azure DevOps build reasons to filter results to (Default is 'IndividualCI,BatchedCI')
+```
