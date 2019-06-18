@@ -8,7 +8,7 @@ https://docs.microsoft.com/en-us/rest/api/azure/devops/build/timeline/get?view=a
 
 This is packaged as a .NET global tool.  You can install it like this...
 
-> dotnet tool install Microsoft.DotNet.AzureDevOpsTelemetry --tool-path e:\chcosta\azdot --add-source https://dotnetfeed.blob.core.windows.net/dotnet-core/index.json --version 1.0.0-beta.19317.8
+> dotnet tool install Microsoft.DotNet.AzureDevOpsTelemetry --add-source https://dotnetfeed.blob.core.windows.net/dotnet-core/index.json --version 1.0.0-beta.19317.8
 
 ## Usage
 
