@@ -1,22 +1,20 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <TargetFramework>net472</TargetFramework>
     <LangVersion>preview</LangVersion>
     <ExcludeFromSourceBuild>true</ExcludeFromSourceBuild>
     <IsPackable>true</IsPackable>
-    <PackAsTool>true</PackAsTool>
-    <ToolCommandName>lingest</ToolCommandName>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Azure.Kusto.Tools" Version="2.2.2" GeneratePathProperty="true">
-      <IncludeAssets>all</IncludeAssets>
-    </PackageReference>
+    <PackageReference Include="Microsoft.Azure.Kusto.Data" Version="6.1.8" />
+    <PackageReference Include="Microsoft.Azure.Kusto.Ingest" Version="6.1.8" />
   </ItemGroup>
 
   <ItemGroup>
     <None Include="$(PkgMicrosoft_Azure_Kusto_Tools)\tools\*" Pack="True" PackagePath="tools" />
   </ItemGroup>
+
 </Project>

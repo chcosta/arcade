@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -6,8 +6,10 @@
     <LangVersion>preview</LangVersion>
     <ExcludeFromSourceBuild>true</ExcludeFromSourceBuild>
     <IsPackable>true</IsPackable>
+<!--
     <PackAsTool>true</PackAsTool>
     <ToolCommandName>azdot</ToolCommandName>
+-->    
   </PropertyGroup>
 
   <ItemGroup>

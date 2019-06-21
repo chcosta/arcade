@@ -18,7 +18,7 @@ namespace Microsoft.DotNet.AzureDevOpsTelemetry
 
         public static int Main(string[] args)
         {
-            SecureString pat = new SecureString();
+            string personalAccessToken = null;
             DateTime minDateTime = DateTime.Now.Subtract(new TimeSpan(1, 0, 0, 0));
             DateTime maxDateTime = DateTime.Now;
             string buildReasonFilter = "individualCI,batchedCI";
@@ -42,10 +42,7 @@ namespace Microsoft.DotNet.AzureDevOpsTelemetry
                         s_Project = value;
                         break;
                     case "-pat":
-                        foreach (char c in value.ToCharArray())
-                        {
-                            pat.AppendChar(c);
-                        }
+                        personalAccessToken = value;
                         break;
                     case "-mindatetime":
                         DateTime.TryParse(value, out minDateTime);
@@ -79,7 +76,7 @@ namespace Microsoft.DotNet.AzureDevOpsTelemetry
                 return 1;
             }
 
-            s_azureServer = new AzureServer(s_Organization);
+            s_azureServer = new AzureServer(s_Organization, personalAccessToken);
 
             // Get builds in project since a specified dateTime
             var builds = GetBuilds(minDateTime, maxDateTime, buildReasonFilter).GetAwaiter().GetResult();
@@ -95,7 +92,7 @@ namespace Microsoft.DotNet.AzureDevOpsTelemetry
             foreach (var task in tasks)
             {
                 var build = task.Key;
-                writeLines.Add($"Build\t{build.Id}\t{build.Status}\t{build.Repository}\t{build.Reason}\t{build.BuildNumber}\t{build.Result}\t{build.QueueTime}\t{build.StartTime}\t{build.FinishTime}");
+                writeLines.Add($"Build\t{build.Id}\t{build.Status}\t{build.Repository.id}\t{build.Reason}\t{build.BuildNumber}\t{build.Result}\t{build.QueueTime}\t{build.StartTime}\t{build.FinishTime}");
                 foreach (var validationResult in build.ValidationResults)
                 {
                     writeLines.Add($"Job\t{build.Id}\t{validationResult.Message}");
@@ -111,7 +108,7 @@ namespace Microsoft.DotNet.AzureDevOpsTelemetry
                             {
                                 foreach (var issue in job.Issues)
                                 {
-                                    writeLines.Add($"    Message\t{issue.Type}\t{task.Key}\t{job.Name}\t{job?.Log?.Url}\t{job.Attempt}\t{issue.Message}");
+                                    writeLines.Add($"    Message\t{task.Key.Id}\t{issue.Type}\t{job.Name}\t{job?.Log?.Url}\t{job.Attempt}\t{issue.Message}");
                                 }
                             }
                         }

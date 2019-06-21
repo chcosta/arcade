@@ -132,7 +132,15 @@ namespace Microsoft.DotNet.AzureDevOpsTelemetry.Util
     /// </summary>
     public sealed class BuildRepository
     {
-        // TODO
+        public bool checkoutSubModules { get; set; }
+        public string clean { get; set; }
+        public string defaultBranch { get; set; }
+        public string id { get; set; }
+        public string name { get; set; }
+        public object properties { get; set; }
+        public string rootFolder { get; set; }
+        public string type { get; set; }
+        public string url { get; set; }
     }
 
     /// <summary>

@@ -4,7 +4,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Runtime.CompilerServices;
+using System.Security;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -14,9 +16,12 @@ namespace Microsoft.DotNet.AzureDevOpsTelemetry.Util
     {
         public string Organization { get; }
 
-        public AzureServer(string organization)
+        private string _personalAccessToken;
+
+        public AzureServer(string organization, string personalAccessToken = null)
         {
             Organization = organization;
+            _personalAccessToken = personalAccessToken;
         }
 
         /// <summary>
@@ -35,7 +40,7 @@ namespace Microsoft.DotNet.AzureDevOpsTelemetry.Util
             }
             if (!string.IsNullOrEmpty(maxDateTime))
             {
-                builder.Append($"minTime={maxDateTime}&");
+                builder.Append($"maxTime={maxDateTime}&");
             }
             if(!string.IsNullOrEmpty(buildReason))
             {
@@ -192,6 +197,14 @@ namespace Microsoft.DotNet.AzureDevOpsTelemetry.Util
                 client.DefaultRequestHeaders.Accept.Add(
                     new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
 
+                if (_personalAccessToken != null)
+                {
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic",
+                        Convert.ToBase64String(
+                            System.Text.ASCIIEncoding.ASCII.GetBytes(
+                                string.Format("{0}:{1}", "", _personalAccessToken))));
+                }
+
                 using (var response = await client.GetAsync(uri))
                 {
                     response.EnsureSuccessStatusCode();
@@ -220,34 +233,4 @@ namespace Microsoft.DotNet.AzureDevOpsTelemetry.Util
             ContinuationToken = continuationToken;
         }
     }
-
-    /*
-	try
-	{
-		var personalaccesstoken = "PAT_FROM_WEBSITE";
-
-		using (HttpClient client = new HttpClient())
-		{
-			client.DefaultRequestHeaders.Accept.Add(
-				new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
-
-			client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic",
-				Convert.ToBase64String(
-					System.Text.ASCIIEncoding.ASCII.GetBytes(
-						string.Format("{0}:{1}", "", personalaccesstoken))));
-
-			using (HttpResponseMessage response = await client.GetAsync(
-						"https://dev.azure.com/{organization}/_apis/projects"))
-			{
-				response.EnsureSuccessStatusCode();
-				string responseBody = await response.Content.ReadAsStringAsync();
-				Console.WriteLine(responseBody);
-			}
-		}
-	}
-	catch (Exception ex)
-	{
-		Console.WriteLine(ex.ToString());
-	}
-    */
 }
