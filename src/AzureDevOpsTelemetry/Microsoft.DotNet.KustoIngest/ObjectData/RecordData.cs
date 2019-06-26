@@ -9,7 +9,7 @@ namespace Microsoft.DotNet.KustoIngest.ObjectData
     public sealed class RecordData
     {
         public int BuildId { get; private set; }
-        public string Id { get; private set; }
+        public string Id { get; set; }
         public string ParentId { get; private set; }
         public string Name { get; private set; }
         public DateTime StartTime { get; private set; }

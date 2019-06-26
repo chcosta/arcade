@@ -65,7 +65,6 @@ namespace Microsoft.DotNet.Build.Tasks.Feed
         {
             try
             {
-                System.Diagnostics.Debugger.Launch();
                 Log.LogMessage(MessageImportance.High, "Performing feed push...");
 
                 if (ItemsToPush == null)

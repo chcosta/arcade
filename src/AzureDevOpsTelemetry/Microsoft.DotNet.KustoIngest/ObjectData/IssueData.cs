@@ -8,7 +8,7 @@ namespace Microsoft.DotNet.KustoIngest.ObjectData
 {
     public sealed class IssueData
     {
-        public string RecordId { get; private set; }
+        public string RecordId { get; set; }
         public string Type { get; private set; }
         public string Category { get; private set; }
         public string Message { get; private set; }

@@ -41,8 +41,9 @@ namespace Microsoft.DotNet.KustoIngest
             }
 
             Dictionary<int, BuildData> builds = new Dictionary<int, BuildData>();
-            List<RecordData> records = new List<RecordData>();
+            Dictionary<string, RecordData> records = new Dictionary<string, RecordData>();
             List<IssueData> issues = new List<IssueData>();
+            string recordGuid = null;
             foreach(var line in File.ReadAllLines(resultsFilePath))
             {
                 var item = FileData.Row.Parse(line);
@@ -56,25 +57,25 @@ namespace Microsoft.DotNet.KustoIngest
                     else if(item.Label == "Record")
                     {
                         var recordData = RecordData.Parse(line);
-                        records.Add(recordData);
+                        recordGuid = Guid.NewGuid().ToString();
+                        recordData.Id = recordGuid;
+                        records.Add(recordGuid, recordData);
                     }
                     else if(item.Label == "Issue")
                     {
                         var issueData = IssueData.Parse(line);
+                        issueData.RecordId = recordGuid.ToString();
                         issues.Add(issueData);
                     }
                 }
             }
             foreach(var issue in issues)
             {
-                foreach (var record in records.Where(r => r.Id == issue.RecordId))
-                {
-                    record.AddIssue(issue);
-                }
+                records[issue.RecordId].AddIssue(issue);
             }
             foreach(var record in records)
             {
-                builds[record.BuildId].AddRecord(record);
+                builds[record.Value.BuildId].AddRecord(record.Value);
             }
 
             var lastBuildDateTime = new DateTime();
@@ -84,7 +85,7 @@ namespace Microsoft.DotNet.KustoIngest
             {
                 if (reader.HasRows)
                 {
-                    lastBuildDateTime = (DateTime)reader["FinishTime"];
+                    lastBuildDateTime = reader.GetDateTime(0);
                 }
             }
             Console.WriteLine($"Last finish time: {lastBuildDateTime}");
@@ -131,14 +132,14 @@ namespace Microsoft.DotNet.KustoIngest
                 IgnoreFirstRecord = true,
                 Format = Kusto.Data.Common.DataSourceFormat.csv
             };
-            ingestClient.IngestFromSingleFile(ingestBuildsFilename, deleteSourceOnSuccess: true, ingestionProperties: kustoRecordsIngestionProperties);
+            ingestClient.IngestFromSingleFile(ingestRecordsFilename, deleteSourceOnSuccess: true, ingestionProperties: kustoRecordsIngestionProperties);
 
             var kustoIssuesIngestionProperties = new KustoIngestionProperties(databaseName: "engineeringdata", tableName: "TimelineIssues")
             {
                 IgnoreFirstRecord = true,
                 Format = Kusto.Data.Common.DataSourceFormat.csv
             };
-            ingestClient.IngestFromSingleFile(ingestBuildsFilename, deleteSourceOnSuccess: true, ingestionProperties: kustoIssuesIngestionProperties);
+            ingestClient.IngestFromSingleFile(ingestIssuesFilename, deleteSourceOnSuccess: true, ingestionProperties: kustoIssuesIngestionProperties);
 
             return 0;
         }
