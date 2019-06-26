@@ -65,6 +65,7 @@ namespace Microsoft.DotNet.Build.Tasks.Feed
         {
             try
             {
+                System.Diagnostics.Debugger.Launch();
                 Log.LogMessage(MessageImportance.High, "Performing feed push...");
 
                 if (ItemsToPush == null)
@@ -133,16 +134,16 @@ namespace Microsoft.DotNet.Build.Tasks.Feed
 
                     var packagePaths = packageItems.Select(i => i.ItemSpec);
 
-                    if(!blobFeedAction.PushToFeedAsync(packagePaths, pushOptions).Result)
-                    {
-                        return !Log.HasLoggedErrors;
-                    }
+//                    if(!blobFeedAction.PushToFeedAsync(packagePaths, pushOptions).Result)
+//                    {
+//                        return !Log.HasLoggedErrors;
+//                    }
 
-                    await blobFeedAction.PublishToFlatContainerAsync(symbolItems, MaxClients, pushOptions);
-                    if (Log.HasLoggedErrors)
-                    {
-                        return !Log.HasLoggedErrors;
-                    }
+//                    await blobFeedAction.PublishToFlatContainerAsync(symbolItems, MaxClients, pushOptions);
+//                    if (Log.HasLoggedErrors)
+//                    {
+//                        return !Log.HasLoggedErrors;
+//                    }
 
                     packageArtifacts = ConcatPackageArtifacts(packageArtifacts, packageItems);
                     blobArtifacts = ConcatBlobArtifacts(blobArtifacts, symbolItems);
@@ -185,9 +186,22 @@ namespace Microsoft.DotNet.Build.Tasks.Feed
             IEnumerable<BlobArtifactModel> artifacts,
             IEnumerable<ITaskItem> items)
         {
+            var i = items
+                .Where(item => !string.Equals(item.GetMetadata("ExcludeFromManifest"), "true", StringComparison.OrdinalIgnoreCase));
+
+            List<BlobArtifactModel> blobbies = new List<BlobArtifactModel>();
+            foreach(var i3 in i)
+            {
+                blobbies.Add(BuildManifestUtil.CreateBlobArtifactModel(i3));
+            }
+
+            var j = i.Select(s => BuildManifestUtil.CreateBlobArtifactModel(s));
+            var k = i.Select(BuildManifestUtil.CreateBlobArtifactModel);
+            var j2 = j.Where(blob => blob != null);
+            var k2 = k.Where(blob => blob != null);
             return artifacts.Concat(items
-                .Where(i => !string.Equals(i.GetMetadata("ExcludeFromManifest"), "true", StringComparison.OrdinalIgnoreCase))
-                .Select(BuildManifestUtil.CreateBlobArtifactModel)
+                .Where(item => !string.Equals(item.GetMetadata("ExcludeFromManifest"), "true", StringComparison.OrdinalIgnoreCase))
+                .Select(s => BuildManifestUtil.CreateBlobArtifactModel(s))
                 .Where(blob => blob != null));
         }
     }

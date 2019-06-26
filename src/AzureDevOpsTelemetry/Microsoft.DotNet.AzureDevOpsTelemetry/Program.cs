@@ -95,7 +95,7 @@ namespace Microsoft.DotNet.AzureDevOpsTelemetry
                 writeLines.Add($"Build\t{build.Id}\t{build.Status}\t{build.Repository.id}\t{build.Reason}\t{build.BuildNumber}\t{build.Result}\t{build.QueueTime}\t{build.StartTime}\t{build.FinishTime}");
                 foreach (var validationResult in build.ValidationResults)
                 {
-                    writeLines.Add($"Job\t{build.Id}\t{validationResult.Message}");
+                    writeLines.Add($"    Issue\t{build.Id}\tValidationResult\t\t{validationResult.Message}\t\t");
                 }
                 if (task.Value.Result != null)
                 {
@@ -106,9 +106,10 @@ namespace Microsoft.DotNet.AzureDevOpsTelemetry
                         {
                             if (job.Issues != null)
                             {
+                                writeLines.Add($"  Record\t{task.Key.Id}\t{job.Id}\t{job.ParentId}\t{job.Name}\t{job.StartTime}\t{job.FinishTime}\t{job.CurrentOperation}\t{job.PercentComplete}\t{job.Result}\t{job.ResultCode}\t{job.ChangeId}\t{job.LastModified}\t{job.WorkerName}\t{job.Order}\t{job.Details}\t{job.ErrorCount}\t{job.WarningCount}\t{job.Url}\t{job.Log?.Id}\t{job.Log?.Type}\t{job.Log?.Url}\t{job.Task?.Id}\t{job.Task?.Name}\t{job.Task?.Version}\t{job.Attempt}");
                                 foreach (var issue in job.Issues)
                                 {
-                                    writeLines.Add($"    Message\t{task.Key.Id}\t{issue.Type}\t{job.Name}\t{job?.Log?.Url}\t{job.Attempt}\t{issue.Message}");
+                                    writeLines.Add($"    Issue\t{job.Id}\t{issue.Type}\t{issue.Category}\t{issue.Message}\t{issue.Data?.Type}\t{issue.Data?.LogFileLineNumber}");
                                 }
                             }
                         }

@@ -308,11 +308,16 @@ namespace Microsoft.DotNet.AzureDevOpsTelemetry.Util
     public sealed class Issue
     {
         public string Category { get; set; }
-        public object Data { get; set; }
+        public IssueData Data { get; set; }
         public string Message { get; set; }
         public string Type { get; set; }
     }
 
+    public sealed class IssueData
+    {
+        public string Type { get; set; }
+        public int LogFileLineNumber { get; set; }
+    }
     /// <summary>
     /// https://docs.microsoft.com/en-us/rest/api/azure/devops/build/timeline/get?view=azure-devops-rest-5.0#timelinereference
     /// </summary>

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Microsoft.DotNet.LightIngest
+namespace Microsoft.DotNet.KustoIngest
 {
     public class TimelineBuild
     {

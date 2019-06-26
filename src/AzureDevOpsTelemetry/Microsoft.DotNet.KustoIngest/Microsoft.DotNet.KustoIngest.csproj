@@ -17,4 +17,8 @@
     <None Include="$(PkgMicrosoft_Azure_Kusto_Tools)\tools\*" Pack="True" PackagePath="tools" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Include="..\Common\DataSchema.cs" Link="DataSchema.cs" />
+  </ItemGroup>
+
 </Project>

@@ -1,10 +1,11 @@
+using Microsoft.DotNet.AzureDevOpsTelemetry.Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Microsoft.DotNet.LightIngest
+namespace Microsoft.DotNet.KustoIngest
 {
     public static class FileData
     {
@@ -27,7 +28,7 @@ namespace Microsoft.DotNet.LightIngest
                     };
 
                     string[] schema = null;
-                    if (Schemas.TryGetValue(result.Label.ToLower(), out schema))
+                    if (DataSchema.Schemas.TryGetValue(result.Label.ToLower(), out schema))
                     {
                         // a schema was found
                         for (int i = 0; i < schema.Length; i++)
@@ -39,18 +40,8 @@ namespace Microsoft.DotNet.LightIngest
                         return result;
                     }
                 }
-
                 return default(Row);
             }
         }
-        private static Dictionary<string /*name*/, string[] /*schema*/> Schemas = new Dictionary<string, string[]>()
-        {
-            {"build", new string[] { "buildid", "status", "result", "repository", "reason", "buildnumber", "queuetime", "starttime", "finishtime" } },
-            {"message", new string[] { "issuetype", "name", "logurl", "attempt", "message" } },
-            {"status", new string[] { "azdoBuildId", "status", "result" } },
-            {"all", new string[] { "azdoBuildId", "status", "repo", "author", "prNumber", "buildNumber", "result", "queuedDate", "startDate", "finishDate", "definitionId", "errorLogCount", "logCount" } },
-            {"error", new string[] { "azdoBuildId", "category", "logName", "lineNumber", "error" } },
-            {"warning", new string[] { "azdoBuildId", "category", "logName", "lineNumber", "error" } }
-        };
     }
 }
