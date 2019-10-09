@@ -114,62 +114,51 @@ stages:
         additionalParameters: ${{ parameters.SDLValidationParameters.params }}
         continueOnError: ${{ parameters.SDLValidationParameters.continueOnError }}
 
-- template: \eng\common\templates\post-build\channels\netcore-dev-5.yml
-  parameters:
-    artifactsPublishingAdditionalParameters: ${{ parameters.artifactsPublishingAdditionalParameters }}
-    dependsOn: ${{ parameters.publishDependsOn }}
-    publishInstallersAndChecksums: ${{ parameters.publishInstallersAndChecksums }}
-    
-- template: \eng\common\templates\post-build\channels\netcore-dev-31.yml
-  parameters:
-    artifactsPublishingAdditionalParameters: ${{ parameters.artifactsPublishingAdditionalParameters }}
-    dependsOn: ${{ parameters.publishDependsOn }}
-    publishInstallersAndChecksums: ${{ parameters.publishInstallersAndChecksums }}
-    symbolPublishingAdditionalParameters: ${{ parameters.symbolPublishingAdditionalParameters }}
+- ${{ if or(eq(parameters.artifacts.publish.manifests, 'true'), ne(parameters.artifacts.publish.manifests, '')) }}:
+  - ${{ if and(ne(parameters.enablePublishUsingPipelines, 'true'), eq(parameters.runAsPublic, 'false'), ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:    
+    - template: \eng\common\templates\post-build\channels\netcore-dev-5.yml
+      parameters:
+        artifactsPublishingAdditionalParameters: ${{ parameters.artifactsPublishingAdditionalParameters }}
+        dependsOn: ${{ parameters.publishDependsOn }}
+        publishInstallersAndChecksums: ${{ parameters.publishInstallersAndChecksums }}
+        symbolPublishingAdditionalParameters: ${{ parameters.symbolPublishingAdditionalParameters }}
 
-- template: \eng\common\templates\post-build\channels\netcore-tools-latest.yml
-  parameters:
-    artifactsPublishingAdditionalParameters: ${{ parameters.artifactsPublishingAdditionalParameters }}
-    dependsOn: ${{ parameters.publishDependsOn }}
-    publishInstallersAndChecksums: ${{ parameters.publishInstallersAndChecksums }}
-    symbolPublishingAdditionalParameters: ${{ parameters.symbolPublishingAdditionalParameters }}
+    - template: \eng\common\templates\post-build\channels\netcore-dev-31.yml
+      parameters:
+        artifactsPublishingAdditionalParameters: ${{ parameters.artifactsPublishingAdditionalParameters }}
+        dependsOn: ${{ parameters.publishDependsOn }}
+        publishInstallersAndChecksums: ${{ parameters.publishInstallersAndChecksums }}
+        symbolPublishingAdditionalParameters: ${{ parameters.symbolPublishingAdditionalParameters }}
 
-- template: \eng\common\templates\post-build\channels\netcore-tools-validation.yml
-  parameters:
-    artifactsPublishingAdditionalParameters: ${{ parameters.artifactsPublishingAdditionalParameters }}
-    dependsOn: ${{ parameters.publishDependsOn }}
-    publishInstallersAndChecksums: ${{ parameters.publishInstallersAndChecksums }}
-    symbolPublishingAdditionalParameters: ${{ parameters.symbolPublishingAdditionalParameters }}
+    - template: \eng\common\templates\post-build\channels\netcore-tools-latest.yml
+      parameters:
+        artifactsPublishingAdditionalParameters: ${{ parameters.artifactsPublishingAdditionalParameters }}
+        dependsOn: ${{ parameters.publishDependsOn }}
+        publishInstallersAndChecksums: ${{ parameters.publishInstallersAndChecksums }}
+        symbolPublishingAdditionalParameters: ${{ parameters.symbolPublishingAdditionalParameters }}
 
-- template: \eng\common\templates\post-build\channels\netcore-3-tools-validation.yml
-  parameters:
-    artifactsPublishingAdditionalParameters: ${{ parameters.artifactsPublishingAdditionalParameters }}
-    dependsOn: ${{ parameters.publishDependsOn }}
-    publishInstallersAndChecksums: ${{ parameters.publishInstallersAndChecksums }}
+    - template: \eng\common\templates\post-build\channels\public-validation-release.yml
+      parameters:
+        artifactsPublishingAdditionalParameters: ${{ parameters.artifactsPublishingAdditionalParameters }}
+        dependsOn: ${{ parameters.publishDependsOn }}
+        publishInstallersAndChecksums: ${{ parameters.publishInstallersAndChecksums }}
 
-- template: \eng\common\templates\post-build\channels\netcore-3-tools.yml
-  parameters:
-    dependsOn: ${{ parameters.publishDependsOn }}
-    symbolPublishingAdditionalParameters: ${{ parameters.symbolPublishingAdditionalParameters }}
-    artifactsPublishingAdditionalParameters: ${{ parameters.artifactsPublishingAdditionalParameters }}
-    publishInstallersAndChecksums: ${{ parameters.publishInstallersAndChecksums }}
+    - template: \eng\common\templates\post-build\channels\netcore-release-30.yml
+      parameters:
+        artifactsPublishingAdditionalParameters: ${{ parameters.artifactsPublishingAdditionalParameters }}
+        dependsOn: ${{ parameters.publishDependsOn }}
+        publishInstallersAndChecksums: ${{ parameters.publishInstallersAndChecksums }}
+        symbolPublishingAdditionalParameters: ${{ parameters.symbolPublishingAdditionalParameters }}
 
-- template: \eng\common\templates\post-build\channels\netcore-release-30.yml
-  parameters:
-    artifactsPublishingAdditionalParameters: ${{ parameters.artifactsPublishingAdditionalParameters }}
-    dependsOn: ${{ parameters.publishDependsOn }}
-    publishInstallersAndChecksums: ${{ parameters.publishInstallersAndChecksums }}
-    symbolPublishingAdditionalParameters: ${{ parameters.symbolPublishingAdditionalParameters }}
+    - template: \eng\common\templates\post-build\channels\netcore-release-31.yml
+      parameters:
+        artifactsPublishingAdditionalParameters: ${{ parameters.artifactsPublishingAdditionalParameters }}
+        dependsOn: ${{ parameters.publishDependsOn }}
+        publishInstallersAndChecksums: ${{ parameters.publishInstallersAndChecksums }}
+        symbolPublishingAdditionalParameters: ${{ parameters.symbolPublishingAdditionalParameters }}
 
-- template: \eng\common\templates\post-build\channels\netcore-release-31.yml
-  parameters:
-    artifactsPublishingAdditionalParameters: ${{ parameters.artifactsPublishingAdditionalParameters }}
-    dependsOn: ${{ parameters.publishDependsOn }}
-    publishInstallersAndChecksums: ${{ parameters.publishInstallersAndChecksums }}
-    symbolPublishingAdditionalParameters: ${{ parameters.symbolPublishingAdditionalParameters }}
-
-- template: \eng\common\templates\post-build\channels\netcore-internal-30.yml
-  parameters:
-    artifactsPublishingAdditionalParameters: ${{ parameters.artifactsPublishingAdditionalParameters }}
-    dependsOn: ${{ parameters.publishDependsOn }}
-    symbolPublishingAdditionalParameters: ${{ parameters.symbolPublishingAdditionalParameters }}
+    - template: \eng\common\templates\post-build\channels\netcore-internal-30.yml
+      parameters:
+        artifactsPublishingAdditionalParameters: ${{ parameters.artifactsPublishingAdditionalParameters }}
+        dependsOn: ${{ parameters.publishDependsOn }}
+        symbolPublishingAdditionalParameters: ${{ parameters.symbolPublishingAdditionalParameters }}
