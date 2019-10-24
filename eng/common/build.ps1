@@ -28,6 +28,9 @@ Param(
 
 . $PSScriptRoot\tools.ps1
 
+if ($failOnConfigureToolsetError -ne $null -And $lastExitCode -ne 0) {
+  ExitWithExitCode $lastExitCode
+}
 function Print-Usage() {
     Write-Host "Common settings:"
     Write-Host "  -configuration <value>  Build configuration: 'Debug' or 'Release' (short: -c)"

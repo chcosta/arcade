@@ -605,4 +605,5 @@ Write-PipelineSetVariable -Name 'TMP' -Value $TempDir
 $configureToolsetScript = Join-Path $EngRoot "configure-toolset.ps1"
 if (Test-Path $configureToolsetScript) {
     . $configureToolsetScript
+    ExitWithExitCode $lastExitCode
 }
