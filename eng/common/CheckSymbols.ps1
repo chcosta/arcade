@@ -1,12 +1,11 @@
 param(
-  [Parameter(Mandatory=$true)][string] $InputPath,              # Full path to directory where NuGet packages to be checked are stored
-  [Parameter(Mandatory=$true)][string] $ExtractPath,            # Full path to directory where the packages will be extracted during validation
-  [Parameter(Mandatory=$true)][string] $DotnetSymbolVersion     # Version of dotnet symbol to use
+  [Parameter(Mandatory=$true)][string] $InputPath,       # Full path to directory where NuGet packages to be checked are stored
+  [Parameter(Mandatory=$true)][string] $ExtractPath,     # Full path to directory where the packages will be extracted during validation
+  [Parameter(Mandatory=$true)][string] $SymbolToolPath   # Full path to directory where dotnet symbol-tool was installed
 )
 
-. $PSScriptRoot\post-build-utils.ps1
-
 Add-Type -AssemblyName System.IO.Compression.FileSystem
+. $PSScriptRoot\pipeline-logging-functions.ps1
 
 function FirstMatchingSymbolDescriptionOrDefault {
   param( 
@@ -37,10 +36,7 @@ function FirstMatchingSymbolDescriptionOrDefault {
   # DWARF file for a .dylib
   $DylibDwarf = $SymbolPath.Replace($Extension, ".dylib.dwarf")
  
-  $dotnetSymbolExe = "$env:USERPROFILE\.dotnet\tools"
-  $dotnetSymbolExe = Resolve-Path "$dotnetSymbolExe\dotnet-symbol.exe"
-
-  & $dotnetSymbolExe --symbols --modules --windows-pdbs $TargetServerParam $FullPath -o $SymbolsPath | Out-Null
+  .\dotnet-symbol.exe --symbols --modules --windows-pdbs $TargetServerParam $FullPath -o $SymbolsPath | Out-Null
 
   if (Test-Path $PdbPath) {
     return "PDB"
@@ -69,8 +65,7 @@ function CountMissingSymbols {
 
   # Ensure input file exist
   if (!(Test-Path $PackagePath)) {
-    Write-PipelineTaskError "Input file does not exist: $PackagePath"
-    ExitWithExitCode 1
+    throw "Input file does not exist: $PackagePath"
   }
   
   # Extensions for which we'll look for symbols
@@ -85,6 +80,9 @@ function CountMissingSymbols {
   $SymbolsPath = Join-Path -Path $ExtractPath -ChildPath "Symbols"
   
   [System.IO.Compression.ZipFile]::ExtractToDirectory($PackagePath, $ExtractPath)
+
+  # Makes easier to reference `symbol tool`
+  Push-Location $SymbolToolPath
 
   Get-ChildItem -Recurse $ExtractPath |
     Where-Object {$RelevantExtensions -contains $_.Extension} |
@@ -132,7 +130,7 @@ function CheckSymbolsAvailable {
   Get-ChildItem "$InputPath\*.nupkg" |
     ForEach-Object {
       $FileName = $_.Name
-
+	  
       # These packages from Arcade-Services include some native libraries that
       # our current symbol uploader can't handle. Below is a workaround until
       # we get issue: https://github.com/dotnet/arcade/issues/2457 sorted.
@@ -146,43 +144,16 @@ function CheckSymbolsAvailable {
         Write-Host
         return
       }
-
+	  
       Write-Host "Validating $FileName "
       $Status = CountMissingSymbols "$InputPath\$FileName"
-
+  
       if ($Status -ne 0) {
         Write-PipelineTelemetryError -Category "CheckSymbols" -Message "Missing symbols for $Status modules in the package $FileName"
-        ExitWithExitCode $exitCode
       }
 
       Write-Host
     }
 }
 
-function InstallDotnetSymbol {
-  $dotnetSymbolPackageName = "dotnet-symbol"
-
-  $dotnetRoot = InitializeDotNetCli -install:$true
-  $dotnet = "$dotnetRoot\dotnet.exe"
-  $toolList = & "$dotnet" tool list --global
-
-  if (($toolList -like "*$dotnetSymbolPackageName*") -and ($toolList -like "*$dotnetSymbolVersion*")) {
-    Write-Host "dotnet-symbol version $dotnetSymbolVersion is already installed."
-  }
-  else {
-    Write-Host "Installing dotnet-symbol version $dotnetSymbolVersion..."
-    Write-Host "You may need to restart your command window if this is the first dotnet tool you have installed."
-    & "$dotnet" tool install $dotnetSymbolPackageName --version $dotnetSymbolVersion --verbosity "minimal" --global
-  }
-}
-
-try {
-  InstallDotnetSymbol
-
-  CheckSymbolsAvailable
-}
-catch {
-  Write-Host $_.ScriptStackTrace
-  Write-PipelineTelemetryError -Category "CheckSymbols" -Message $_
-  ExitWithExitCode 1
-}
+CheckSymbolsAvailable
