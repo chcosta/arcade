@@ -16,6 +16,8 @@ try {
   Invoke-WebRequest $url -OutFile ${ToolDestinationPath}\verify.ps1 
 
   & ${ToolDestinationPath}\verify.ps1 ${PackagesPath}\*.nupkg
+
+  throw an error
 } 
 catch {
   Write-Host $_.ScriptStackTrace
