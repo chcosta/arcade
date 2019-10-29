@@ -46,7 +46,7 @@ Param (
   [int] $RetryWaitTimeInSeconds = 30
 )
 
-. $PSScriptRoot\pipeline-logging-functions.ps1
+. $PSScriptRoot\..\pipeline-logging-functions.ps1
 
 # Import common library modules
 Import-Module -Name (Join-Path $CommonLibraryDirectory "CommonLibrary.psm1")
