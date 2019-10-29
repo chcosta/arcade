@@ -132,7 +132,7 @@ function CheckSymbolsAvailable {
   Get-ChildItem "$InputPath\*.nupkg" |
     ForEach-Object {
       $FileName = $_.Name
-	  
+
       # These packages from Arcade-Services include some native libraries that
       # our current symbol uploader can't handle. Below is a workaround until
       # we get issue: https://github.com/dotnet/arcade/issues/2457 sorted.
@@ -146,13 +146,13 @@ function CheckSymbolsAvailable {
         Write-Host
         return
       }
-	  
+
       Write-Host "Validating $FileName "
       $Status = CountMissingSymbols "$InputPath\$FileName"
-  
+
       if ($Status -ne 0) {
-	    Write-PipelineTaskError "Missing symbols for $Status modules in the package $FileName"
-		ExitWithExitCode $exitCode
+        Write-PipelineTelemetryError -Category "Symbols" -Message "Missing symbols for $Status modules in the package $FileName"
+        ExitWithExitCode $exitCode
       }
 
       Write-Host
@@ -182,8 +182,7 @@ try {
   CheckSymbolsAvailable
 }
 catch {
-  Write-Host $_
-  Write-Host $_.Exception
   Write-Host $_.ScriptStackTrace
+  Write-PipelineTelemetryError -Category "Symbols" -Message $_
   ExitWithExitCode 1
 }

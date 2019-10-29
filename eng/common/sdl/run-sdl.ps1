@@ -14,6 +14,8 @@ $ErrorActionPreference = "Stop"
 Set-StrictMode -Version 2.0
 $LASTEXITCODE = 0
 
+. $PSScriptRoot\..\pipeline-logging-functions.ps1
+
 # We store config files in the r directory of .gdn
 Write-Host $ToolsList
 $gdnConfigPath = Join-Path $GdnFolder "r"
@@ -21,7 +23,7 @@ $ValidPath = Test-Path $GuardianCliLocation
 
 if ($ValidPath -eq $False)
 {
-  Write-Host "Invalid Guardian CLI Location."
+  Write-PipelineTelemetryError -Category "Sdl" -Message "Invalid Guardian CLI Location."
   exit 1
 }
 
@@ -35,7 +37,7 @@ foreach ($tool in $ToolsList) {
     Write-Host "$GuardianCliLocation configure --working-directory $WorkingDirectory --tool $tool --output-path $gdnConfigFile --logger-level $GuardianLoggerLevel --noninteractive --force --args `" TargetDirectory < $TargetDirectory `" `" OutputType < pre `" $(If ($CrScanAdditionalRunConfigParams) {$CrScanAdditionalRunConfigParams})"
     & $GuardianCliLocation configure --working-directory $WorkingDirectory --tool $tool --output-path $gdnConfigFile --logger-level $GuardianLoggerLevel --noninteractive --force --args " TargetDirectory < $TargetDirectory " "OutputType < pre" $(If ($CrScanAdditionalRunConfigParams) {$CrScanAdditionalRunConfigParams})
     if ($LASTEXITCODE -ne 0) {
-      Write-Host "Guardian configure for $tool failed with exit code $LASTEXITCODE."
+      Write-PipelineTelemetryError -Category "Sdl" -Message "Guardian configure for $tool failed with exit code $LASTEXITCODE."
       exit $LASTEXITCODE
     }
   }
@@ -43,7 +45,7 @@ foreach ($tool in $ToolsList) {
     Write-Host "$GuardianCliLocation configure --working-directory $WorkingDirectory --tool $tool --output-path $gdnConfigFile --logger-level $GuardianLoggerLevel --noninteractive --force --args `" Target < $TargetDirectory `" $(If ($PoliCheckAdditionalRunConfigParams) {$PoliCheckAdditionalRunConfigParams})"
     & $GuardianCliLocation configure --working-directory $WorkingDirectory --tool $tool --output-path $gdnConfigFile --logger-level $GuardianLoggerLevel --noninteractive --force --args " Target < $TargetDirectory " $(If ($PoliCheckAdditionalRunConfigParams) {$PoliCheckAdditionalRunConfigParams})
     if ($LASTEXITCODE -ne 0) {
-      Write-Host "Guardian configure for $tool failed with exit code $LASTEXITCODE."
+      Write-PipelineTelemetryError -Category "Sdl" -Message "Guardian configure for $tool failed with exit code $LASTEXITCODE."
       exit $LASTEXITCODE
     }
   }
@@ -54,6 +56,6 @@ foreach ($tool in $ToolsList) {
 Write-Host "$GuardianCliLocation run --working-directory $WorkingDirectory --baseline mainbaseline --update-baseline $UpdateBaseline --logger-level $GuardianLoggerLevel $configParam"
 & $GuardianCliLocation run --working-directory $WorkingDirectory --tool $tool --baseline mainbaseline --update-baseline $UpdateBaseline --logger-level $GuardianLoggerLevel $configParam
 if ($LASTEXITCODE -ne 0) {
-  Write-Host "Guardian run for $ToolsList using $configParam failed with exit code $LASTEXITCODE."
+  Write-PipelineTelemetryError -Category "Sdl" -Message "Guardian run for $ToolsList using $configParam failed with exit code $LASTEXITCODE."
   exit $LASTEXITCODE
 }

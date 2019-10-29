@@ -1,7 +1,10 @@
 function Test-FilesUseTelemetryOutput {
-    $requiredTelemetryExcludeFiles = @( "pipeline-logging-functions.ps1" )
+    $requireTelemetryExcludeFiles = @(
+        "pipeline-logging-functions.ps1", 
+        "enable-cross-org-publishing.ps1",
+        "performance-setup.ps1" )
 
-    $filesMissingTelemetry = Get-ChildItem -File -Recurse -Path $engCommonRoot -Include "*.ps1" -Exclude $requiredTelemetryExcludeFiles | Where-Object { -Not( $_ | Select-String -Pattern "Write-PipelineTelemetryError" )}
+    $filesMissingTelemetry = Get-ChildItem -File -Recurse -Path $engCommonRoot -Include "*.ps1" -Exclude $requireTelemetryExcludeFiles | Where-Object { -Not( $_ | Select-String -Pattern "Write-PipelineTelemetryError" )}
     If($filesMissingTelemetry) {
         Write-Host "All ps1 files under eng/common are required to use pipeline logging functions for writing pipeline telemetry errors."
         Write-Host "See https://github.com/dotnet/arcade/blob/master/eng/common/pipeline-logging-functions.ps1"

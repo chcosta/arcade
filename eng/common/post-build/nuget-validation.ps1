@@ -18,8 +18,7 @@ try {
   & ${ToolDestinationPath}\verify.ps1 ${PackagesPath}\*.nupkg
 } 
 catch {
-  Write-PipelineTaskError "NuGet package validation failed. Please check error logs."
-  Write-Host $_
   Write-Host $_.ScriptStackTrace
+  Write-PipelineTelemetryError -Category "NuGetValidation" -Message $_
   ExitWithExitCode 1
 }

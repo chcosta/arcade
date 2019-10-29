@@ -18,7 +18,7 @@ function CheckExitCode ([string]$stage)
 {
   $exitCode = $LASTEXITCODE
   if ($exitCode  -ne 0) {
-    Write-Host "Something failed in stage: '$stage'. Check for errors above. Exiting now..."
+    Write-PipelineTelemetryError -Category "Arcade" -Message "Something failed in stage: '$stage'. Check for errors above. Exiting now..."
     ExitWithExitCode $exitCode
   }
 }
@@ -78,9 +78,8 @@ catch {
     Write-Host "This might be a toolset repo which includes only toolset dependencies. " -NoNewline -ForegroundColor Yellow
     Write-Host "Since -includeToolset is not set there is no graph to create. Include -includeToolset and try again..." -ForegroundColor Yellow
   }
-  Write-Host $_
-  Write-Host $_.Exception
   Write-Host $_.ScriptStackTrace
+  Write-PipelineTelemetryError -Category "Arcade" -Message $_
   ExitWithExitCode 1
 } finally {
     Pop-Location

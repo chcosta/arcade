@@ -51,6 +51,7 @@ if (!$GlobalJsonFile) {
 Set-StrictMode -version 2.0
 $ErrorActionPreference="Stop"
 
+. $PSScriptRoot\pipeline-logging-functions.ps1
 Import-Module -Name (Join-Path $PSScriptRoot "native\CommonLibrary.psm1")
 
 try {
@@ -112,13 +113,14 @@ try {
             }
             $toolInstallationFailure = $true
         } else {
-            Write-Error $errMsg
+            Write-PipelineTelemetryError -Category "NativeToolsBootstrap" -Message $errMsg
             exit 1
         }
       }
     }
 
     if ((Get-Variable 'toolInstallationFailure' -ErrorAction 'SilentlyContinue') -and $toolInstallationFailure) {
+        Write-PipelineTelemetryError -Category "NativeToolsBootstrap" -Message "Native tools bootstrap failed"
         exit 1
     }
   }
@@ -136,13 +138,13 @@ try {
     return $InstallBin
   }
   else {
-    Write-Error "Native tools install directory does not exist, installation failed"
+    Write-PipelineTelemetryError -Category "NativeToolsBootstrap" -Message "Native tools install directory does not exist, installation failed"
     exit 1
   }
   exit 0
 }
 catch {
-  Write-Host $_
-  Write-Host $_.Exception
-  exit 1
+  Write-Host $_.ScriptStackTrace
+  Write-PipelineTelemetryError -Category "NativeToolsBootstrap" -Message $_
+  ExitWithExitCode 1
 }

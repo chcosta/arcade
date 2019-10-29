@@ -36,7 +36,7 @@ function SetupCredProvider {
   Remove-Item .\installcredprovider.ps1
 
   if (-Not("$env:USERPROFILE\.nuget\plugins\netcore")) {
-    Write-Host "CredProvider plugin was not installed correctly!"
+    Write-PipelineTelemetryError -Category "Arcade" -Message "CredProvider plugin was not installed correctly!"
     ExitWithExitCode 1  
   } 
   else {
@@ -49,7 +49,7 @@ function SetupCredProvider {
   $nugetConfigPath = "$RepoRoot\NuGet.config"
 
   if (-Not (Test-Path -Path $nugetConfigPath)) {
-    Write-Host "NuGet.config file not found in repo's root!"
+    Write-PipelineTelemetryError -Category "Build" -Message "NuGet.config file not found in repo's root!"
     ExitWithExitCode 1  
   }
   
@@ -120,14 +120,13 @@ try {
     InstallDotNetSdkAndRestoreArcade
   }
   else {
-    Write-Host "Unknown operation '$Operation'!"
+    Write-PipelineTelemetryError -Category "Arcade" -Message "Unknown operation '$Operation'!"
     ExitWithExitCode 1  
   }
 } 
 catch {
-  Write-Host $_
-  Write-Host $_.Exception
   Write-Host $_.ScriptStackTrace
+  Write-PipelineTelemetryError -Category "Arcade" -Message $_
   ExitWithExitCode 1
 } 
 finally {

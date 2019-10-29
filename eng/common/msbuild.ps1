@@ -18,9 +18,8 @@ try {
   MSBuild @extraArgs
 } 
 catch {
-  Write-Host $_
-  Write-Host $_.Exception
   Write-Host $_.ScriptStackTrace
+  Write-PipelineTelemetryError -Category "Build" -Message $_
   ExitWithExitCode 1
 }
 

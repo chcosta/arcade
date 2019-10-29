@@ -11,6 +11,8 @@ $ErrorActionPreference = "Stop"
 Set-StrictMode -Version 2.0
 $LASTEXITCODE = 0
 
+. $PSScriptRoot\..\pipeline-logging-functions.ps1
+
 # Don't display the console progress UI - it's a huge perf hit
 $ProgressPreference = 'SilentlyContinue'
 
@@ -39,13 +41,13 @@ Try
   Write-Host "$GuardianCliLocation init --working-directory $WorkingDirectory --logger-level $GuardianLoggerLevel"
   & $GuardianCliLocation init --working-directory $WorkingDirectory --logger-level $GuardianLoggerLevel
   if ($LASTEXITCODE -ne 0) {
-    Write-Error "Guardian init failed with exit code $LASTEXITCODE."
+    Write-PipelineTelemetryError -Category "Build" -Message "Guardian init failed with exit code $LASTEXITCODE."
   }
   # We create the mainbaseline so it can be edited later
   Write-Host "$GuardianCliLocation baseline --working-directory $WorkingDirectory --name mainbaseline"
   & $GuardianCliLocation baseline --working-directory $WorkingDirectory --name mainbaseline
   if ($LASTEXITCODE -ne 0) {
-    Write-Error "Guardian baseline failed with exit code $LASTEXITCODE."
+    Write-PipelineTelemetryError -Category "Build" -Message "Guardian baseline failed with exit code $LASTEXITCODE."
   }
   & $(Join-Path $PSScriptRoot "push-gdn.ps1") -Repository $Repository -BranchName $BranchName -GdnFolder $gdnFolder -AzureDevOpsAccessToken $AzureDevOpsAccessToken -PushReason "Initialize gdn folder"
 }

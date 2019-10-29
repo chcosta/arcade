@@ -31,6 +31,8 @@ $ErrorActionPreference = "Stop"
 Set-StrictMode -Version 2.0
 $LASTEXITCODE = 0
 
+. $PSScriptRoot\..\pipeline-logging-functions.ps1
+
 #Replace repo names to the format of org/repo
 if (!($Repository.contains('/'))) {
   $RepoName = $Repository -replace '(.*?)-(.*)', '$1/$2';
@@ -50,7 +52,7 @@ $ValidPath = Test-Path $guardianCliLocation
 
 if ($ValidPath -eq $False)
 {
-  Write-Host "Invalid Guardian CLI Location."
+  Write-PipelineTelemetryError -Category "Sdl" -Message "Invalid Guardian CLI Location."
   exit 1
 }
 
@@ -62,11 +64,11 @@ if ($TsaOnboard) {
     Write-Host "$guardianCliLocation tsa-onboard --codebase-name `"$TsaCodebaseName`" --notification-alias `"$TsaNotificationEmail`" --codebase-admin `"$TsaCodebaseAdmin`" --instance-url `"$TsaInstanceUrl`" --project-name `"$TsaProjectName`" --area-path `"$TsaBugAreaPath`" --iteration-path `"$TsaIterationPath`" --working-directory $workingDirectory --logger-level $GuardianLoggerLevel"
     & $guardianCliLocation tsa-onboard --codebase-name "$TsaCodebaseName" --notification-alias "$TsaNotificationEmail" --codebase-admin "$TsaCodebaseAdmin" --instance-url "$TsaInstanceUrl" --project-name "$TsaProjectName" --area-path "$TsaBugAreaPath" --iteration-path "$TsaIterationPath" --working-directory $workingDirectory --logger-level $GuardianLoggerLevel
     if ($LASTEXITCODE -ne 0) {
-      Write-Host "Guardian tsa-onboard failed with exit code $LASTEXITCODE."
+      Write-PipelineTelemetryError -Category "Sdl" -Message "Guardian tsa-onboard failed with exit code $LASTEXITCODE."
       exit $LASTEXITCODE
     }
   } else {
-    Write-Host "Could not onboard to TSA -- not all required values ($$TsaCodebaseName, $$TsaNotificationEmail, $$TsaCodebaseAdmin, $$TsaBugAreaPath) were specified."
+    Write-PipelineTelemetryError -Category "Sdl" -Message "Could not onboard to TSA -- not all required values ($$TsaCodebaseName, $$TsaNotificationEmail, $$TsaCodebaseAdmin, $$TsaBugAreaPath) were specified."
     exit 1
   }
 }
@@ -90,11 +92,11 @@ if ($TsaPublish) {
     Write-Host "$guardianCliLocation tsa-publish --all-tools --repository-name `"$TsaRepositoryName`" --branch-name `"$TsaBranchName`" --build-number `"$BuildNumber`" --codebase-name `"$TsaCodebaseName`" --notification-alias `"$TsaNotificationEmail`" --codebase-admin `"$TsaCodebaseAdmin`" --instance-url `"$TsaInstanceUrl`" --project-name `"$TsaProjectName`" --area-path `"$TsaBugAreaPath`" --iteration-path `"$TsaIterationPath`" --working-directory $workingDirectory --logger-level $GuardianLoggerLevel"
     & $guardianCliLocation tsa-publish --all-tools --repository-name "$TsaRepositoryName" --branch-name "$TsaBranchName" --build-number "$BuildNumber" --onboard $True --codebase-name "$TsaCodebaseName" --notification-alias "$TsaNotificationEmail" --codebase-admin "$TsaCodebaseAdmin" --instance-url "$TsaInstanceUrl" --project-name "$TsaProjectName" --area-path "$TsaBugAreaPath" --iteration-path "$TsaIterationPath" --working-directory $workingDirectory  --logger-level $GuardianLoggerLevel
     if ($LASTEXITCODE -ne 0) {
-      Write-Host "Guardian tsa-publish failed with exit code $LASTEXITCODE."
+      Write-PipelineTelemetryError -Category "Sdl" -Message "Guardian tsa-publish failed with exit code $LASTEXITCODE."
       exit $LASTEXITCODE
     }
   } else {
-    Write-Host "Could not publish to TSA -- not all required values ($$TsaBranchName, $$BuildNumber) were specified."
+    Write-PipelineTelemetryError -Category "Sdl" -Message "Could not publish to TSA -- not all required values ($$TsaBranchName, $$BuildNumber) were specified."
     exit 1
   }
 }

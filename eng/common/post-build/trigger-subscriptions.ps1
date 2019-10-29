@@ -13,7 +13,7 @@ $normalizedSourceRepo = $SourceRepo.Replace('dnceng@', '')
 $subscriptions = Get-MaestroSubscriptions -SourceRepository $normalizedSourceRepo -ChannelId $ChannelId
 
 if (!$subscriptions) {
-  Write-Host "No subscriptions found for source repo '$normalizedSourceRepo' in channel '$ChannelId'"
+  Write-PipelineTelemetryError -Category "TriggerSubscriptions" -Message "No subscriptions found for source repo '$normalizedSourceRepo' in channel '$ChannelId'"
   ExitWithExitCode 0
 }
 
@@ -49,7 +49,7 @@ if ($subscriptionsToTrigger.Count -eq 0) {
   Write-Host "No subscription matched source repo '$normalizedSourceRepo' and channel ID '$ChannelId'."
 }
 elseif ($failedTriggeredSubscription) {
-  Write-Host "At least one subscription failed to be triggered..."
+  Write-PipelineTelemetryError -Category "TriggerSubscriptions" -Message "At least one subscription failed to be triggered..."
   ExitWithExitCode 1
 }
 else {

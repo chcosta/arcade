@@ -15,7 +15,7 @@ try {
   $exitCode = $LASTEXITCODE
 
   if ($exitCode -ne 0) {
-    Write-PipelineTaskError "Something failed while running 'darc-init.ps1'. Check for errors above. Exiting now..."
+    Write-PipelineTelemetryError -Category "Darc" -Message "Something failed while running 'darc-init.ps1'. Check for errors above. Exiting now..."
     ExitWithExitCode $exitCode
   }
 
@@ -38,8 +38,7 @@ try {
     --latest-location
 }
 catch {
-  Write-Host $_
-  Write-Host $_.Exception
   Write-Host $_.ScriptStackTrace
+  Write-PipelineTelemetryError -Category "Darc" -Message $_
   ExitWithExitCode 1
 }

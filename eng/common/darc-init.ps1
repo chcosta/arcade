@@ -35,4 +35,11 @@ function InstallDarcCli ($darcVersion) {
   }
 }
 
-InstallDarcCli $darcVersion
+try {
+  InstallDarcCli $darcVersion
+}
+catch {
+  Write-Host $_.ScriptStackTrace
+  Write-PipelineTelemetryError -Category "Darc" -Message $_
+  ExitWithExitCode 1
+}

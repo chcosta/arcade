@@ -147,7 +147,7 @@ $ValidatePackage = {
     return 0
   }
   else {
-    Write-Host "$PackagePath has broken SourceLink links."
+    Write-PipelineTelemetryError -Category "SourceLink" -Message "$PackagePath has broken SourceLink links."
     return 1
   }
 }
@@ -155,7 +155,7 @@ $ValidatePackage = {
 function ValidateSourceLinkLinks {
   if ($GHRepoName -ne "" -and !($GHRepoName -Match "^[^\s\/]+/[^\s\/]+$")) {
     if (!($GHRepoName -Match "^[^\s-]+-[^\s]+$")) {
-      Write-PipelineTaskError "GHRepoName should be in the format <org>/<repo> or <org>-<repo>. '$GHRepoName'"
+      Write-PipelineTelemetryError -Category "SourceLink" -Message "GHRepoName should be in the format <org>/<repo> or <org>-<repo>. '$GHRepoName'"
       ExitWithExitCode 1
     }
     else {
@@ -164,7 +164,7 @@ function ValidateSourceLinkLinks {
   }
 
   if ($GHCommit -ne "" -and !($GHCommit -Match "^[0-9a-fA-F]{40}$")) {
-    Write-PipelineTaskError "GHCommit should be a 40 chars hexadecimal string. '$GHCommit'"
+    Write-PipelineTelemetryError -Category "SourceLink" -Message "GHCommit should be a 40 chars hexadecimal string. '$GHCommit'"
     ExitWithExitCode 1
   }
 
@@ -222,7 +222,7 @@ function ValidateSourceLinkLinks {
     }
   }
   if ($ValidationFailures -gt 0) {
-    Write-PipelineTaskError " $ValidationFailures package(s) failed validation."
+    Write-PipelineTelemetryError -Category "SourceLink" -Message "$ValidationFailures package(s) failed validation."
     ExitWithExitCode 1
   }
 }
@@ -250,8 +250,8 @@ try {
   ValidateSourceLinkLinks 
 }
 catch {
-  Write-Host $_
   Write-Host $_.Exception
   Write-Host $_.ScriptStackTrace
+  Write-PipelineTelemetryError -Category "SourceLink" -Message $_
   ExitWithExitCode 1
 }

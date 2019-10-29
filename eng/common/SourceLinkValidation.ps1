@@ -6,6 +6,8 @@ param(
   [Parameter(Mandatory=$true)][string] $GHCommit             # GitHub commit SHA used to build the packages
 )
 
+. $PSScriptRoot\pipeline-logging-functions.ps1
+
 # Cache/HashMap (File -> Exist flag) used to consult whether a file exist 
 # in the repository at a specific commit point. This is populated by inserting
 # all files present in the repo at a specific commit point.
@@ -133,13 +135,13 @@ $ValidatePackage = {
 
 function ValidateSourceLinkLinks {
   if (!($GHRepoName -Match "^[^\s\/]+/[^\s\/]+$")) {
-    Write-Host "GHRepoName should be in the format <org>/<repo>"
+    Write-PipelineTelemetryError -Category "Build" -Message "GHRepoName should be in the format <org>/<repo>"
     $global:LASTEXITCODE = 1
     return
   }
 
   if (!($GHCommit -Match "^[0-9a-fA-F]{40}$")) {
-    Write-Host "GHCommit should be a 40 chars hexadecimal string"
+    Write-PipelineTelemetryError -Category "Build" -Message "GHCommit should be a 40 chars hexadecimal string"
     $global:LASTEXITCODE = 1
     return
   }
@@ -160,7 +162,7 @@ function ValidateSourceLinkLinks {
     }
   }
   catch {
-    Write-Host "Problems downloading the list of files from the repo. Url used: $RepoTreeURL"
+    Write-PipelineTelemetryError -Category "Build" -Message "Problems downloading the list of files from the repo. Url used: $RepoTreeURL"
     $global:LASTEXITCODE = 1
     return
   }
