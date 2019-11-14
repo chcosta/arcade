@@ -48,8 +48,8 @@ function Write-PipelineTaskError {
       [string]$LineNumber,
       [string]$ColumnNumber,
       [switch]$AsOutput)
-  
-      if(!$ci) {
+
+      if(-Not (Test-Path variable:ci) -Or !$ci) {
         if($Type -eq 'error') {
           Write-Host $Message -ForegroundColor Red
           return
@@ -80,7 +80,7 @@ function Write-PipelineTaskError {
       [switch]$AsOutput,
       [bool]$IsMultiJobVariable=$true)
 
-      if($ci) {
+      if(-Not (Test-Path variable:ci) -Or !$ci) {
         Write-LoggingCommand -Area 'task' -Event 'setvariable' -Data $Value -Properties @{
           'variable' = $Name
           'isSecret' = $Secret
@@ -95,7 +95,8 @@ function Write-PipelineTaskError {
       [Parameter(Mandatory=$true)]
       [string]$Path,
       [switch]$AsOutput)
-      if($ci) {
+
+      if(-Not (Test-Path variable:ci) -Or !$ci) {
         Write-LoggingCommand -Area 'task' -Event 'prependpath' -Data $Path -AsOutput:$AsOutput
       }
   }
