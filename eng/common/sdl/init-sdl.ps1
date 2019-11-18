@@ -41,7 +41,7 @@ Try
   Write-Host "$GuardianCliLocation init --working-directory $WorkingDirectory --logger-level $GuardianLoggerLevel"
   & $GuardianCliLocation init --working-directory $WorkingDirectory --logger-level $GuardianLoggerLevel
   if ($LASTEXITCODE -ne 0) {
-    Write-PipelineTelemetryError -Category "Build" -Message "Guardian init failed with exit code $LASTEXITCODE."
+    Write-PipelineTelemetryError -Category "Sdl" -Message "Guardian init failed with exit code $LASTEXITCODE."
   }
   # We create the mainbaseline so it can be edited later
   Write-Host "$GuardianCliLocation baseline --working-directory $WorkingDirectory --name mainbaseline"
