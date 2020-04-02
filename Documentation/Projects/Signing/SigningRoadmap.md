@@ -27,3 +27,7 @@ Signing plan documentation is available [here](https://github.com/dotnet/arcade/
 - Switch repos to consume / publish to unsigned feed and publish to signed feed
 
 - Up until this point, signing continues as it currently is.  During this stage, we will being switching some repos to only sign via promotion.
+
+## Notes
+
+- Due to increasingly limited Azure core availability, I'm beginning to experience increased slowness in the ability to produce / promote official Arcade builds.  This degredation will have a large impact on the development loop of this project and may cause large adjustments in the dates defined above.
