@@ -8,15 +8,13 @@ Signing plan documentation is available [here](https://github.com/dotnet/arcade/
 
 - Update signing validation to work with build manifest
 
-- Enable not signing non-shipping packages
+## Stage 2: MSI signing - mid May
 
-## Stage 2: MSI signing - late April
+- Create task / target for preserving Wix and /or MSI obj/metadata - late April
 
-- Create task / target for preserving MSI obj/metadata - mid April
+- Promotion job which will consume build manifest, artifacts, and obj data to construct a valid MSI, and publish to signed feed - mid May
 
-- Promotion job which will consume build manifest, artifacts, and obj data to construct a valid MSI, and publish to signed feed
-
-## Stage 3: Other signing - late May
+## Stage 3: Other signing - early June
 
 - Enable package signing in Promotion job
 
@@ -24,7 +22,7 @@ Signing plan documentation is available [here](https://github.com/dotnet/arcade/
 
 - Add Mac notarization to Promotion job
 
-## Stage 4: Transition - June
+## Stage 4: Transition - June - July
 
 - Switch repos to consume / publish to unsigned feed and publish to signed feed
 
