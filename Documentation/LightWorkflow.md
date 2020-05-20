@@ -33,3 +33,47 @@ Make these changes to the runtime repo to produce / publish Light packages.
    </PropertyGroup>
 ```
 
+Build of the runtime repo with Light Command packages: https://dnceng.visualstudio.com/internal/_build/results?buildId=649910&view=results
+
+Packages were published to dotnetfeed
+
+Manifest_Installers.xml: 
+
+```
+... Location="https://dotnetfeed.blob.core.windows.net/dotnet-core/index.json">
+  <Blob Id="Runtime/5.0.0-preview.6.20268.4/LightCommandPackage-dotnet-apphost-pack-5.0.0-preview.6.20268.4-win-x64.zip" />
+  <Blob Id="Runtime/5.0.0-preview.6.20268.4/LightCommandPackage-dotnet-apphost-pack-5.0.0-preview.6.20268.4-win-x64.zip.sha512" />
+  <Blob Id="Runtime/5.0.0-preview.6.20268.4/LightCommandPackage-dotnet-apphost-pack-5.0.0-preview.6.20268.4-win-x64_arm.zip" />
+  <Blob Id="Runtime/5.0.0-preview.6.20268.4/LightCommandPackage-dotnet-apphost-pack-5.0.0-preview.6.20268.4-win-x64_arm.zip.sha512" />
+  <Blob Id="Runtime/5.0.0-preview.6.20268.4/LightCommandPackage-dotnet-apphost-pack-5.0.0-preview.6.20268.4-win-x64_arm64.zip" />
+  <Blob Id="Runtime/5.0.0-preview.6.20268.4/LightCommandPackage-dotnet-apphost-pack-5.0.0-preview.6.20268.4-win-x64_arm64.zip.sha512" />
+  <Blob Id="Runtime/5.0.0-preview.6.20268.4/LightCommandPackage-dotnet-apphost-pack-5.0.0-preview.6.20268.4-win-x64_x86.zip" />
+  <Blob Id="Runtime/5.0.0-preview.6.20268.4/LightCommandPackage-dotnet-apphost-pack-5.0.0-preview.6.20268.4-win-x64_x86.zip.sha512" />
+  <Blob Id="Runtime/5.0.0-preview.6.20268.4/LightCommandPackage-dotnet-apphost-pack-5.0.0-preview.6.20268.4-win-x86.zip" />
+  <Blob Id="Runtime/5.0.0-preview.6.20268.4/LightCommandPackage-dotnet-apphost-pack-5.0.0-preview.6.20268.4-win-x86.zip.sha512" />
+  <Blob Id="Runtime/5.0.0-preview.6.20268.4/LightCommandPackage-dotnet-apphost-pack-5.0.0-preview.6.20268.4-win-x86_arm.zip" />
+  <Blob Id="Runtime/5.0.0-preview.6.20268.4/LightCommandPackage-dotnet-apphost-pack-5.0.0-preview.6.20268.4-win-x86_arm.zip.sha512" />
+  <Blob Id="Runtime/5.0.0-preview.6.20268.4/LightCommandPackage-dotnet-apphost-pack-5.0.0-preview.6.20268.4-win-x86_arm64.zip" />
+  <Blob Id="Runtime/5.0.0-preview.6.20268.4/LightCommandPackage-dotnet-apphost-pack-5.0.0-preview.6.20268.4-win-x86_arm64.zip.sha512" />
+  <Blob Id="Runtime/5.0.0-preview.6.20268.4/LightCommandPackage-dotnet-apphost-pack-5.0.0-preview.6.20268.4-win-x86_x64.zip" />
+  <Blob Id="Runtime/5.0.0-preview.6.20268.4/LightCommandPackage-dotnet-apphost-pack-5.0.0-preview.6.20268.4-win-x86_x64.zip.sha512" />
+  <Blob Id="Runtime/5.0.0-preview.6.20268.4/LightCommandPackage-dotnet-crossgen2-pack-5.0.0-preview.6.20268.4-win-x64.zip" />
+  <Blob Id="Runtime/5.0.0-preview.6.20268.4/LightCommandPackage-dotnet-crossgen2-pack-5.0.0-preview.6.20268.4-win-x64.zip.sha512" />
+  <Blob Id="Runtime/5.0.0-preview.6.20268.4/LightCommandPackage-dotnet-host-5.0.0-preview.6.20268.4-win-x64.zip" />
+  <Blob Id="Runtime/5.0.0-preview.6.20268.4/LightCommandPackage-dotnet-host-5.0.0-preview.6.20268.4-win-x64.zip.sha512" />
+  <Blob Id="Runtime/5.0.0-preview.6.20268.4/LightCommandPackage-dotnet-host-5.0.0-preview.6.20268.4-win-x86.zip" />
+  <Blob Id="Runtime/5.0.0-preview.6.20268.4/LightCommandPackage-dotnet-host-5.0.0-preview.6.20268.4-win-x86.zip.sha512" />
+  <Blob Id="Runtime/5.0.0-preview.6.20268.4/LightCommandPackage-dotnet-hostfxr-5.0.0-preview.6.20268.4-win-x64.zip" />
+  <Blob Id="Runtime/5.0.0-preview.6.20268.4/LightCommandPackage-dotnet-hostfxr-5.0.0-preview.6.20268.4-win-x64.zip.sha512" />
+  <Blob Id="Runtime/5.0.0-preview.6.20268.4/LightCommandPackage-dotnet-hostfxr-5.0.0-preview.6.20268.4-win-x86.zip" />
+  <Blob Id="Runtime/5.0.0-preview.6.20268.4/LightCommandPackage-dotnet-hostfxr-5.0.0-preview.6.20268.4-win-x86.zip.sha512" />
+  <Blob Id="Runtime/5.0.0-preview.6.20268.4/LightCommandPackage-dotnet-runtime-5.0.0-preview.6.20268.4-win-x64.zip" />
+  <Blob Id="Runtime/5.0.0-preview.6.20268.4/LightCommandPackage-dotnet-runtime-5.0.0-preview.6.20268.4-win-x64.zip.sha512" />
+  <Blob Id="Runtime/5.0.0-preview.6.20268.4/LightCommandPackage-dotnet-runtime-5.0.0-preview.6.20268.4-win-x86.zip" />
+  <Blob Id="Runtime/5.0.0-preview.6.20268.4/LightCommandPackage-dotnet-runtime-5.0.0-preview.6.20268.4-win-x86.zip.sha512" />
+  <Blob Id="Runtime/5.0.0-preview.6.20268.4/LightCommandPackage-dotnet-targeting-pack-5.0.0-preview.6.20268.4-win-x64.zip" />
+  <Blob Id="Runtime/5.0.0-preview.6.20268.4/LightCommandPackage-dotnet-targeting-pack-5.0.0-preview.6.20268.4-win-x64.zip.sha512" />
+  <Blob Id="Runtime/5.0.0-preview.6.20268.4/LightCommandPackage-dotnet-targeting-pack-5.0.0-preview.6.20268.4-win-x86.zip" />
+  <Blob Id="Runtime/5.0.0-preview.6.20268.4/LightCommandPackage-dotnet-targeting-pack-5.0.0-preview.6.20268.4-win-x86.zip.sha512" />
+  ...
+```
