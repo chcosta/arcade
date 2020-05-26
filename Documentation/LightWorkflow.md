@@ -33,9 +33,8 @@ Make these changes to the runtime repo to produce / publish Light packages.
    </PropertyGroup>
 ```
 
-Build of the runtime repo with Light Command packages: https://dnceng.visualstudio.com/internal/_build/results?buildId=649910&view=results
+There's no current runtime build that has been "promoted" and published the Light packages.  This Runtime build is a viable candidate though, https://dev.azure.com/dnceng/internal/_build/results?buildId=649910.  The LightPackages are listed in the `AssetManifests/manifest_installers.xml` file
 
-Packages were published to dotnetfeed
 
 Manifest_Installers.xml: 
 
