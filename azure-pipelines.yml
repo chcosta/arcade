@@ -2,7 +2,9 @@ jobs:
   - job: Foo
     displayName: Signing
     steps:
-      - script: echo ##vso[task.setvariable isSecret=False;variable=msbuildPath;isOutput=True]C:\Program Files (x86)\Microsoft Visual Studio\2019\Preview\\MSBuild\Current\Bin\MSBuild.exe
-      - script: echo $ msbuildpath - $(msbuildPath)
+      - script: echo "##vso[task.setvariable isSecret=False;variable=msbuildPath;isOutput=True]C:\Program Files (x86)\Microsoft Visual Studio\2019\Preview\\MSBuild\Current\Bin\MSBuild.exe"
+      - script: echo "##vso[task.setvariable isSecret=False;variable=msbuildPath2;isOutput=False]C:\Program Files (x86)\Microsoft Visual Studio\2019\Preview\\MSBuild\Current\Bin\MSBuild.exe"
+
       - script: echo % msbuildpath - %msbuildPath%
-      - script: echo mustache path - {{ variables['msbuildPath'] }}
+      - script: echo % msbuildpath - %msbuildPath2%
+
