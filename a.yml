@@ -5,4 +5,8 @@ jobs:
       - script: echo ##vso[task.setvariable isSecret=False;variable=msbuildPath;isOutput=True]C:\Program Files (x86)\Microsoft Visual Studio\2019\Preview\\MSBuild\Current\Bin\MSBuild.exe
       - script: echo $ msbuildpath - $(msbuildPath)
       - script: echo % msbuildpath - %msbuildPath%
-      - script: echo mustache path - {{ variables['msbuildPath'] }}
+        env:
+          msbuildPath: $(msbuildPath)
+      - script: echo mustache path - %msbuildPath%
+        env:
+          msbuildPath: ${{ variables['msbuildPath'] }}
