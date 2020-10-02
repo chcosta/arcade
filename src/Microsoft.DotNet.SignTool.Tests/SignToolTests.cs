@@ -312,8 +312,13 @@ namespace Microsoft.DotNet.SignTool.Tests
             var signingInput = new Configuration(signToolArgs.TempDir, itemsToSign, strongNameSignInfo, fileSignInfo, extensionsSignInfo, dualCertificates, task.Log).GenerateListOfFiles();
             var util = new BatchSignUtil(task.BuildEngine, task.Log, signTool, signingInput, new string[] { });
 
+            var beforeSigningEngineFilesList = Directory.GetFiles(signToolArgs.TempDir, "*-engine.exe", new EnumerationOptions() { RecurseSubdirectories = true });
             util.Go(doStrongNameCheck: true);
-
+            var afterSigningEngineFilesList = Directory.GetFiles(signToolArgs.TempDir, "*-engine.exe", new EnumerationOptions() { RecurseSubdirectories = true });
+            
+            // validate no intermediate msi engine files have populated the drop (they fail signing validation).
+            Assert.Same(beforeSigningEngineFilesList, afterSigningEngineFilesList);
+            
             Assert.Same(ByteSequenceComparer.Instance, signingInput.ZipDataMap.KeyComparer);
 
             // The list of files that would be signed was captured inside the FakeBuildEngine,
@@ -979,7 +984,7 @@ $@"<FilesToSign Include=""{Path.Combine(_tmpDir, "ContainerSigning", "0", "ABCDE
   <Authenticode>Microsoft400</Authenticode>
 </FilesToSign>"
             },
-wixToolsPath: GetWixToolPath());
+            wixToolsPath: GetWixToolPath());
 
         }
         [SkippableFact]

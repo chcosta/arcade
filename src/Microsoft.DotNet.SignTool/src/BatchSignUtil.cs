@@ -160,6 +160,10 @@ namespace Microsoft.DotNet.SignTool
                 {
                     _log.LogMessage(MessageImportance.Normal, $"Attaching engine {engine.Key} to {engine.Value.FullPath}");
                     int exitCode = RunWixTool("insignia.exe", $"-ab {engine.Key} {engine.Value.FullPath} -o {engine.Value.FullPath}", workingDirectory, _signTool.WixToolsPath);
+
+                    // cleanup engines (they fail signing verification if they stay in the drop
+                    File.Delete(engine.Key);
+
                     if (exitCode != 0)
                     {
                         _log.LogError($"Failed to attach engine to {engine.Value.FullPath}");

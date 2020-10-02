@@ -235,7 +235,6 @@ namespace Microsoft.DotNet.SignTool
             // the wixpack so we can associate the wixpack with the item
             var wixPack = _wixPacks.SingleOrDefault(w => w.Moniker.Equals(Path.GetFileName(fullPath), StringComparison.OrdinalIgnoreCase));
             var fileSignInfo = ExtractSignInfo(fullPath, collisionPriorityId, contentHash, forceRepack, wixPack.FullPath, containerPath);
-
             var key = new SignedFileContentKey(contentHash, Path.GetFileName(fullPath));
 
             if (_filesByContentKey.TryGetValue(key, out var existingSignInfo))
@@ -274,7 +273,19 @@ namespace Microsoft.DotNet.SignTool
             _log.LogMessage(MessageImportance.Low, $"Caching file {key.FileName} {key.StringHash}");
             _filesByContentKey.Add(key, fileSignInfo);
 
-            if (fileSignInfo.SignInfo.ShouldSign || fileSignInfo.ForceRepack || fileSignInfo.IsContainer())
+            if (fileSignInfo.IsZipContainer() || fileSignInfo.ForceRepack)
+            {
+                // Only sign containers if the file itself is unsigned, or 
+                // an item in the container is unsigned.
+                bool shouldSign = fileSignInfo.SignInfo.ShouldSign;
+                var hasSignableParts = _zipDataMap[contentHash].NestedParts.Any(b => b.FileSignInfo.SignInfo.ShouldSign == true);
+                shouldSign |= hasSignableParts;
+                if(shouldSign)
+                {
+                    _filesToSign.Add(fileSignInfo);
+                }
+            }
+            else if (fileSignInfo.SignInfo.ShouldSign || fileSignInfo.ForceRepack)
             {
                 _filesToSign.Add(fileSignInfo);
             }
@@ -395,7 +406,30 @@ namespace Microsoft.DotNet.SignTool
                 fileSpec = matchedNameTokenFramework ? $" (PublicKeyToken = {peInfo.PublicKeyToken}, Framework = {peInfo.TargetFramework})" :
                         matchedNameToken ? $" (PublicKeyToken = {peInfo.PublicKeyToken})" : string.Empty;
             }
-
+            else if (FileSignInfo.IsNupkg(fullPath) || FileSignInfo.IsVsix(fullPath))
+            {
+                isAlreadySigned = VerifySignatures.IsSignedContainer(fullPath);
+                if(!isAlreadySigned)
+                {
+                    _log.LogMessage($"Container {fullPath} does not have a signature marker.");
+                }
+                else
+                {
+                    _log.LogMessage(MessageImportance.Low, $"Container {fullPath} has a signature marker.");
+                }
+            }
+            else if (FileSignInfo.IsWix(fullPath))
+            {
+                isAlreadySigned = VerifySignatures.IsDigitallySigned(fullPath);
+                if (!isAlreadySigned)
+                {
+                    _log.LogMessage($"File {fullPath} is not digitally signed.");
+                }
+                else
+                {
+                    _log.LogMessage(MessageImportance.Low, $"File {fullPath} is digitally signed.");
+                }
+            }
             // We didn't find any specific information for PE files using PKT + TargetFramework
             if (explicitCertificateName == null)
             {
@@ -464,6 +498,41 @@ namespace Microsoft.DotNet.SignTool
 
             return new FileSignInfo(fullPath, hash, SignInfo.Ignore, forceRepack: forceRepack, wixContentFilePath: wixContentFilePath);
         }
+
+        internal bool IsSignedContainer(string fullPath)
+        {
+            if (FileSignInfo.IsZipContainer(fullPath))
+            {
+                bool signedContainer = false;
+
+                using (var archive = new ZipArchive(File.OpenRead(fullPath), ZipArchiveMode.Read))
+                {
+                    foreach (ZipArchiveEntry entry in archive.Entries)
+                    {
+
+                        if (FileSignInfo.IsNupkg(fullPath) && VerifySignatures.VerifySignedNupkgByFileMarker(fullPath))
+                        {
+                            signedContainer = true;
+                            break;
+                        }
+                        else if(FileSignInfo.IsVsix(fullPath) && VerifySignatures.VerifySingedVSIXByFileMarker(fullPath))
+                        {
+                            signedContainer = true;
+                            break;
+                        }
+                    }
+                }
+
+                if (!signedContainer)
+                {
+                    _log.LogMessage($"Container {fullPath} does not have signature marker.");
+                    return false;
+                }
+                _log.LogMessage(MessageImportance.Low, $"Container {fullPath} has a signature marker.");
+            }
+            return true;
+        }
+
 
         private void LogWarning(SigningToolErrorCode code, string message)
             => _log.LogWarning(subcategory: null, warningCode: code.ToString(), helpKeyword: null, file: null, lineNumber: 0, columnNumber: 0, endLineNumber: 0, endColumnNumber: 0, message: message);
