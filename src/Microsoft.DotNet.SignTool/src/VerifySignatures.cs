@@ -25,7 +25,6 @@ namespace Microsoft.DotNet.SignTool
                 {
                     foreach (ZipArchiveEntry entry in archive.Entries)
                     {
-
                         if (FileSignInfo.IsNupkg(fullPath) && VerifySignatures.VerifySignedNupkgByFileMarker(entry.FullName))
                         {
                             signedContainer = true;
