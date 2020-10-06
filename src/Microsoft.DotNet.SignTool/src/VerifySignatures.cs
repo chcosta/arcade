@@ -14,7 +14,7 @@ namespace Microsoft.DotNet.SignTool
         {
             return Path.GetFileName(filePath).Equals(".signature.p7s", StringComparison.OrdinalIgnoreCase);
         }
-        internal static bool VerifySingedVSIXByFileMarker(string filePath)
+        internal static bool VerifySignedVSIXByFileMarker(string filePath)
         {
             return filePath.StartsWith("package/services/digital-signature/", StringComparison.OrdinalIgnoreCase);
         }
@@ -33,7 +33,7 @@ namespace Microsoft.DotNet.SignTool
                             signedContainer = true;
                             break;
                         }
-                        else if (FileSignInfo.IsVsix(fullPath) && VerifySignatures.VerifySingedVSIXByFileMarker(entry.FullName))
+                        else if (FileSignInfo.IsVsix(fullPath) && VerifySignatures.VerifySignedVSIXByFileMarker(entry.FullName))
                         {
                             signedContainer = true;
                             break;

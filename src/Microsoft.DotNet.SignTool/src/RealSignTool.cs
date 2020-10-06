@@ -129,7 +129,7 @@ namespace Microsoft.DotNet.SignTool
 
         public override bool VerifySignedVSIXFileMarker(string filePath)
         {
-            return VerifySignatures.VerifySingedVSIXByFileMarker(filePath);
+            return VerifySignatures.VerifySignedVSIXByFileMarker(filePath);
         }
     }
 }

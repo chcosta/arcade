@@ -523,7 +523,7 @@ namespace Microsoft.DotNet.SignTool
                             signedContainer = true;
                             break;
                         }
-                        else if(FileSignInfo.IsVsix(fullPath) && VerifySignatures.VerifySingedVSIXByFileMarker(fullPath))
+                        else if(FileSignInfo.IsVsix(fullPath) && VerifySignatures.VerifySignedVSIXByFileMarker(fullPath))
                         {
                             signedContainer = true;
                             break;
