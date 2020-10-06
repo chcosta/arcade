@@ -273,13 +273,22 @@ namespace Microsoft.DotNet.SignTool
             _log.LogMessage(MessageImportance.Low, $"Caching file {key.FileName} {key.StringHash}");
             _filesByContentKey.Add(key, fileSignInfo);
 
-            if (fileSignInfo.IsZipContainer() || fileSignInfo.ForceRepack)
+            if (fileSignInfo.IsContainer() || fileSignInfo.ForceRepack)
             {
                 // Only sign containers if the file itself is unsigned, or 
                 // an item in the container is unsigned.
                 bool shouldSign = fileSignInfo.SignInfo.ShouldSign;
-                var hasSignableParts = _zipDataMap[contentHash].NestedParts.Any(b => b.FileSignInfo.SignInfo.ShouldSign == true);
-                shouldSign |= hasSignableParts;
+                if (!shouldSign)
+                {
+                    var hasSignableParts = _zipDataMap[contentHash].NestedParts.Any(b => b.FileSignInfo.SignInfo.ShouldSign == true);
+                    if(hasSignableParts)
+                    {
+                        // If the file has contents that need to be signed, then re-evaluate the signing info and specify forceRepack is true
+                        fileSignInfo = ExtractSignInfo(fullPath, collisionPriorityId, contentHash, forceRepack: true, wixPack.FullPath, containerPath);
+                        _filesByContentKey[key] = fileSignInfo;
+                    }
+                    shouldSign |= hasSignableParts;
+                }
                 if(shouldSign)
                 {
                     _filesToSign.Add(fileSignInfo);
@@ -456,7 +465,7 @@ namespace Microsoft.DotNet.SignTool
                         .Where(d => d.ItemSpec == signInfo.Certificate &&
                         d.GetMetadata(SignToolConstants.CollisionPriorityId) == _hashToCollisionIdMap[stringHash]).Any();
 
-                if (isAlreadySigned && !dualCerts)
+                if (isAlreadySigned && !dualCerts && !forceRepack)
                 {
                     return new FileSignInfo(fullPath, hash, SignInfo.AlreadySigned, forceRepack: forceRepack, wixContentFilePath: wixContentFilePath);
                 }
