@@ -27,7 +27,7 @@ namespace Microsoft.DotNet.SignTool
         /// This store content information for container files.
         /// Key is the content hash of the file.
         /// </summary>
-        private readonly Dictionary<ImmutableArray<byte>, ZipData> _zipDataMap;
+        private readonly Dictionary<SignedFileContentKey, ZipData> _zipDataMap;
 
         /// <summary>
         /// Path to where container files will be extracted.
@@ -121,7 +121,7 @@ namespace Microsoft.DotNet.SignTool
             _filesToSign = new List<FileSignInfo>();
             _wixPacks = new List<WixPackInfo>();
             _filesToCopy = new List<KeyValuePair<string, string>>();
-            _zipDataMap = new Dictionary<ImmutableArray<byte>, ZipData>(ByteSequenceComparer.Instance);
+            _zipDataMap = new Dictionary<SignedFileContentKey, ZipData>();
             _filesByContentKey = new Dictionary<SignedFileContentKey, FileSignInfo>();
             _itemsToSign = itemsToSign;
             _dualCertificates = dualCertificates == null ? new ITaskItem[0] : dualCertificates;
@@ -218,7 +218,7 @@ namespace Microsoft.DotNet.SignTool
                 }
             }
 
-            return new BatchSignInput(_filesToSign.ToImmutableArray(), _zipDataMap.ToImmutableDictionary(ByteSequenceComparer.Instance), _filesToCopy.ToImmutableArray());
+            return new BatchSignInput(_filesToSign.ToImmutableArray(), _zipDataMap.ToImmutableDictionary(), _filesToCopy.ToImmutableArray());
         }
 
         private FileSignInfo TrackFile(
@@ -235,9 +235,8 @@ namespace Microsoft.DotNet.SignTool
             // the wixpack so we can associate the wixpack with the item
             var wixPack = _wixPacks.SingleOrDefault(w => w.Moniker.Equals(Path.GetFileName(fullPath), StringComparison.OrdinalIgnoreCase));
             var fileSignInfo = ExtractSignInfo(fullPath, collisionPriorityId, contentHash, forceRepack, wixPack.FullPath, containerPath);
-            var key = new SignedFileContentKey(contentHash, Path.GetFileName(fullPath));
 
-            if (_filesByContentKey.TryGetValue(key, out var existingSignInfo))
+            if (_filesByContentKey.TryGetValue(fileSignInfo.FileContentKey, out var existingSignInfo))
             {
                 // If we saw this file already we wouldn't call TrackFile unless this is a top-level file.
                 Debug.Assert(!isNested);
@@ -249,29 +248,24 @@ namespace Microsoft.DotNet.SignTool
 
             if (fileSignInfo.IsContainer())
             {
-                if (_zipDataMap.ContainsKey(contentHash))
-                {
-                    _log.LogError($"File '{fullPath}' has the same content hash as '{_zipDataMap[contentHash].FileSignInfo.FullPath}'. The incorrect file will be written.");
-                }
-
                 if (fileSignInfo.IsZipContainer())
                 {
                     if (TryBuildZipData(fileSignInfo, out var zipData))
                     {
-                        _zipDataMap[contentHash] = zipData;
+                        _zipDataMap[fileSignInfo.FileContentKey] = zipData;
                     }
                 }
                 else if (fileSignInfo.IsWixContainer())
                 {
-                    Console.WriteLine($"Trying to gather data for {fullPath}");
+                    _log.LogMessage($"Trying to gather data for wix container {fullPath}");
                     if (TryBuildWixData(fileSignInfo, out var msiData))
                     {
-                        _zipDataMap[contentHash] = msiData;
+                        _zipDataMap[fileSignInfo.FileContentKey] = msiData;
                     }
                 }
             }
-            _log.LogMessage(MessageImportance.Low, $"Caching file {key.FileName} {key.StringHash}");
-            _filesByContentKey.Add(key, fileSignInfo);
+            _log.LogMessage(MessageImportance.Low, $"Caching file {fileSignInfo.FileContentKey.FileName} {fileSignInfo.FileContentKey.StringHash}");
+            _filesByContentKey.Add(fileSignInfo.FileContentKey, fileSignInfo);
 
             if (fileSignInfo.IsContainer() || fileSignInfo.ForceRepack)
             {
@@ -321,6 +315,12 @@ namespace Microsoft.DotNet.SignTool
             PEInfo peInfo = null;
             string stringHash = ContentUtil.HashToString(hash);
 
+            // handle multi-part extensions like ".symbols.nupkg" specified in FileExtensionSignInfo
+            if (_fileExtensionSignInfo != null)
+            {
+                extension = _fileExtensionSignInfo.OrderByDescending(o => o.Key.Length).FirstOrDefault(f => fileName.EndsWith(f.Key, StringComparison.OrdinalIgnoreCase)).Key ?? extension;
+            }
+
             // Asset is nested asset part of a container. Try to get it from the visited assets first
             if (string.IsNullOrEmpty(collisionPriorityId) &&
                 !string.IsNullOrEmpty(containerPath))
@@ -353,7 +353,7 @@ namespace Microsoft.DotNet.SignTool
             // Try to determine default certificate name by the extension of the file. Since there might be dupes
             // we get the one which maps a collision id or the first of the returned ones in case there is no
             // collision id
-            bool hasSignInfos = _fileExtensionSignInfo.TryGetValue(Path.GetExtension(fullPath), out var signInfos);
+            bool hasSignInfos = _fileExtensionSignInfo.TryGetValue(extension, out var signInfos);
             SignInfo signInfo = SignInfo.Ignore;
             bool hasSignInfo = false;
 
