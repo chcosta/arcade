@@ -274,12 +274,12 @@ namespace Microsoft.DotNet.SignTool
                 bool shouldSign = fileSignInfo.SignInfo.ShouldSign;
                 if (!shouldSign)
                 {
-                    var hasSignableParts = _zipDataMap[contentHash].NestedParts.Any(b => b.FileSignInfo.SignInfo.ShouldSign == true);
+                    var hasSignableParts = _zipDataMap[fileSignInfo.FileContentKey].NestedParts.Any(b => b.FileSignInfo.SignInfo.ShouldSign == true);
                     if(hasSignableParts)
                     {
                         // If the file has contents that need to be signed, then re-evaluate the signing info and specify forceRepack is true
                         fileSignInfo = ExtractSignInfo(fullPath, collisionPriorityId, contentHash, forceRepack: true, wixPack.FullPath, containerPath);
-                        _filesByContentKey[key] = fileSignInfo;
+                        _filesByContentKey[fileSignInfo.FileContentKey] = fileSignInfo;
                     }
                     shouldSign |= hasSignableParts;
                 }
