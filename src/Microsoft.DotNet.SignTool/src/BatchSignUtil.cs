@@ -98,12 +98,12 @@ namespace Microsoft.DotNet.SignTool
             // Generate the list of signed files in a deterministic order. Makes it easier to track down
             // bugs if repeated runs use the same ordering.
             var toSignList = _batchData.FilesToSign.ToList();
+            var toRepackList = _batchData.FilesToSign.Where(x => (x.ForceRepack || x.SignInfo.HasSignableParts) && x.IsContainer())?.Select(x => x.FullPath)?.ToList();
             var round = 0;
             var signedSet = new HashSet<SignedFileContentKey>();
 
             bool signFiles(IEnumerable<FileSignInfo> files, out int totalFilesSigned)
             {
-
                 var filesToSign = files.Where(fileInfo => fileInfo.SignInfo.ShouldSign).ToArray();
                 totalFilesSigned = filesToSign.Length;
                 _log.LogMessage(MessageImportance.High, $"Signing Round {round}: {filesToSign.Length} files to sign.");
@@ -179,11 +179,13 @@ namespace Microsoft.DotNet.SignTool
                     {
                         _log.LogMessage($"Repacking container: '{file.FileName}'");
                         _batchData.ZipDataMap[file.FileContentKey].Repack(_log);
+                        toRepackList.Remove(file.FullPath);
                     }
-                    if (file.IsWixContainer())
+                    else if (file.IsWixContainer())
                     {
                         _log.LogMessage($"Packing wix container: '{file.FileName}'");
                         _batchData.ZipDataMap[file.FileContentKey].Repack(_log, _signTool.TempDir, _signTool.WixToolsPath);
+                        toRepackList.Remove(file.FullPath);
                     }
                 }
             }
@@ -195,8 +197,9 @@ namespace Microsoft.DotNet.SignTool
                 if (file.IsContainer())
                 {
                     var zipData = _batchData.ZipDataMap[file.FileContentKey];
-                    return zipData.NestedParts.All(x => !x.FileSignInfo.SignInfo.ShouldSign || 
-                        signedSet.Contains(x.FileSignInfo.FileContentKey));
+                    return zipData.NestedParts.All(x => (!x.FileSignInfo.SignInfo.ShouldSign ||
+                        signedSet.Contains(x.FileSignInfo.FileContentKey)) && !toRepackList.Contains(x.FileSignInfo.FullPath)
+                        );
                 }
                 return true;
             }
@@ -328,7 +331,10 @@ namespace Microsoft.DotNet.SignTool
                 {
                     if (!isVsixCert)
                     {
-                        log.LogError($"VSIX {fileName} must be signed with a VSIX certificate");
+                        if (!fileName.SignInfo.HasSignableParts)
+                        {
+                            log.LogError($"VSIX {fileName} must be signed with a VSIX certificate");
+                        }
                     }
 
                     if (fileName.SignInfo.StrongName != null)
@@ -340,7 +346,10 @@ namespace Microsoft.DotNet.SignTool
                 {
                     if (fileName.SignInfo.Certificate == null)
                     {
-                        log.LogError($"Nupkg {fileName} should have a certificate name.");
+                        if (!fileName.SignInfo.HasSignableParts)
+                        {
+                            log.LogError($"Nupkg {fileName} should have a certificate name.");
+                        }
                     }
 
                     if (fileName.SignInfo.StrongName != null)
@@ -352,7 +361,10 @@ namespace Microsoft.DotNet.SignTool
                 {
                     if (fileName.SignInfo.Certificate != null)
                     {
-                        log.LogError($"Zip {fileName} should not be signed with this certificate: {fileName.SignInfo.Certificate}");
+                        if (!fileName.SignInfo.HasSignableParts)
+                        {
+                            log.LogError($"Zip {fileName} should not be signed with this certificate: {fileName.SignInfo.Certificate}");
+                        }
                     }
 
                     if (fileName.SignInfo.StrongName != null)
@@ -364,7 +376,10 @@ namespace Microsoft.DotNet.SignTool
                 {
                     if (fileName.SignInfo.Certificate == null)
                     {
-                        log.LogError($"Wix file {fileName} should have a certificate name.");
+                        if (!fileName.SignInfo.HasSignableParts)
+                        {
+                            log.LogError($"Wix file {fileName} should have a certificate name.");
+                        }
                     }
 
                     if (fileName.SignInfo.StrongName != null)
