@@ -14,6 +14,11 @@ Please sit back and enjoy the moment of your career where you are actually asked
 These prerequisites are required for a successful migration. If you're not sure about any of these, please reach out to **@dotnet/dnceng**.
 
 Please verify that you:
+- Ideally have skimmed through this guide beforehand to get an idea of what needs to happen
+- **Have announced the change in your repo by pinning an issue**
+  - Ideally say when it is going to happen
+  - You can link the [official announcement](https://github.com/dotnet/announcements/issues/172)
+  - After you're done, you can either edit this or can create a new pinned issue saying the renaming has happened. This is up to you. Additionally, GitHub will also display a banner on the homepage of the repo once the change happens
 - Know whether your repo is part of the [Maestro/darc dependency flow](https://github.com/dotnet/arcade/blob/master/Documentation/DependencyFlowOnboarding.md)
   - If so, have the [`darc`](https://github.com/dotnet/arcade/blob/master/Documentation/Darc.md) command installed, updated and authenticated
   - Make sure tokens set using `darc authenticate` are still valid ([details at Darc.md#authenticate](https://github.com/dotnet/arcade/blob/master/Documentation/Darc.md#authenticate))
@@ -35,12 +40,31 @@ Please verify that you:
      > Please note that GitHub has a new feature that will try to redirect you to the default branch for certain 404s,
      > e.g. https://github.com/dotnet/efcore/blob/master/README.md will lead to the `README.md` on the default `release/5.0` branch
 
+# How long will this take?
+
+The actions in the steps themselves are mostly matters of a minute or so.
+However, some steps require changes to some repositories and the overall time spent on this depends on how long your PR builds and your CI take.
+The amount of custom work needed for your repository because of internal references and dependencies on master can vary for each repository.
+Our experience shows that **you should reserver 1 to 4 hours for this**.
+
+The steps that require changes are:
+- [Step 2](#2-add-main-triggers-to-yaml-pipelines) and [step 6](#6-search-your-repository-for-any-references-to-the-main-branch-specific-to-your-repo) inside of your GitHub repository,
+- [Step 3](#3-update-the-the-build-mirroring-in-subscriptionsjson) requires a change to the [`dotnet/versions`](https://github.com/dotnet/versions) repo for which you will need an approval of someone from **@dotnet/dnceng**,
+- [Step 11](#11-remove-the-master-branch-triggers-from-your-yaml-pipelines) is a clean-up step in your repo and can happen after.
+
+We recommend:
+- Prepare PRs for these steps beforehand
+- Ideally, get the `dotnet/versions` repo pre-approved as you won't be able to do it yourself (most likely)
+
+
+> Please not that [step 5](#5-change-the-default-branch-to-main-for-your-github-repository) will re-trigger all PR builds on all open PRs.
 
 ## Step labels
 
 Some steps are only intended for some cases, they are labelled in the following way:
 - ![AzDO mirrored](images/azdo-mirrored.png) Step is intended only for repositories that are mirrored to the [internal AzDO dnceng project](https://dev.azure.com/dnceng/internal)*
 - ![Maestro enabled](images/maestro-enabled.png) Step is intended only for repositories that are part of our [dependency flow](https://github.com/dotnet/arcade/blob/master/Documentation/DependencyFlowOnboarding.md)**
+- The guide should also work for non-GitHub AzDO-only repositories. In this case, just follow steps that apply to AzDO.
 
 > \* You can tell that your repo is being mirrored by searching the git repositories in the [internal AzDO dnceng project](https://dev.azure.com/dnceng/internal/_git). In case your repository's name on GitHub is `dotnet/foo`, there should be a git repository named `dotnet-foo`. You should then also be able to find your repo in the [subscriptions.json](https://github.com/dotnet/versions/blob/master/Maestro/subscriptions.json#L627) file on which the mirroring is based.
 >
@@ -65,29 +89,23 @@ All of the steps are easily revert-able, so it is not a problem to go back to `m
 10. [Delete the `master` branch of the AzDO repository](#10-delete-the-master-branch-of-the-azdo-repository)
 11. [Remove the `master` branch triggers from your YAML pipelines](#11-remove-the-master-branch-triggers-from-your-yaml-pipelines)
 12. [Configure **Component Governance** to track the `main` branch](#12-configure-component-governance-to-track-the-main-branch)
-13. [FAQ](#faq)
+13. [Fix AzDO dashboards](#13-fix-any-azdo-dashboards-based-off-of-the-pipelines--repository)
+14. [FAQ](#faq)
 
 ## 1. Disable Maestro subscriptions
 ![Maestro enabled](images/maestro-enabled.png)
 
-Generate Maestro migration scripts, review and execute a script which disables all subscriptions targeting internal and GitHub repositories:
+Generate json data file describing Maestro migration, review it and disable all subscriptions targeting internal and GitHub repositories:
 
-1. Download the script [from](https://raw.githubusercontent.com/dotnet/arcade/master/scripts/disable-subscriptions-prepare-migration-script.ps1).
-2. Run the script `disable-subscriptions-prepare-migration-script.ps1` with short repository name (e.g. dotnet/wpf). Script generation is a safe operation which executes only darc read operations.
-3. Verify that two scripts `rename-branch-in-maestro.ps1` and `disable-subscriptions-in-maestro.ps1` are generated.
-4. Review the script `disable-subscriptions-in-maestro.ps1`.
-5. Execute the script `disable-subscriptions-in-maestro.ps1`.
-
-Example:
-```ps
-> .\disable-subscriptions-prepare-migration-script.ps1 dotnet/aspnetcore # safe operation which only generates scripts
-Generating darc scripts for repository https://dev.azure.com/dnceng/internal/_git/dotnet-aspnetcore master ==> main...
-Generating darc scripts for repository https://github.com/dotnet/aspnetcore master ==> main...
-Files rename-branch-in-maestro.ps1 and disable-subscriptions-in-maestro.ps1 were generated.
-
-> cat disable-subscriptions-in-maestro.ps1 # review the script which disables all subscriptions targeting internal and GitHub repositories
-...
-> .\disable-subscriptions-in-maestro.ps1 # disables subscriptions in Maestro
+1. Download the script [m2m-dotnet.ps1](https://raw.githubusercontent.com/dotnet/arcade/master/scripts/m2m-dotnet.ps1).
+2. Generate json file which describes DARC migration (safe operation which executes only DARC read operations):
+```
+./m2m-dotnet.ps1 -GenerateDataFile -Repository [short repository name (e.g. dotnet/wpf)]
+```
+3. Verify that the file `m2m-dotnet_[timestamp].json` was generated and check that subscriptions and default channels were properly filled.
+4. Disable DARC subscriptions targeting your repository:
+```
+./m2m-dotnet.ps1 -DisableSubscriptions -DataFile m2m-dotnet_[timestamp].json
 ```
 
 ## 2. Add `main` triggers to YAML pipelines
@@ -171,8 +189,9 @@ This will effectively disable code mirroring.
 > * Automation updates target branch in all PRs.
 > * GitHub raw links are automatically redirected. For example link https://raw.githubusercontent.com/dotnet/xharness/master/README.md still works even after rename and is equivalent to link https://raw.githubusercontent.com/dotnet/xharness/main/README.md.
 
-
 > **Warning:** The `master` branch will be deleted during this step!
+
+> **Warning:** This step will re-trigger all PR builds on all open PRs.
 
 1. Navigate to your repository: `https://github.com/dotnet/[REPO NAME]`
 2. In case you don't see settings tab, you don't have sufficient permissions and won't be able to proceed (please check the [prerequisites](#prerequisites))
@@ -195,31 +214,43 @@ Search your repository for any references to the `master` branch specific to you
     ```
     grep -r master . | grep -v "^\./\(\.git\|eng/common\)"
     ```
+- There also might be references **to your repo from other repos**. You don't have to worry about these much as GitHub will redirect all links automatically (see [FAQ / What happens to links to files in my repo](#what-happens-to-links-to-files-in-my-repo)). Ideally take care of those at the end of this guide
 
 ## 7. Use a `darc` script to migrate channels and subscriptions
 ![Maestro enabled](images/maestro-enabled.png)
 
 > **Note:** This uses [darc](https://github.com/dotnet/arcade/blob/master/Documentation/Darc.md) and migrates default channels and subscriptions
 
-1. Review the script `rename-branch-in-maestro.ps1` generated in step 1.
-2. Execute the script `rename-branch-in-maestro.ps1`
+1. You can optionally run DARC migration script in a dry run mode. This doesn't update anything, but displays DARC commands which would be executed.
+```
+./m2m-dotnet.ps1 -Migrate -DataFile m2m-dotnet_[timestamp].json -DryRun
+```
+2. Run DARC migration script (it is safe to execute it repeatedly):
+```
+./m2m-dotnet.ps1 -Migrate -DataFile m2m-dotnet_[timestamp].json
+```
+3. Validate migration (make sure that you don't see any errors):
+```
+./m2m-dotnet.ps1 -Verify -DataFile m2m-dotnet_[timestamp].json
+```
 
 ## 8. Change the default branch for AzDO pipelines
-![AzDO mirrored](images/azdo-mirrored.png) 
+![AzDO mirrored](images/azdo-mirrored.png)
 
 - Do this for [public](https://dev.azure.com/dnceng/public) and [internal](https://dev.azure.com/dnceng/internal) projects
 - Do this for all pipelines that are based off a YAML in the repo that you are working with
-- You can use [this script](https://raw.githubusercontent.com/dotnet/arcade/763e8754c7e7a4b37ad76974a15dfe0ede876004/scripts/list-repo-pipelines.ps1) to list all pipelines associated with a given repo:
+- You can use [this script](https://raw.githubusercontent.com/dotnet/arcade/master/scripts/list-repo-pipelines.ps1) to list all pipelines associated with a given repo:
   > ```ps
-  > .\list-repo-pipelines.ps1 -GitHubRepository "[REPOSITORY]" -PAT "[TOKEN]"
+  > .\list-repo-pipelines.ps1 -GitHubRepository "[GH REPO NAME]" -AzDORepository "[AZDO REPO NAME]" -PAT "[TOKEN]"
   > ```
 
 Example:
   > ```ps
-  > .\list-repo-pipelines.ps1 -GitHubRepository "dotnet/runtime" -PAT "jdsvmd324jnsdvjafn2vsd"
+  > .\list-repo-pipelines.ps1 -GitHubRepository "dotnet/xharness" -AzDORepository "dotnet-xharness" -PAT "jdsvmd324jnsdvjafn2vsd"
   > ```
 
-The **Pesonal Access Token** needs to read Code, Builds and Releases.
+The **Pesonal Access Token** needs to have following scopes: **Code (Read)**, **Build (Read)**.
+The parameters can be used separately, GitHub listing doesn't require the token to be set.
 
 1. Go to AzDO pipelines, find your pipeline
 2. Click `Edit`
@@ -245,7 +276,7 @@ The **Pesonal Access Token** needs to read Code, Builds and Releases.
 
 
 ## 10. Delete the `master` branch of the AzDO repository
-![AzDO mirrored](images/azdo-mirrored.png) 
+![AzDO mirrored](images/azdo-mirrored.png)
 
 - For this you need to have the `Force push` permission in branch security settings
 
@@ -305,6 +336,11 @@ Go to the internal AzDO mirror of your repository and configure **Component Gove
 ![Component Governance](images/component-governance-1.png)
 ![Component Governance](images/component-governance-2.png)
 
+## 13. Fix any AzDO dashboards
+
+Fix any AzDO dashboards based off of the pipelines / repository.
+This can be done through the AzDO website in most cases.
+
 **You are now done with the migration!**
 
 # FAQ
@@ -332,31 +368,18 @@ GitHub links are automatically redirected. For example https://github.com/dotnet
 GitHub raw links are automatically redirected. For example link https://raw.githubusercontent.com/dotnet/xharness/master/README.md still works even after rename and is equivalent to link https://raw.githubusercontent.com/dotnet/xharness/main/README.md.
 
 ## How to revert Maestro migration?
-Two update scripts are generated. There are 3 scenarios:
-1. In case the `disable-subscriptions-in-maestro.ps1` script was executed **only**, to roll back, edit this script and replace argument `-d` with `-e`. For example update content of `disable-subscriptions-in-maestro.ps1` from:
 
+1. Edit file `m2m-dotnet_[timestamp].json` and update following fields for public and internal repository:
 ```
-$ErrorActionPreference = 'Stop'
-# Disable targeting subscriptions for https://dev.azure.com/dnceng/internal/_git/dotnet-runtime (master)
-# --------------------------------
-# Disable targeting subscriptions for https://github.com/dotnet/runtime (master)
-# ----------------------------------
-darc subscription-status --id "032d107a-6f5d-4df8-c8c4-08d75d523d5f" -d -q
+"newBranch":  "master",
+"oldBranch":  "main",
 ```
-
-to:
+2. Run DARC migration script:
 ```
-$ErrorActionPreference = 'Stop'
-# Disable targeting subscriptions for https://dev.azure.com/dnceng/internal/_git/dotnet-runtime (master)
-# --------------------------------
-# Disable targeting subscriptions for https://github.com/dotnet/runtime (master)
-# ----------------------------------
-darc subscription-status --id "032d107a-6f5d-4df8-c8c4-08d75d523d5f" -e -q
+./m2m-dotnet.ps1 -Migrate -DataFile m2m-dotnet_[timestamp].json
 ```
-and execute `disable-subscriptions-in-maestro.ps1`.
-
-2. When both scripts were executed, you need to generate rollback scripts using the same script which was used to generate migration scripts:
-    `./disable-subscriptions-prepare-migration-script.ps1 [repo name] master main`.
-    Then execute generated update script `./rename-branch-in-maestro.ps1` and all changes will be reverted.
-
-3. Reach out to us in case of any questions or issues with these scripts.
+3. Validate migration (make sure that you don't see any errors):
+```
+./m2m-dotnet.ps1 -Verify -DataFile m2m-dotnet_[timestamp].json
+```
+4. Reach out to us in case of any questions or issues with these scripts.
