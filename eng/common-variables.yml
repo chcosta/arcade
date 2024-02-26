@@ -33,4 +33,5 @@ variables:
     - name: PostBuildSign
       value: true
     - name: _1ESPTDefinitionName
-      value: 'v1/1ES.Official.PipelineTemplate.yml@1ESPipelineTemplates'
+      value: 'azure-pipelines/MicroBuild.1ES.Official.yml@MicroBuildTemplate
+'
