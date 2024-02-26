@@ -10,6 +10,8 @@ variables:
     value: False
   - name: _InternalBuildArgs
     value: ''
+  - name: _1ESPTDefinitionName
+    value: 'v1/1ES.Unofficial.PipelineTemplate.yml@1ESPipelineTemplates'
 
   - ${{ if and(ne(variables['System.TeamProject'], 'public'), notin(variables['Build.Reason'], 'PullRequest')) }}:
     - name: _RunAsPublic
@@ -30,3 +32,5 @@ variables:
         /p:OfficialBuildId=$(BUILD.BUILDNUMBER)
     - name: PostBuildSign
       value: true
+    - name: _1ESPTDefinitionName
+      value: 'v1/1ES.Official.PipelineTemplate.yml@1ESPipelineTemplates'
